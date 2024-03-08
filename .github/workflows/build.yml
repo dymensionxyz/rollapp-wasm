@@ -1,0 +1,33 @@
+name: Build Rollappd
+on: ["push"]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [amd64]
+        targetos: [darwin, linux]
+        go-version: ['1.19.x', '1.20.x']
+        include:
+          - targetos: darwin
+            arch: arm64
+    name: rollapp ${{ matrix.arch }} for ${{ matrix.targetos }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4.1.0
+        with:
+          go-version: ${{ matrix.go-version }}
+        env:
+          GOOS: ${{ matrix.targetos }}
+          GOARCH: ${{ matrix.arch }}
+
+      - name: Compile rollappd
+        run: |
+          go mod download
+          cd cmd/rollappd
+          go build .
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: rollappd ${{ matrix.targetos }} ${{ matrix.arch }}
+          path: cmd/rollappd/rollappd

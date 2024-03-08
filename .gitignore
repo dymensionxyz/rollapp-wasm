@@ -1,0 +1,8 @@
+cmd/rollappd/rollappd
+scripts/ibc/*.json
+build/
+release/
+.idea/
+.vscode/
+.DS_Store
+.go-version
