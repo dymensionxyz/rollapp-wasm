@@ -36,7 +36,7 @@ make install
 export the following variables:
 
 ```shell
-export ROLLAPP_CHAIN_ID="rollapp-wasm"
+export ROLLAPP_CHAIN_ID="rollappwasm_1234-1"
 export KEY_NAME_ROLLAPP="rol-user"
 export DENOM="urax"
 export MONIKER="$ROLLAPP_CHAIN_ID-sequencer"
@@ -104,6 +104,7 @@ set:
 
 ```shell
 settlement_layer = "dymension"
+gas_prices = "0.025adym"
 ```
 
 ### Run rollapp locally
@@ -118,7 +119,7 @@ rollappd start
 
 ```shell
 git clone https://github.com/dymensionxyz/go-relayer.git --branch v0.2.0-v2.3.1-relayer
-cd relayer && make install
+cd go-relayer && make install
 ```
 
 ### Establish IBC channel

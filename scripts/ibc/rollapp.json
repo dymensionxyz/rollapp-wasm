@@ -2,7 +2,7 @@
   "type": "cosmos",
   "value": {
     "key": "relayer-rollapp-key",
-    "chain-id": "demo-dymension-rollapp",
+    "chain-id": "rollappwasm_1234-1",
     "rpc-addr": "http://127.0.0.1:26657",
     "account-prefix": "rol",
     "keyring-backend": "test",

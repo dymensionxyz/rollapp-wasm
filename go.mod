@@ -9,7 +9,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.46.15
 	github.com/cosmos/ibc-go/v6 v6.2.1
 	github.com/dymensionxyz/dymension-rdk v1.0.0-beta
-	github.com/dymensionxyz/dymint v0.6.1-beta.0.20240304142714-582b71db4809
+	github.com/dymensionxyz/dymint v0.6.1-beta.0.20240307154502-e2066959a81f
 	github.com/gorilla/mux v1.8.1
 	github.com/prometheus/client_golang v1.16.0
 	github.com/rakyll/statik v0.1.7

@@ -13,6 +13,9 @@ SETTLEMENT_CHAIN_ID="dymension_100-1"
 SETTLEMENT_KEY_NAME_GENESIS="local-user"
 
 EXECUTABLE="rollappd"
+ROLLAPP_CHAIN_ID="rollappwasm_1234-1"
+ROLLAPP_KEY_NAME_GENESIS="rol-user"
+DENOM="urax"
 
 RELAYER_KEY_FOR_ROLLAP="relayer-rollapp-key"
 RELAYER_KEY_FOR_HUB="relayer-hub-key"
@@ -68,6 +71,10 @@ rly keys add "$SETTLEMENT_CHAIN_ID" "$RELAYER_KEY_FOR_HUB"
 RLY_HUB_ADDR=$(rly keys show "$SETTLEMENT_CHAIN_ID")
 RLY_ROLLAPP_ADDR=$(rly keys show "$ROLLAPP_CHAIN_ID")
 
+echo '# -------------------------------- funding for rly account  ------------------------------- #'
+$SETTLEMENT_EXECUTABLE tx bank send $SETTLEMENT_KEY_NAME_GENESIS "$(rly keys show "$SETTLEMENT_CHAIN_ID")" 1000000000000000000000adym --keyring-backend test --broadcast-mode block --fees 20000000000000adym -y  --node "$SETTLEMENT_RPC_FOR_RELAYER"
+$EXECUTABLE tx bank send $ROLLAPP_KEY_NAME_GENESIS "$(rly keys show "$ROLLAPP_CHAIN_ID")" 1000000000000000000000$DENOM --keyring-backend test --broadcast-mode block -y  --node "$ROLLAPP_RPC_FOR_RELAYER"
+
 echo "# ------------------------------- balance of rly account on hub [$RLY_HUB_ADDR]------------------------------ #"
 $SETTLEMENT_EXECUTABLE q bank balances "$(rly keys show "$SETTLEMENT_CHAIN_ID")" --node "$SETTLEMENT_RPC_FOR_RELAYER"
 echo "From within the hub node: \"$SETTLEMENT_EXECUTABLE tx bank send $SETTLEMENT_KEY_NAME_GENESIS $RLY_HUB_ADDR 100000000000000000000udym --keyring-backend test --broadcast-mode block\""
@@ -76,13 +83,11 @@ echo "# ------------------------------- balance of rly account on rollapp [$RLY_
 $EXECUTABLE q bank balances "$(rly keys show "$ROLLAPP_CHAIN_ID")" --node "$ROLLAPP_RPC_FOR_RELAYER"
 echo "From within the rollapp node: \"$EXECUTABLE tx bank send $KEY_NAME_ROLLAPP $RLY_ROLLAPP_ADDR 100000000$DENOM --keyring-backend test --broadcast-mode block\""
 
-echo "waiting to fund accounts. Press to continue..."
-read -r answer
-
 echo '# -------------------------------- creating IBC link ------------------------------- #'
 
 rly paths new "$ROLLAPP_CHAIN_ID" "$SETTLEMENT_CHAIN_ID" "$RELAYER_PATH" --src-port "$IBC_PORT" --dst-port "$IBC_PORT" --version "$IBC_VERSION"
-
+rly tx client "$SETTLEMENT_CHAIN_ID" "$ROLLAPP_CHAIN_ID" "$RELAYER_PATH"
+rly tx client "$ROLLAPP_CHAIN_ID" "$SETTLEMENT_CHAIN_ID"  "$RELAYER_PATH"
 while true; do
   rly tx update-clients "$RELAYER_PATH" | tee /dev/stdout
   sleep 5
@@ -93,15 +98,10 @@ UPDATE_CLIENTS_PID=$!
 rly tx link "$RELAYER_PATH" --src-port "$IBC_PORT" --dst-port "$IBC_PORT" --version "$IBC_VERSION"
 # Channel is currently not created in the tx link since we changed the relayer to support on demand blocks
 # Which messed up with channel creation as part of tx link.
-rly tx channel "$RELAYER_PATH"
-
 
 kill $UPDATE_CLIENTS_PID > /dev/null 2>&1
 
 
 echo '# -------------------------------- IBC channel established ------------------------------- #'
-ROLLAPP_CHANNEL_ID=$(rly q channels "$ROLLAPP_CHAIN_ID" | jq -r 'select(.state == "STATE_OPEN") | .channel_id' | tail -n 1)
-HUB_CHANNEL_ID=$(rly q channels "$SETTLEMENT_CHAIN_ID" | jq -r 'select(.state == "STATE_OPEN") | .channel_id' | tail -n 1)
-
-echo "ROLLAPP_CHANNEL_ID: $ROLLAPP_CHANNEL_ID"
-echo "HUB_CHANNEL_ID: $HUB_CHANNEL_ID"
+echo "ROLLAPP_CHANNEL: $(rly q channels "$ROLLAPP_CHAIN_ID")"
+echo "HUB_CHANNEL: $(rly q channels "$SETTLEMENT_CHAIN_ID")"
