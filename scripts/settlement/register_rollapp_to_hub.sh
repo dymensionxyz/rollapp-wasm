@@ -9,4 +9,6 @@ dymd tx rollapp create-rollapp "$ROLLAPP_CHAIN_ID" "$MAX_SEQUENCERS" '{"Addresse
   --from "$KEY_NAME_SEQUENCER" \
   --keyring-backend test \
   --keyring-dir "$KEYRING_PATH" \
-  --broadcast-mode block
+  --broadcast-mode block \
+  --fees 20000000000000adym \
+  -y

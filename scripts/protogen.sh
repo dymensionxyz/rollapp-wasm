@@ -27,5 +27,5 @@ for dir in $proto_dirs; do
 done
 
 # move proto files to the right places
-cp -r github.com/dymensionxyz/rollapp/* ./
+cp -r github.com/dymensionxyz/rollapp-wasm/* ./
 rm -rf github.com
