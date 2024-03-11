@@ -16,5 +16,5 @@ for contract in cw20_base cw20_ics20; do
   wget -O "scripts/bytecode/${contract}.wasm" "$url"
 done
 
-rm -f version.txt
-echo "$tag" >version.txt
+rm -f scripts/version.txt
+echo "$tag" >scripts/version.txt
