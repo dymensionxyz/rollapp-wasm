@@ -19,7 +19,6 @@ type HandlerOptions struct {
 
 	IBCKeeper         *ibckeeper.Keeper
 	WasmConfig        *wasmtypes.WasmConfig
-	WasmKeeper        *wasmkeeper.Keeper
 	TxCounterStoreKey storetypes.StoreKey
 }
 
@@ -68,6 +67,10 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 
 	if options.SignModeHandler == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for ante builder")
+	}
+
+	if options.WasmConfig == nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "wasm config is required for ante builder")
 	}
 
 	return sdk.ChainAnteDecorators(GetAnteDecorators(options)...), nil

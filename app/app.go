@@ -94,6 +94,7 @@ import (
 	ibctestingtypes "github.com/cosmos/ibc-go/v6/testing/types"
 
 	wasm "github.com/CosmWasm/wasmd/x/wasm"
+	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
@@ -132,9 +133,8 @@ var (
 )
 
 func getGovProposalHandlers() []govclient.ProposalHandler {
-	var govProposalHandlers []govclient.ProposalHandler
-
-	govProposalHandlers = append(govProposalHandlers,
+	govProposalHandlers := append(
+		wasmclient.ProposalHandlers,
 		paramsclient.ProposalHandler,
 		distrclient.ProposalHandler,
 		upgradeclient.LegacyProposalHandler,
@@ -257,6 +257,7 @@ func NewRollapp(
 	homePath string,
 	invCheckPeriod uint,
 	encodingConfig rollappparams.EncodingConfig,
+	enabledProposals []wasm.ProposalType,
 	appOpts servertypes.AppOptions,
 	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
@@ -430,6 +431,11 @@ func NewRollapp(
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
 	}
 
+	// The gov proposal types can be individually enabled
+	if len(enabledProposals) != 0 {
+		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, enabledProposals))
+	}
+
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	availableCapabilities := strings.Join(AllCapabilities(), ",")
@@ -511,7 +517,7 @@ func NewRollapp(
 		genutiltypes.ModuleName,
 		epochstypes.ModuleName,
 		paramstypes.ModuleName,
-		wasmtypes.ModuleName,
+		wasm.ModuleName,
 	}
 	app.mm.SetOrderBeginBlockers(beginBlockersList...)
 
@@ -531,7 +537,7 @@ func NewRollapp(
 		upgradetypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
-		wasmtypes.ModuleName,
+		wasm.ModuleName,
 	}
 	app.mm.SetOrderEndBlockers(endBlockersList...)
 
@@ -557,7 +563,7 @@ func NewRollapp(
 		epochstypes.ModuleName,
 		upgradetypes.ModuleName,
 		ibctransfertypes.ModuleName,
-		wasmtypes.ModuleName,
+		wasm.ModuleName,
 	}
 	app.mm.SetOrderInitGenesis(initGenesisList...)
 
@@ -647,7 +653,6 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.Wa
 			},
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
-			WasmKeeper:        &app.WasmKeeper,
 			TxCounterStoreKey: app.keys[wasmtypes.StoreKey],
 		},
 	)
@@ -691,7 +696,7 @@ func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.Res
 
 	//Passing the dymint sequencers to the sequencer module from RequestInitChain
 	if len(req.Validators) == 0 {
-		panic("Dymint have no sequencers defined on InitChain")
+		panic(fmt.Sprint("Dymint have no sequencers defined on InitChain, req:", req))
 	}
 	app.SequencersKeeper.SetDymintSequencers(ctx, req.Validators)
 
