@@ -138,6 +138,18 @@ After successful run, the new established channels will be shown
 rly start hub-rollapp
 ```
 
+### Deploy the installed contract
+
+```shell
+sh scripts/wasm/deploy_contract.sh
+```
+
+### Make the ibc transfer
+
+```shell
+sh scripts/wasm/ibc_transfer.sh
+```
+
 ## Developers guide
 
 TODO
