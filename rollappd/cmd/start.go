@@ -35,6 +35,7 @@ import (
 	rdklogger "github.com/dymensionxyz/dymension-rdk/utils/logger"
 	dymintconf "github.com/dymensionxyz/dymint/config"
 	dymintconv "github.com/dymensionxyz/dymint/conv"
+	dymintmemp "github.com/dymensionxyz/dymint/mempool"
 	dymintnode "github.com/dymensionxyz/dymint/node"
 	dymintrpc "github.com/dymensionxyz/dymint/rpc"
 )
@@ -269,13 +270,14 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 		proxy.NewLocalClientCreator(app),
 		genesis,
 		ctx.Logger,
+		dymintmemp.PrometheusMetrics("dymint"),
 	)
 	if err != nil {
 		return err
 	}
 
-	server := dymintrpc.NewServer(tmNode, cfg.RPC, ctx.Logger)
-	err = server.Start()
+	dymserver := dymintrpc.NewServer(tmNode, cfg.RPC, ctx.Logger)
+	err = dymserver.Start()
 	if err != nil {
 		return err
 	}
@@ -288,7 +290,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 	// service if API or gRPC is enabled, and avoid doing so in the general
 	// case, because it spawns a new local tendermint RPC client.
 	if (config.API.Enable || config.GRPC.Enable) && tmNode != nil {
-		clientCtx = clientCtx.WithClient(server.Client())
+		clientCtx = clientCtx.WithClient(dymserver.Client())
 
 		app.RegisterTxService(clientCtx)
 		app.RegisterTendermintService(clientCtx)

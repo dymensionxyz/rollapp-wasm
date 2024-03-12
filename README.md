@@ -13,7 +13,7 @@ It uses Cosmos-SDK's [simapp](https://github.com/cosmos/cosmos-sdk/tree/main/sim
 - minimal app setup
 - wired IBC for [ICS 20 Fungible Token Transfers](https://github.com/cosmos/ibc/tree/main/spec/app/ics-020-fungible-token-transfer)
 - Uses `dymint` for block sequencing and replacing `tendermint`
-- Uses modules from `dymension-RDK` to sync with `dymint` and provide RollApp custom logic 
+- Uses modules from `dymension-RDK` to sync with `dymint` and provide RollApp custom logic
 
 ## Overview
 
@@ -36,7 +36,7 @@ make install
 export the following variables:
 
 ```shell
-export ROLLAPP_CHAIN_ID="demo-dymension-rollapp"
+export ROLLAPP_CHAIN_ID="rollappwasm_1234-1"
 export KEY_NAME_ROLLAPP="rol-user"
 export DENOM="urax"
 export MONIKER="$ROLLAPP_CHAIN_ID-sequencer"
@@ -46,6 +46,14 @@ And initialize the rollapp:
 
 ```shell
 sh scripts/init.sh
+```
+
+### Download cw20-ics20 smartcontract
+
+Download cw20-ics20 smartcontract with a specific version:
+
+```shell
+sh scripts/download_release.sh v1.0.0
 ```
 
 ### Run rollapp
@@ -74,7 +82,7 @@ SEQUENCER_ADDR=`dymd keys show sequencer --address --keyring-backend test --keyr
 fund the sequencer account
 
 ```shell
-dymd tx bank send local-user $SEQUENCER_ADDR 10000000000000000000000udym --keyring-backend test --broadcast-mode block
+dymd tx bank send local-user $SEQUENCER_ADDR 10000000000000000000000adym --keyring-backend test --broadcast-mode block --fees 20000000000000adym -y
 ```
 
 ### Register rollapp on settlement
@@ -96,6 +104,7 @@ set:
 
 ```shell
 settlement_layer = "dymension"
+gas_prices = "0.025adym"
 ```
 
 ### Run rollapp locally
@@ -110,7 +119,7 @@ rollappd start
 
 ```shell
 git clone https://github.com/dymensionxyz/go-relayer.git --branch v0.2.0-v2.3.1-relayer
-cd relayer && make install
+cd go-relayer && make install
 ```
 
 ### Establish IBC channel
@@ -127,6 +136,18 @@ After successful run, the new established channels will be shown
 
 ```shell
 rly start hub-rollapp
+```
+
+### Deploy the installed contract
+
+```shell
+sh scripts/wasm/deploy_contract.sh
+```
+
+### Make the ibc transfer
+
+```shell
+sh scripts/wasm/ibc_transfer.sh
 ```
 
 ## Developers guide

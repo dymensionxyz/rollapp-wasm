@@ -22,6 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	tmcfg "github.com/tendermint/tendermint/config"
@@ -29,20 +30,23 @@ import (
 	tmlog "github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+
 	rdkserver "github.com/dymensionxyz/dymension-rdk/server"
 	"github.com/dymensionxyz/dymension-rdk/utils"
 	sequencercli "github.com/dymensionxyz/dymension-rdk/x/sequencers/client/cli"
 	dymintconf "github.com/dymensionxyz/dymint/config"
-	"github.com/dymensionxyz/rollapp/app"
-	"github.com/dymensionxyz/rollapp/app/params"
+	"github.com/dymensionxyz/rollapp-wasm/app"
+	"github.com/dymensionxyz/rollapp-wasm/app/params"
 )
 
 const rollappAscii = `
-██████   ██████  ██      ██       █████  ██████  ██████  
-██   ██ ██    ██ ██      ██      ██   ██ ██   ██ ██   ██ 
-██████  ██    ██ ██      ██      ███████ ██████  ██████  
-██   ██ ██    ██ ██      ██      ██   ██ ██      ██      
-██   ██  ██████  ███████ ███████ ██   ██ ██      ██                     
+██████   ██████  ██      ██       █████  ██████  ██████      ██     ██  █████  ███████ ███    ███ 
+██   ██ ██    ██ ██      ██      ██   ██ ██   ██ ██   ██     ██     ██ ██   ██ ██      ████  ████ 
+██████  ██    ██ ██      ██      ███████ ██████  ██████      ██  █  ██ ███████ ███████ ██ ████ ██ 
+██   ██ ██    ██ ██      ██      ██   ██ ██      ██          ██ ███ ██ ██   ██      ██ ██  ██  ██ 
+██   ██  ██████  ███████ ███████ ██   ██ ██      ██           ███ ███  ██   ██ ███████ ██      ██                 
 `
 
 // NewRootCmd creates a new root rollappd command. It is called once in the main function.
@@ -242,6 +246,11 @@ func (ac appCreator) newApp(
 		skipUpgradeHeights[int64(h)] = true
 	}
 
+	var wasmOpts []wasm.Option
+	if cast.ToBool(appOpts.Get("telemetry.enabled")) {
+		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
+	}
+
 	return app.NewRollapp(
 		logger,
 		db,
@@ -251,7 +260,9 @@ func (ac appCreator) newApp(
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		ac.encCfg,
+		app.GetEnabledProposals(),
 		appOpts,
+		wasmOpts,
 		baseappOptions...)
 }
 
@@ -271,6 +282,7 @@ func (ac appCreator) appExport(
 	}
 
 	loadLatest := height == -1
+	var emptyWasmOpts []wasm.Option
 	rollapp = app.NewRollapp(
 		logger,
 		db,
@@ -280,7 +292,9 @@ func (ac appCreator) appExport(
 		homePath,
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		ac.encCfg,
+		app.GetEnabledProposals(),
 		appOpts,
+		emptyWasmOpts,
 	)
 
 	if height != -1 {

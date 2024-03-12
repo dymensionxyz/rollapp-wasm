@@ -45,12 +45,12 @@ install:
 	@echo "--> Ensure dependencies have not been modified"
 	@go mod verify
 	@echo "--> installing rollappd"
-	@go install $(BUILD_FLAGS) -v -mod=readonly ./cmd/rollappd
+	@go install $(BUILD_FLAGS) -v -mod=readonly ./rollappd
 
 
 .PHONY: build
 build: ## Compiles the rollapd binary
-	go build  -o build/rollappd $(BUILD_FLAGS) ./cmd/rollappd
+	go build  -o build/rollappd $(BUILD_FLAGS) ./rollappd
 
 
 .PHONY: clean
