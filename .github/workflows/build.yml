@@ -7,7 +7,7 @@ jobs:
       matrix:
         arch: [amd64]
         targetos: [darwin, linux]
-        go-version: ['1.19.x', '1.20.x']
+        go-version: ['1.21.x']
         include:
           - targetos: darwin
             arch: arm64
@@ -24,10 +24,10 @@ jobs:
       - name: Compile rollappd
         run: |
           go mod download
-          cd cmd/rollappd
+          cd rollappd
           go build .
 
       - uses: actions/upload-artifact@v3
         with:
           name: rollappd ${{ matrix.targetos }} ${{ matrix.arch }}
-          path: cmd/rollappd/rollappd
+          path: rollappd/rollappd
