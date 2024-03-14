@@ -52,7 +52,7 @@ QUERY_MSG=$(cat <<EOF
 {"balance":{"address":"$ROLLAPP_GENESIS_ADDR"}}
 EOF
 )
-rollappd q wasm contract-state smart $contract $QUERY_MSG
+rollappd q wasm contract-state smart $contract "$QUERY_MSG"
 
 # balance of the hub will not change yet, we need to start relayer to make it work
 dymd q bank balance $SETTLEMENT_GENESIS_ADDR

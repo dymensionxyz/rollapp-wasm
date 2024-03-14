@@ -86,14 +86,6 @@ echo "From within the rollapp node: \"$EXECUTABLE tx bank send $KEY_NAME_ROLLAPP
 echo '# -------------------------------- creating IBC link ------------------------------- #'
 
 rly paths new "$ROLLAPP_CHAIN_ID" "$SETTLEMENT_CHAIN_ID" "$RELAYER_PATH" --src-port "$IBC_PORT" --dst-port "$IBC_PORT" --version "$IBC_VERSION"
-rly tx client "$SETTLEMENT_CHAIN_ID" "$ROLLAPP_CHAIN_ID" "$RELAYER_PATH"
-rly tx client "$ROLLAPP_CHAIN_ID" "$SETTLEMENT_CHAIN_ID"  "$RELAYER_PATH"
-while true; do
-  rly tx update-clients "$RELAYER_PATH" | tee /dev/stdout
-  sleep 5
-done &
-UPDATE_CLIENTS_PID=$!
-
 
 rly tx link "$RELAYER_PATH" --src-port "$IBC_PORT" --dst-port "$IBC_PORT" --version "$IBC_VERSION"
 # Channel is currently not created in the tx link since we changed the relayer to support on demand blocks
