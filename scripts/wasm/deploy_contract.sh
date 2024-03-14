@@ -24,6 +24,7 @@ INIT_CW20=$(cat <<EOF
 EOF
 )
 rollappd tx wasm instantiate $CW20_CODE_ID "$INIT_CW20" --label test --no-admin --from $ROLLAPP_KEY_NAME_GENESIS --yes
+sleep 2
 CW20_ADDR=$(rollappd q wasm list-contract-by-code $CW20_CODE_ID --output json | jq -r '.contracts[0]' )
 echo "Token contract deployed at: $CW20_ADDR"
 
@@ -52,6 +53,7 @@ INIT_ICS20=$(cat <<EOF
 EOF
 )
 rollappd tx wasm instantiate $ICS20_CODE_ID "$INIT_ICS20" --label ics20 --no-admin --from rol-user --gas 50000000 --yes
+sleep 2
 ICS20_ADDR=$(rollappd q wasm list-contract-by-code $ICS20_CODE_ID --output json | jq -r '.contracts[0]' )
 
 echo "ICS20 contract deployed at: $ICS20_ADDR"

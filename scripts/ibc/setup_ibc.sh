@@ -91,8 +91,7 @@ rly tx link "$RELAYER_PATH" --src-port "$IBC_PORT" --dst-port "$IBC_PORT" --vers
 # Channel is currently not created in the tx link since we changed the relayer to support on demand blocks
 # Which messed up with channel creation as part of tx link.
 
-kill $UPDATE_CLIENTS_PID > /dev/null 2>&1
-
+sleep 5
 
 echo '# -------------------------------- IBC channel established ------------------------------- #'
 echo "ROLLAPP_CHANNEL: $(rly q channels "$ROLLAPP_CHAIN_ID")"
