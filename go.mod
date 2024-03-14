@@ -1,6 +1,8 @@
 module github.com/dymensionxyz/rollapp-wasm
 
-go 1.20
+go 1.21
+
+toolchain go1.21.4
 
 require (
 	github.com/CosmWasm/wasmd v0.33.0
