@@ -42,6 +42,12 @@ export DENOM="urax"
 export MONIKER="$ROLLAPP_CHAIN_ID-sequencer"
 ```
 
+if you want to change the max wasm size:
+
+```shell
+export MAX_WASM_SIZE=YOUR_MAX_WASM_SIZE
+```
+
 And initialize the rollapp:
 
 ```shell
