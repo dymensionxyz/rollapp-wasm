@@ -6,15 +6,10 @@ SETTLEMENT_KEY_NAME_GENESIS="local-user"
 SETTLEMENT_GENESIS_ADDR="$(dymd keys show $SETTLEMENT_KEY_NAME_GENESIS | grep "address:" | cut -d' ' -f3)"
 SETTLEMENT_CHAIN_ID="dymension_100-1"
 
-<<<<<<< HEAD
 ICS20_CODE_ID="$(rollappd q wasm  list-code | grep "code_id:" | tail -n 1 | cut -d' ' -f3 | tr -d '"')"
 CW20_CODE_ID=$((ICS20_CODE_ID - 1))
 CW20_ADDR=$(rollappd q wasm list-contract-by-code $CW20_CODE_ID --output json | jq -r '.contracts[0]' )
 ICS20_ADDR=$(rollappd q wasm list-contract-by-code $ICS20_CODE_ID --output json | jq -r '.contracts[0]' )
-=======
-CW20_ADDR=$(rollappd q wasm list-contract-by-code 1 --output json | jq -r '.contracts[0]' )
-ICS20_ADDR=$(rollappd q wasm list-contract-by-code 2 --output json | jq -r '.contracts[0]' )
->>>>>>> main
 
 ICS20_PATH="ics20-hub"
 version=ics20-1
