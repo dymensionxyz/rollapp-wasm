@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -283,6 +284,13 @@ func NewRollapp(
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
+
+	if maxSize := os.Getenv("MAX_WASM_SIZE"); maxSize != "" {
+		// https://github.com/CosmWasm/wasmd#compile-time-parameters
+		val, _ := strconv.ParseInt(maxSize, 10, 32)
+		wasmtypes.MaxWasmSize = int(val)
+		wasmtypes.MaxProposalWasmSize = int(val)
+	}
 
 	// load state streaming if enabled
 	if _, _, err := streaming.LoadStreamingServices(bApp, appOpts, appCodec, keys); err != nil {
