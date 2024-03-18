@@ -43,5 +43,5 @@ jobs:
             push: true
             platforms: linux/amd64
             tags: |
-                ghcr.io/dymensionxyz/rollapp-wams:latest
+                ghcr.io/dymensionxyz/rollapp-wasm:latest
                 ghcr.io/dymensionxyz/rollapp-wasm:${{ env.DOCKER_IMAGE_TAG }}
