@@ -3,7 +3,7 @@ FROM ubuntu:latest as go-builder
 
 # Install necessary dependencies
 RUN apt-get update && apt-get install -y \
-    wget make \
+    wget make git \
     && rm -rf /var/lib/apt/lists/*
 
 # Download and install Go 1.21
