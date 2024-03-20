@@ -470,8 +470,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davidlazar/go-crypto v0.0.0-20200604182044-b73af7476f6c h1:pFUpOrbxDR6AkioZ1ySsx5yxlDQZ8stG2b88gTPxgJU=
 github.com/davidlazar/go-crypto v0.0.0-20200604182044-b73af7476f6c/go.mod h1:6UhI8N9EjYm1c2odKpFpAYeR8dsBeM7PtzQhRgxRr9U=
-github.com/decentrio/wasmd v0.33.0-sdk46.1 h1:jlZQwoo8xuQb4tEs7AUHlxNNRuD4LuxsDtR9XYwXFLo=
-github.com/decentrio/wasmd v0.33.0-sdk46.1/go.mod h1:mPBiB+54La70eS2HHzvK2Vn7Frgf7rjnxDo70oopw+w=
+github.com/decentrio/wasmd v0.33.0-sdk46.2 h1:cUgYN8crDXiQiKLBYfGR5IXg77Z/QrvZBoU9Fg/1ACo=
+github.com/decentrio/wasmd v0.33.0-sdk46.2/go.mod h1:mPBiB+54La70eS2HHzvK2Vn7Frgf7rjnxDo70oopw+w=
 github.com/deckarep/golang-set v1.8.0 h1:sk9/l/KqpunDwP7pSjUg0keiOOLEnOBHzykLrsPppp4=
 github.com/deckarep/golang-set v1.8.0/go.mod h1:5nI87KwE7wgsBU1F4GKAw2Qod7p5kyS383rP6+o6qqo=
 github.com/decred/base58 v1.0.4 h1:QJC6B0E0rXOPA8U/kw2rP+qiRJsUaE2Er+pYb3siUeA=
