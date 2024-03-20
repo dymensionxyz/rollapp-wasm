@@ -293,7 +293,7 @@ require (
 )
 
 replace (
-	github.com/CosmWasm/wasmd => github.com/decentrio/wasmd v0.33.0-sdk46.1
+	github.com/CosmWasm/wasmd => github.com/decentrio/wasmd v0.33.1-0.20240320074727-758780f64bf2
 	github.com/centrifuge/go-substrate-rpc-client/v4 => github.com/availproject/go-substrate-rpc-client/v4 v4.0.12-avail-1.4.0-rc1-5e286e3
 	github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
 	// use Evmos geth fork
