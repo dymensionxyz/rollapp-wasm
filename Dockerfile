@@ -17,6 +17,8 @@ ENV GOROOT=/usr/local/go
 ENV GOPATH=$HOME/go
 ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
+RUN apt-get update -y
+RUN apt-get install build-essential -y
 # Set the working directory
 WORKDIR /app
 
