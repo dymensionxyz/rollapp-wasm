@@ -41,9 +41,9 @@ COPY . .
 
 RUN make build
 
-FROM alpine:3.18
+FROM ubuntu:latest
 
-RUN apk add curl jq bash vim 
+RUN apt-get update -y
 
 COPY --from=go-builder /app/build/rollappd /usr/local/bin/
 
