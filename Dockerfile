@@ -50,8 +50,8 @@ FROM ubuntu:latest
 RUN apt-get update -y
 
 COPY --from=go-builder /app/build/rollappd /usr/local/bin/
-COPY --from=go-builder /lib/libwasmvm.x86_64.so libwasmvm.x86_64.so
-COPY --from=go-builder /lib/libwasmvm.aarch64.so libwasmvm.aarch64.so
+COPY --from=go-builder /lib/libwasmvm.x86_64.so /lib/libwasmvm.x86_64.so
+COPY --from=go-builder /lib/libwasmvm.aarch64.so /lib/libwasmvm.aarch64.so
 
 WORKDIR /app
 
