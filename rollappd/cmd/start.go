@@ -3,6 +3,18 @@ package cmd
 import (
 	"context"
 	"fmt"
+	berpc "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc"
+	berpcbackend "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/backend"
+	berpccfg "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/config"
+	berpctypes "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/types"
+	berpcserver "github.com/bcdevtools/block-explorer-rpc-cosmos/server"
+	iberpcbackend "github.com/bcdevtools/integrate-block-explorer-rpc-cosmos/integrate_be_rpc/backend"
+	wasmberpcbackend "github.com/bcdevtools/integrate-block-explorer-rpc-cosmos/integrate_be_rpc/backend/wasm"
+	wasmbeapi "github.com/bcdevtools/integrate-block-explorer-rpc-cosmos/integrate_be_rpc/namespaces/wasm"
+	rawberpcbackend "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/backend"
+	rawbeapi "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/namespaces/raw"
+	"github.com/ethereum/go-ethereum/rpc"
+	rpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
 	"net"
 	"net/http"
 	"os"
@@ -198,6 +210,8 @@ which accepts a path for the resulting pprof file.
 
 	cmd.Flags().Bool(FlagDisableIAVLFastNode, false, "Disable fast node for IAVL tree")
 
+	berpccfg.AddBeJsonRpcFlags(cmd)
+
 	dymintconf.AddNodeFlags(cmd)
 	rdklogger.AddLogFlags(cmd)
 	return cmd
@@ -225,6 +239,15 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 	}
 
 	if err := config.ValidateBasic(); err != nil {
+		return err
+	}
+
+	beRpcCfg, err := berpccfg.GetConfig(ctx.Viper)
+	if err != nil {
+		return err
+	}
+
+	if err := beRpcCfg.Validate(); err != nil {
 		return err
 	}
 
@@ -289,7 +312,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 	// Add the tx service to the gRPC router. We only need to register this
 	// service if API or gRPC is enabled, and avoid doing so in the general
 	// case, because it spawns a new local tendermint RPC client.
-	if (config.API.Enable || config.GRPC.Enable) && tmNode != nil {
+	if (config.API.Enable || config.GRPC.Enable || beRpcCfg.Enable) && tmNode != nil {
 		clientCtx = clientCtx.WithClient(dymserver.Client())
 
 		app.RegisterTxService(clientCtx)
@@ -306,7 +329,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 	}
 
 	var apiSrv *api.Server
-	if config.API.Enable {
+	if config.API.Enable || beRpcCfg.Enable {
 		genDoc, err := genDocProvider()
 		if err != nil {
 			return err
@@ -394,6 +417,108 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 				}
 			}()
 		}
+	}
+
+	var (
+		beJsonRpcHttpSrv     *http.Server
+		beJsonRpcHttpSrvDone chan struct{}
+	)
+
+	if beRpcCfg.Enable {
+		externalServices := berpctypes.ExternalServices{
+			ChainType: berpctypes.ChainTypeCosmWasm,
+		}
+
+		wasmBeRpcBackend := wasmberpcbackend.NewWasmBackend(ctx, ctx.Logger, clientCtx, externalServices)
+
+		raeBeRpcBackend := rawberpcbackend.NewRollAppWasmBackend(ctx, ctx.Logger, clientCtx)
+
+		// register application APIs
+
+		berpc.RegisterAPINamespace(wasmbeapi.DymWasmBlockExplorerNamespace, func(ctx *server.Context,
+			_ client.Context,
+			_ *rpcclient.WSClient,
+			_ map[string]berpctypes.MessageParser,
+			_ map[string]berpctypes.MessageInvolversExtractor,
+			_ func(berpcbackend.BackendI) berpcbackend.RequestInterceptor,
+			_ berpctypes.ExternalServices,
+		) []rpc.API {
+			return []rpc.API{
+				{
+					Namespace: wasmbeapi.DymWasmBlockExplorerNamespace,
+					Version:   wasmbeapi.ApiVersion,
+					Service:   wasmbeapi.NewWasmBeAPI(ctx, wasmBeRpcBackend),
+					Public:    true,
+				},
+			}
+		}, false)
+		berpc.RegisterAPINamespace(rawbeapi.DymRollAppWasmBlockExplorerNamespace, func(ctx *server.Context,
+			_ client.Context,
+			_ *rpcclient.WSClient,
+			_ map[string]berpctypes.MessageParser,
+			_ map[string]berpctypes.MessageInvolversExtractor,
+			_ func(berpcbackend.BackendI) berpcbackend.RequestInterceptor,
+			_ berpctypes.ExternalServices,
+		) []rpc.API {
+			return []rpc.API{
+				{
+					Namespace: rawbeapi.DymRollAppWasmBlockExplorerNamespace,
+					Version:   rawbeapi.ApiVersion,
+					Service:   rawbeapi.NewRaeAPI(ctx, raeBeRpcBackend),
+					Public:    true,
+				},
+			}
+		}, false)
+
+		// register message involvers extractor
+
+		// TODO BE implement
+		/*
+			berpc.RegisterMessageInvolversExtractor(&Msg_Wasm_Tx{}, func(msg sdk.Msg, _ *tx.Tx, _ tmtypes.Tx, _ client.Context) (berpctypes.MessageInvolversResult, error) {
+				// return wasmBeRpcBackend.GetWasmTransactionInvolversByHash()
+
+			})
+		*/
+
+		//
+
+		genDoc, err := genDocProvider()
+		if err != nil {
+			return err
+		}
+
+		clientCtx := clientCtx.WithChainID(genDoc.ChainID)
+
+		tmEndpoint := "/websocket"
+		tmRPCAddr := cfg.RPC.ListenAddress
+		beJsonRpcHttpSrv, beJsonRpcHttpSrvDone, err = berpcserver.StartBeJsonRPC(
+			ctx, clientCtx, tmRPCAddr, tmEndpoint,
+			beRpcCfg,
+			func(backend berpcbackend.BackendI) berpcbackend.RequestInterceptor {
+				return rawberpcbackend.NewRollAppEvmRequestInterceptor(
+					backend,
+					raeBeRpcBackend,
+					iberpcbackend.NewDefaultRequestInterceptor(backend, nil, wasmBeRpcBackend),
+				)
+			},
+			externalServices,
+		)
+		if err != nil {
+			return err
+		}
+		defer func() {
+			shutdownCtx, cancelFn := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancelFn()
+			if err := beJsonRpcHttpSrv.Shutdown(shutdownCtx); err != nil {
+				ctx.Logger.Error("HTTP server shutdown produced a warning", "error", err.Error())
+			} else {
+				ctx.Logger.Info("HTTP server shut down, waiting 5 sec")
+				select {
+				case <-time.Tick(5 * time.Second):
+				case <-beJsonRpcHttpSrvDone:
+				}
+			}
+		}()
 	}
 
 	var rosettaSrv crgserver.Server
