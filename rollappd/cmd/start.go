@@ -10,6 +10,7 @@ import (
 	berpcserver "github.com/bcdevtools/block-explorer-rpc-cosmos/server"
 	iberpcbackend "github.com/bcdevtools/integrate-block-explorer-rpc-cosmos/integrate_be_rpc/backend"
 	wasmberpcbackend "github.com/bcdevtools/integrate-block-explorer-rpc-cosmos/integrate_be_rpc/backend/wasm"
+	bemsgparsers "github.com/bcdevtools/integrate-block-explorer-rpc-cosmos/integrate_be_rpc/message_parsers"
 	wasmbeapi "github.com/bcdevtools/integrate-block-explorer-rpc-cosmos/integrate_be_rpc/namespaces/wasm"
 	rawberpcbackend "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/backend"
 	rawbeapi "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/namespaces/raw"
@@ -470,13 +471,14 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 			}
 		}, false)
 
-		// register message involvers extractor
+		// register message parsers & message involvers extractor
+
+		bemsgparsers.RegisterMessageParsersForWasm()
 
 		// TODO BE implement
 		/*
 			berpc.RegisterMessageInvolversExtractor(&Msg_Wasm_Tx{}, func(msg sdk.Msg, _ *tx.Tx, _ tmtypes.Tx, _ client.Context) (berpctypes.MessageInvolversResult, error) {
 				// return wasmBeRpcBackend.GetWasmTransactionInvolversByHash()
-
 			})
 		*/
 
