@@ -8,10 +8,10 @@ import (
 	berpccfg "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/config"
 	berpctypes "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/types"
 	berpcserver "github.com/bcdevtools/block-explorer-rpc-cosmos/server"
-	iberpcbackend "github.com/bcdevtools/integrate-block-explorer-rpc-cosmos/integrate_be_rpc/backend"
-	wasmberpcbackend "github.com/bcdevtools/integrate-block-explorer-rpc-cosmos/integrate_be_rpc/backend/wasm"
-	bemsgparsers "github.com/bcdevtools/integrate-block-explorer-rpc-cosmos/integrate_be_rpc/message_parsers"
-	wasmbeapi "github.com/bcdevtools/integrate-block-explorer-rpc-cosmos/integrate_be_rpc/namespaces/wasm"
+	iberpcbackend "github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc/backend"
+	wasmberpcbackend "github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc/backend/wasm"
+	bemsgparsers "github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc/message_parsers"
+	wasmbeapi "github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc/namespaces/wasm"
 	rawberpcbackend "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/backend"
 	rawbeapi "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/namespaces/raw"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -500,7 +500,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 				return rawberpcbackend.NewRollAppEvmRequestInterceptor(
 					backend,
 					raeBeRpcBackend,
-					iberpcbackend.NewDefaultRequestInterceptor(backend, nil, wasmBeRpcBackend),
+					iberpcbackend.NewDefaultRequestInterceptor(backend, wasmBeRpcBackend),
 				)
 			},
 			externalServices,
