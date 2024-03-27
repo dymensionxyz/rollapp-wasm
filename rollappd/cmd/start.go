@@ -8,7 +8,6 @@ import (
 	berpccfg "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/config"
 	berpctypes "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/types"
 	berpcserver "github.com/bcdevtools/block-explorer-rpc-cosmos/server"
-	iberpcbackend "github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc/backend"
 	wasmberpcbackend "github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc/backend/wasm"
 	bemsgparsers "github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc/message_parsers"
 	wasmbeapi "github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc/namespaces/wasm"
@@ -432,7 +431,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 
 		wasmBeRpcBackend := wasmberpcbackend.NewWasmBackend(ctx, ctx.Logger, clientCtx, externalServices)
 
-		raeBeRpcBackend := rawberpcbackend.NewRollAppWasmBackend(ctx, ctx.Logger, clientCtx)
+		rawBeRpcBackend := rawberpcbackend.NewRollAppWasmBackend(ctx, ctx.Logger, clientCtx)
 
 		// register application APIs
 
@@ -465,7 +464,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 				{
 					Namespace: rawbeapi.DymRollAppWasmBlockExplorerNamespace,
 					Version:   rawbeapi.ApiVersion,
-					Service:   rawbeapi.NewRaeAPI(ctx, raeBeRpcBackend),
+					Service:   rawbeapi.NewRollAppWasmAPI(ctx, rawBeRpcBackend),
 					Public:    true,
 				},
 			}
@@ -481,7 +480,6 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 				// return wasmBeRpcBackend.GetWasmTransactionInvolversByHash()
 			})
 		*/
-
 		//
 
 		genDoc, err := genDocProvider()
@@ -499,8 +497,8 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 			func(backend berpcbackend.BackendI) berpcbackend.RequestInterceptor {
 				return rawberpcbackend.NewRollAppEvmRequestInterceptor(
 					backend,
-					raeBeRpcBackend,
-					iberpcbackend.NewDefaultRequestInterceptor(backend, wasmBeRpcBackend),
+					rawBeRpcBackend,
+					wasmberpcbackend.NewDefaultRequestInterceptor(backend, wasmBeRpcBackend),
 				)
 			},
 			externalServices,
