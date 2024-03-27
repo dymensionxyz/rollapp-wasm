@@ -7,10 +7,8 @@ import (
 	berpcbackend "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/backend"
 	berpccfg "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/config"
 	berpctypes "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/types"
-	berpcserver "github.com/bcdevtools/block-explorer-rpc-cosmos/server"
+	"github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc"
 	wasmberpcbackend "github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc/backend/wasm"
-	bemsgparsers "github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc/message_parsers"
-	wasmbeapi "github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc/namespaces/wasm"
 	rawberpcbackend "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/backend"
 	rawbeapi "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/namespaces/raw"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -419,106 +417,54 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 		}
 	}
 
-	var (
-		beJsonRpcHttpSrv     *http.Server
-		beJsonRpcHttpSrvDone chan struct{}
-	)
-
 	if beRpcCfg.Enable {
-		externalServices := berpctypes.ExternalServices{
-			ChainType: berpctypes.ChainTypeCosmWasm,
-		}
-
-		wasmBeRpcBackend := wasmberpcbackend.NewWasmBackend(ctx, ctx.Logger, clientCtx, externalServices)
-
-		rawBeRpcBackend := rawberpcbackend.NewRollAppWasmBackend(ctx, ctx.Logger, clientCtx)
-
-		// register application APIs
-
-		berpc.RegisterAPINamespace(wasmbeapi.DymWasmBlockExplorerNamespace, func(ctx *server.Context,
-			_ client.Context,
-			_ *rpcclient.WSClient,
-			_ map[string]berpctypes.MessageParser,
-			_ map[string]berpctypes.MessageInvolversExtractor,
-			_ func(berpcbackend.BackendI) berpcbackend.RequestInterceptor,
-			_ berpctypes.ExternalServices,
-		) []rpc.API {
-			return []rpc.API{
-				{
-					Namespace: wasmbeapi.DymWasmBlockExplorerNamespace,
-					Version:   wasmbeapi.ApiVersion,
-					Service:   wasmbeapi.NewWasmBeAPI(ctx, wasmBeRpcBackend),
-					Public:    true,
-				},
-			}
-		}, false)
-		berpc.RegisterAPINamespace(rawbeapi.DymRollAppWasmBlockExplorerNamespace, func(ctx *server.Context,
-			_ client.Context,
-			_ *rpcclient.WSClient,
-			_ map[string]berpctypes.MessageParser,
-			_ map[string]berpctypes.MessageInvolversExtractor,
-			_ func(berpcbackend.BackendI) berpcbackend.RequestInterceptor,
-			_ berpctypes.ExternalServices,
-		) []rpc.API {
-			return []rpc.API{
-				{
-					Namespace: rawbeapi.DymRollAppWasmBlockExplorerNamespace,
-					Version:   rawbeapi.ApiVersion,
-					Service:   rawbeapi.NewRollAppWasmAPI(ctx, rawBeRpcBackend),
-					Public:    true,
-				},
-			}
-		}, false)
-
-		// register message parsers & message involvers extractor
-
-		bemsgparsers.RegisterMessageParsersForWasm()
-
-		// TODO BE implement
-		/*
-			berpc.RegisterMessageInvolversExtractor(&Msg_Wasm_Tx{}, func(msg sdk.Msg, _ *tx.Tx, _ tmtypes.Tx, _ client.Context) (berpctypes.MessageInvolversResult, error) {
-				// return wasmBeRpcBackend.GetWasmTransactionInvolversByHash()
-			})
-		*/
-		//
-
 		genDoc, err := genDocProvider()
 		if err != nil {
 			return err
 		}
 
-		clientCtx := clientCtx.WithChainID(genDoc.ChainID)
+		rawBeRpcBackend := rawberpcbackend.NewRollAppWasmBackend(ctx, ctx.Logger, clientCtx)
 
-		tmEndpoint := "/websocket"
-		tmRPCAddr := cfg.RPC.ListenAddress
-		beJsonRpcHttpSrv, beJsonRpcHttpSrvDone, err = berpcserver.StartBeJsonRPC(
-			ctx, clientCtx, tmRPCAddr, tmEndpoint,
+		serverCloseDeferFunc, err := integrate_be_rpc.StartWasmBeJsonRPC(
+			ctx,
+			clientCtx,
+			genDoc.ChainID,
 			beRpcCfg,
-			func(backend berpcbackend.BackendI) berpcbackend.RequestInterceptor {
+			nil, // external services modifier
+			func(i wasmberpcbackend.WasmBackendI) {
+				berpc.RegisterAPINamespace(rawbeapi.DymRollAppWasmBlockExplorerNamespace, func(ctx *server.Context,
+					_ client.Context,
+					_ *rpcclient.WSClient,
+					_ map[string]berpctypes.MessageParser,
+					_ map[string]berpctypes.MessageInvolversExtractor,
+					_ func(berpcbackend.BackendI) berpcbackend.RequestInterceptor,
+					_ berpctypes.ExternalServices,
+				) []rpc.API {
+					return []rpc.API{
+						{
+							Namespace: rawbeapi.DymRollAppWasmBlockExplorerNamespace,
+							Version:   rawbeapi.ApiVersion,
+							Service:   rawbeapi.NewRollAppWasmAPI(ctx, rawBeRpcBackend),
+							Public:    true,
+						},
+					}
+				}, false)
+			},
+			func(backend berpcbackend.BackendI, wasmBeRpcBackend wasmberpcbackend.WasmBackendI) berpcbackend.RequestInterceptor {
 				return rawberpcbackend.NewRollAppEvmRequestInterceptor(
 					backend,
 					rawBeRpcBackend,
 					wasmberpcbackend.NewDefaultRequestInterceptor(backend, wasmBeRpcBackend),
 				)
 			},
-			externalServices,
+			cfg.RPC.ListenAddress,
+			"/websocket",
 		)
 		if err != nil {
 			return err
 		}
-		defer func() {
-			shutdownCtx, cancelFn := context.WithTimeout(context.Background(), 10*time.Second)
-			defer cancelFn()
-			if err := beJsonRpcHttpSrv.Shutdown(shutdownCtx); err != nil {
-				ctx.Logger.Error("HTTP server shutdown produced a warning", "error", err.Error())
-			} else {
-				ctx.Logger.Info("HTTP server shut down, waiting 5 sec")
-				select {
-				case <-time.Tick(5 * time.Second):
-				case <-beJsonRpcHttpSrvDone:
-				}
-			}
-		}()
+
+		defer serverCloseDeferFunc()
 	}
 
 	var rosettaSrv crgserver.Server
