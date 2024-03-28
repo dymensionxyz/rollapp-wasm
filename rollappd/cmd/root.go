@@ -33,6 +33,7 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
+	berpcconfig "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/config"
 	rdkserver "github.com/dymensionxyz/dymension-rdk/server"
 	"github.com/dymensionxyz/dymension-rdk/utils"
 	dymintconf "github.com/dymensionxyz/dymint/config"
@@ -101,6 +102,9 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 			home := serverCtx.Viper.GetString(tmcli.HomeFlag)
 			chainID := client.GetClientContextFromCmd(cmd).ChainID
 			dymintconf.EnsureRoot(home, dymintconf.DefaultConfig(home, chainID))
+
+			//create Block Explorer Json-RPC toml config file
+			berpcconfig.EnsureRoot(home, berpcconfig.DefaultBeJsonRpcConfig())
 
 			return nil
 		},
