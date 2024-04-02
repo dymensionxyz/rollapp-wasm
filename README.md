@@ -19,10 +19,6 @@ It uses Cosmos-SDK's [simapp](https://github.com/cosmos/cosmos-sdk/tree/main/sim
 
 **Note**: Requires [Go 1.21](https://go.dev/)
 
-## Quick guide
-
-Get started with [building RollApps](https://docs.dymension.xyz/develop/get-started/setup)
-
 ## Installing / Getting started
 
 Build and install the ```rollappd``` binary:
@@ -74,7 +70,7 @@ You should have a running local rollapp!
 
 ### Run local dymension hub node
 
-Follow the instructions on [Dymension Hub docs](https://docs.dymension.xyz/develop/get-started/run-base-layers) to run local dymension hub node
+Follow the instructions on [Dymension docs](https://docs.dymension.xyz/validate/dymension/build-dymd?network=localhost) to run local dymension hub node
 
 ### Create sequencer keys
 
@@ -155,7 +151,3 @@ sh scripts/wasm/deploy_contract.sh
 ```shell
 sh scripts/wasm/ibc_transfer.sh
 ```
-
-## Developers guide
-
-TODO
