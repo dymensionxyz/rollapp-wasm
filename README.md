@@ -19,7 +19,6 @@ It uses Cosmos-SDK's [simapp](https://github.com/cosmos/cosmos-sdk/tree/main/sim
 
 **Note**: Requires [Go 1.21](https://go.dev/)
 
-
 ## Installing / Getting started
 
 Build and install the ```rollappd``` binary:
@@ -152,4 +151,3 @@ sh scripts/wasm/deploy_contract.sh
 ```shell
 sh scripts/wasm/ibc_transfer.sh
 ```
-
