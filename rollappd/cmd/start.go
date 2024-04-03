@@ -433,7 +433,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 			*beRpcCfg,
 			nil, // external services modifier
 			func(i wasmberpcbackend.WasmBackendI) {
-				berpc.RegisterAPINamespace(rawbeapi.DymRollAppWasmBlockExplorerNamespace, func(ctx *server.Context,
+				_ = berpc.RegisterAPINamespace(rawbeapi.DymRollAppWasmBlockExplorerNamespace, func(ctx *server.Context,
 					_ client.Context,
 					_ *rpcclient.WSClient,
 					_ map[string]berpctypes.MessageParser,
