@@ -49,7 +49,6 @@ func (m *RollAppEvmRequestInterceptor) GetModuleParams(moduleName string) (inter
 		} else {
 			params = *sequencersParams
 		}
-		break
 	default:
 		return m.defaultInterceptor.GetModuleParams(moduleName)
 	}
