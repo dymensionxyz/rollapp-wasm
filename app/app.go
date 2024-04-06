@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -82,6 +81,10 @@ import (
 	epochskeeper "github.com/dymensionxyz/dymension-rdk/x/epochs/keeper"
 	epochstypes "github.com/dymensionxyz/dymension-rdk/x/epochs/types"
 
+	hubgenesis "github.com/dymensionxyz/dymension-rdk/x/hub-genesis"
+	hubgenkeeper "github.com/dymensionxyz/dymension-rdk/x/hub-genesis/keeper"
+	hubgentypes "github.com/dymensionxyz/dymension-rdk/x/hub-genesis/types"
+
 	ibctransfer "github.com/cosmos/ibc-go/v6/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v6/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
@@ -127,7 +130,7 @@ var (
 		minttypes.StoreKey, distrtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey,
 		ibchost.StoreKey, upgradetypes.StoreKey,
-		epochstypes.StoreKey,
+		epochstypes.StoreKey, hubgentypes.StoreKey,
 		ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		wasmtypes.StoreKey,
 	}
@@ -170,6 +173,7 @@ var (
 		ibc.AppModuleBasic{},
 		ibctransfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
+		hubgenesis.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 	)
 
@@ -183,6 +187,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		wasmtypes.ModuleName:           {authtypes.Burner},
+		hubgentypes.ModuleName: {authtypes.Burner},
 	}
 )
 
@@ -227,6 +232,7 @@ type App struct {
 	EpochsKeeper     epochskeeper.Keeper
 	DistrKeeper      distrkeeper.Keeper
 	GovKeeper        govkeeper.Keeper
+	HubGenesisKeeper hubgenkeeper.Keeper
 	UpgradeKeeper    upgradekeeper.Keeper
 	ParamsKeeper     paramskeeper.Keeper
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
@@ -284,13 +290,6 @@ func NewRollapp(
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
-
-	if maxSize := os.Getenv("MAX_WASM_SIZE"); maxSize != "" {
-		// https://github.com/CosmWasm/wasmd#compile-time-parameters
-		val, _ := strconv.ParseInt(maxSize, 10, 32)
-		wasmtypes.MaxWasmSize = int(val)
-		wasmtypes.MaxProposalWasmSize = int(val)
-	}
 
 	// load state streaming if enabled
 	if _, _, err := streaming.LoadStreamingServices(bApp, appOpts, appCodec, keys); err != nil {
@@ -437,6 +436,15 @@ func NewRollapp(
 	)
 	transferIBCModule := ibctransfer.NewIBCModule(app.TransferKeeper)
 
+	app.HubGenesisKeeper = hubgenkeeper.NewKeeper(
+		appCodec,
+		keys[hubgentypes.StoreKey],
+		app.GetSubspace(hubgentypes.ModuleName),
+		app.IBCKeeper.ChannelKeeper,
+		app.BankKeeper,
+		app.AccountKeeper,
+	)
+
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
@@ -504,6 +512,7 @@ func NewRollapp(
 		ibc.NewAppModule(app.IBCKeeper),
 		ibctransfer.NewAppModule(app.TransferKeeper),
 		upgrade.NewAppModule(app.UpgradeKeeper),
+		hubgenesis.NewAppModule(appCodec, app.HubGenesisKeeper, app.AccountKeeper),
 	}
 
 	app.mm = module.NewManager(modules...)
@@ -529,6 +538,7 @@ func NewRollapp(
 		genutiltypes.ModuleName,
 		epochstypes.ModuleName,
 		paramstypes.ModuleName,
+		hubgentypes.ModuleName,
 		wasm.ModuleName,
 	}
 	app.mm.SetOrderBeginBlockers(beginBlockersList...)
@@ -549,6 +559,7 @@ func NewRollapp(
 		upgradetypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
+		hubgentypes.ModuleName,
 		wasm.ModuleName,
 	}
 	app.mm.SetOrderEndBlockers(endBlockersList...)
@@ -575,6 +586,7 @@ func NewRollapp(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		ibctransfertypes.ModuleName,
+		hubgentypes.ModuleName,
 		wasm.ModuleName,
 	}
 	app.mm.SetOrderInitGenesis(initGenesisList...)
@@ -903,6 +915,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable())
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
+	paramsKeeper.Subspace(hubgentypes.ModuleName)
 
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	return paramsKeeper
