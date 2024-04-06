@@ -38,16 +38,26 @@ export DENOM="urax"
 export MONIKER="$ROLLAPP_CHAIN_ID-sequencer"
 ```
 
-if you want to change the max wasm size:
-
-```shell
-export MAX_WASM_SIZE=YOUR_MAX_WASM_SIZE
-```
-
 And initialize the rollapp:
 
 ```shell
 sh scripts/init.sh
+```
+
+You can find out in <https://github.com/CosmWasm/wasmd#compile-time-parameters> that:
+
+There are a few variables was allow blockchains to customize at compile time. If you build your own chain and import x/wasm, you can adjust a few items via module parameters, but a few others did not fit in that, as they need to be used by stateless ValidateBasic(). Thus, we made them as flags and set them in start.go so that they can be overridden on your custom chain.
+
+```shell
+rollappd start --max-label-size 64 --max-wasm-size 2048000 --max-wasm-proposal-size 2048000
+```
+
+Those flags are optional, the default value was set as:
+
+```go
+wasmtypes.MaxLabelSize          = 128
+wasmtypes.MaxWasmSize           = 819200
+wasmtypes.MaxProposalWasmSize   = 3145728
 ```
 
 ### Download cw20-ics20 smartcontract

@@ -3,6 +3,13 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"net"
+	"net/http"
+	"os"
+	"runtime/pprof"
+	"strconv"
+	"time"
+
 	berpc "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc"
 	berpcbackend "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/backend"
 	berpccfg "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/config"
@@ -13,12 +20,6 @@ import (
 	rawbeapi "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/namespaces/raw"
 	"github.com/ethereum/go-ethereum/rpc"
 	rpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
-	"net"
-	"net/http"
-	"os"
-	"runtime/pprof"
-	"strconv"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/node"
@@ -40,6 +41,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	"github.com/dymensionxyz/dymension-rdk/utils"
 	rdklogger "github.com/dymensionxyz/dymension-rdk/utils/logger"
@@ -71,6 +74,11 @@ const (
 	FlagIAVLCacheSize       = "iavl-cache-size"
 	FlagDisableIAVLFastNode = "iavl-disable-fastnode"
 	FlagIAVLLazyLoading     = "iavl-lazy-loading"
+
+	// wasm max bytes flags
+	FlagMaxLabelSize        = "max-label-size"
+	FlagMaxWasmSize         = "max-wasm-size"
+	FlagMaxProposalWasmSize = "max-proposal-wasm-size"
 
 	// state sync-related flags
 	FlagStateSyncSnapshotInterval   = "state-sync.snapshot-interval"
@@ -194,6 +202,10 @@ which accepts a path for the resulting pprof file.
 	cmd.Flags().Uint(FlagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
 	cmd.Flags().Uint64(FlagMinRetainBlocks, 0, "Minimum block height offset during ABCI commit to prune Tendermint blocks")
 
+	cmd.Flags().Int(FlagMaxLabelSize, 128, "Maximum wasm label size")
+	cmd.Flags().Int(FlagMaxWasmSize, 819200, "Maximum wasm size")
+	cmd.Flags().Int(FlagMaxProposalWasmSize, 3145728, "Maximum wasm proposal size")
+
 	cmd.Flags().Bool(FlagAPIEnable, false, "Define if the API server should be enabled")
 	cmd.Flags().Bool(FlagAPISwagger, false, "Define if swagger documentation should automatically be registered (Note: the API must also be enabled)")
 	cmd.Flags().String(FlagAPIAddress, serverconfig.DefaultAPIAddress, "the API server address to listen on")
@@ -230,6 +242,10 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 		return err
 	}
 	defer db.Close()
+
+	wasmtypes.MaxLabelSize = ctx.Viper.GetInt(FlagMaxLabelSize)
+	wasmtypes.MaxWasmSize = ctx.Viper.GetInt(FlagMaxWasmSize)
+	wasmtypes.MaxProposalWasmSize = ctx.Viper.GetInt(FlagMaxProposalWasmSize)
 
 	traceWriterFile := ctx.Viper.GetString(flagTraceStore)
 	traceWriter, err := utils.OpenTraceWriter(traceWriterFile)
