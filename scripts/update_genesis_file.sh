@@ -3,9 +3,8 @@
 
 set -x
 tmp=$(mktemp)
-EXECUTABLE="rollapp-evm"
-ROLLAPP_CHAIN_DIR="$HOME/.rollapp_evm"
-CONFIG_DIRECTORY="$ROLLAPP_CHAIN_DIR/config"
+EXECUTABLE="rollappd"
+CONFIG_DIRECTORY="${ROLLAPP_HOME_DIR}/config"
 GENESIS_FILE="$CONFIG_DIRECTORY/genesis.json"
 DYMINT_CONFIG_FILE="$CONFIG_DIRECTORY/dymint.toml"
 APP_CONFIG_FILE="$CONFIG_DIRECTORY/app.toml"
@@ -18,13 +17,13 @@ jq '.consensus_params["block"]["max_bytes"] = "5242880"' "$GENESIS_FILE" >"$tmp"
 jq '.app_state.gov.voting_params.voting_period = "300s"' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
 
 # this is a static module account for the hubgenesis module
-# retrieved using  'rollapp-evm q auth module-accounts' command
+# retrieved using  'rollappd q auth module-accounts' command
 module_account_address="ethm1748tamme3jj3v9wq95fc3pmglxtqscljdy7483"
 
 # Construct the JSON object with the obtained address
 module_account=$(jq -n \
-    --arg address "$module_account_address" \
-    '[{
+  --arg address "$module_account_address" \
+  '[{
       "@type": "/cosmos.auth.v1beta1.ModuleAccount",
       "base_account": {
           "account_number": "0",
@@ -39,10 +38,10 @@ module_account=$(jq -n \
 jq --argjson module_account "$module_account" '.app_state.auth.accounts += $module_account' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
 
 module_account_balance=$(
-    jq -n \
-        --arg address "$module_account_address" \
-        --arg denom "$BASE_DENOM" \
-        '[{
+  jq -n \
+    --arg address "$module_account_address" \
+    --arg denom "$BASE_DENOM" \
+    '[{
     "address": $address,
     "coins": [
       {
@@ -61,8 +60,8 @@ jq '.app_state.bank.supply[0].amount = "2000060000000000000000000000"' "$GENESIS
 # ---------------------------- add elevated account ---------------------------- #
 elevated_address=$(${EXECUTABLE} keys show ${KEY_NAME_ROLLAPP} --keyring-backend test --output json | jq -r .address)
 elevated_address_json=$(jq -n \
-    --arg address "$elevated_address" \
-    '[{
+  --arg address "$elevated_address" \
+  '[{
         "address": $address
     }]')
 jq --argjson elevated_address_json "$elevated_address_json" '.app_state.hubgenesis.params.genesis_triggerer_whitelist += $elevated_address_json' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
