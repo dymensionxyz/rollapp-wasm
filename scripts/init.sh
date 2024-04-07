@@ -6,17 +6,16 @@ ROLLAPP_CHAIN_DIR="$HOME/.rollapp"
 
 set_denom() {
   denom=$1
-  jq --arg denom $denom '.app_state.mint.params.mint_denom = $denom' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
-  jq --arg denom $denom '.app_state.staking.params.bond_denom = $denom' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
-  jq --arg denom $denom '.app_state.gov.deposit_params.min_deposit[0].denom = $denom' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq --arg denom $denom '.app_state.mint.params.mint_denom = $denom' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq --arg denom $denom '.app_state.staking.params.bond_denom = $denom' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq --arg denom $denom '.app_state.gov.deposit_params.min_deposit[0].denom = $denom' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
 }
 
 # ---------------------------- initial parameters ---------------------------- #
 # Assuming 1,000,000 tokens
 #half is staked
-TOKEN_AMOUNT="1000000000000000000000000$DENOM"
-STAKING_AMOUNT="500000000000000000000000$DENOM"
-
+TOKEN_AMOUNT="1000000000000000000000000$BASE_DENOM"
+STAKING_AMOUNT="500000000000000000000000$BASE_DENOM"
 
 CONFIG_DIRECTORY="$ROLLAPP_CHAIN_DIR/config"
 GENESIS_FILE="$CONFIG_DIRECTORY/genesis.json"
@@ -56,8 +55,8 @@ $EXECUTABLE config keyring-backend test
 $EXECUTABLE config chain-id "$ROLLAPP_CHAIN_ID"
 
 # -------------------------------- app config -------------------------------- #
-sed -i'' -e "s/^minimum-gas-prices *= .*/minimum-gas-prices = \"0$DENOM\"/" "$APP_CONFIG_FILE"
-set_denom "$DENOM"
+sed -i'' -e "s/^minimum-gas-prices *= .*/minimum-gas-prices = \"0$BASE_DENOM\"/" "$APP_CONFIG_FILE"
+set_denom "$BASE_DENOM"
 
 # --------------------- adding keys and genesis accounts --------------------- #
 #local genesis account
@@ -67,10 +66,9 @@ $EXECUTABLE gentx_seq --pubkey "$($EXECUTABLE dymint show-sequencer)" --from "$K
 
 echo "Do you want to include staker on genesis? (Y/n) "
 read -r answer
-if [ ! "$answer" != "${answer#[Nn]}" ] ;then
+if [ ! "$answer" != "${answer#[Nn]}" ]; then
   $EXECUTABLE gentx "$KEY_NAME_ROLLAPP" "$STAKING_AMOUNT" --chain-id "$ROLLAPP_CHAIN_ID" --keyring-backend test --home "$ROLLAPP_CHAIN_DIR"
   $EXECUTABLE collect-gentxs --home "$ROLLAPP_CHAIN_DIR"
 fi
-
 
 $EXECUTABLE validate-genesis
