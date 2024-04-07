@@ -174,6 +174,26 @@ sh scripts/add_vesting_accounts_to_genesis_file.sh
 rollappd start
 ```
 
+or as a systemd service:
+
+```shell
+sudo tee /etc/systemd/system/rollapp.service > /dev/null <<EOF
+[Unit] 
+Description=rollapp
+After=network.target 
+[Service] 
+Type=simple
+User=$USER
+ExecStart=$(which rollappd) start
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=65535
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo systemctl daemon-reload
+```
+
 ## Setup IBC between rollapp and local dymension hub node
 
 ### Install dymension relayer
@@ -198,6 +218,26 @@ After successful run, the new established channels will be shown
 ```shell
 rly start hub-rollapp
 ```
+
+or as a systemd service:
+
+```shell
+sudo tee /etc/systemd/system/relayer.service > /dev/null <<EOF
+[Unit]
+Description=rollapp
+After=network.target
+[Service]
+Type=simple
+User=$USER
+ExecStart=$(which rly) start hub-rollapp
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=65535
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
 
 ## Developers guide
 
