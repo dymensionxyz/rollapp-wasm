@@ -87,8 +87,11 @@ configuration with a remote hub node is also supported, the following variables 
 ```shell
 export HUB_RPC_ENDPOINT="http://localhost"
 export HUB_RPC_PORT="36657" # default: 36657
-export HUB_RPC_URL="http://3.71.160.88:36657"
+export HUB_RPC_URL="http://${HUB_RPC_ENDPOINT}:${HUB_RPC_PORT}"
 export HUB_CHAIN_ID="dymension_100-1"
+
+dymd config chain-id ${HUB_CHAIN_ID}
+dymd config node ${HUB_RPC_URL}
 ```
 
 ### Create sequencer keys
@@ -106,7 +109,7 @@ fund the sequencer account
 # this will retrieve the min bond amount from the hub
 # if you're using an new address for registering a sequencer,
 # you have to account for gas fees so it should the final value should be increased
-BOND_AMOUNT="$(dymd q sequencer params -o json --node ${HUB_RPC_URL} | jq -r '.params.min_bond.amount')$(dymd q sequencer params -o json --node ${HUB_RPC_URL} | jq -r '.params.min_bond.denom')"
+BOND_AMOUNT="$(dymd q sequencer params -o json | jq -r '.params.min_bond.amount')$(dymd q sequencer params -o jsono | jq -r '.params.min_bond.denom')"
 echo $BOND_AMOUNT
 
 dymd tx bank send local-user dym1978q3tcxwg0ldzgv7ynfr3mzytr9qfsuwjt7tl 100000000000000000000000adym --keyring-backend test --broadcast-mode block --fees 20000000000000adym -y

@@ -9,7 +9,6 @@ This repository hosts `rollappd`, a template implementation of a dymension rolla
 It uses Cosmos-SDK's [simapp](https://github.com/cosmos/cosmos-sdk/tree/main/simapp) as a reference, but with the following changes:
 
 - minimal app setup
-- wired with EVM and ERC20 modules by [Evmos](https://github.com/evmos/evmos)
 - wired IBC for [ICS 20 Fungible Token Transfers](https://github.com/cosmos/ibc/tree/main/spec/app/ics-020-fungible-token-transfer)
 - Uses `dymint` for block sequencing and replacing `tendermint`
 - Uses modules from `dymension-RDK` to sync with `dymint` and provide RollApp custom logic
@@ -62,7 +61,7 @@ sh scripts/init.sh
 Download cw20-ics20 smartcontract with a specific version:
 
 ```shell
-sh scripts/download_release.sh v1.0.0
+bash scripts/download_release.sh v1.0.0
 ```
 
 ### Run rollapp
@@ -88,6 +87,9 @@ export HUB_RPC_ENDPOINT="http://localhost"
 export HUB_RPC_PORT="36657" # default: 36657
 export HUB_RPC_URL="http://${HUB_RPC_ENDPOINT}:${HUB_RPC_PORT}"
 export HUB_CHAIN_ID="dymension_100-1"
+
+dymd config chain-id ${HUB_CHAIN_ID}
+dymd config node ${HUB_RPC_URL}
 ```
 
 ### Create sequencer keys
@@ -95,8 +97,8 @@ export HUB_CHAIN_ID="dymension_100-1"
 create sequencer key using `dymd`
 
 ```shell
-dymd keys add sequencer --keyring-dir ~/.rollapp_evm/sequencer_keys --keyring-backend test
-SEQUENCER_ADDR=`dymd keys show sequencer --address --keyring-backend test --keyring-dir ~/.rollapp_evm/sequencer_keys`
+dymd keys add sequencer --keyring-dir ${ROLLAPP_HOME_DIR}/sequencer_keys --keyring-backend test
+SEQUENCER_ADDR=`dymd keys show sequencer --address --keyring-backend test --keyring-dir ${ROLLAPP_HOME_DIR}/sequencer_keys`
 ```
 
 fund the sequencer account (if you're using a remote hub node, you must fund the sequencer account or you must have an account with enough funds in your keyring)
@@ -105,9 +107,9 @@ fund the sequencer account (if you're using a remote hub node, you must fund the
 # this will retrieve the min bond amount from the hub
 # if you're using an new address for registering a sequencer,
 # you have to account for gas fees so it should the final value should be increased
-BOND_AMOUNT="$(dymd q sequencer params -o json --node ${HUB_RPC_URL} | jq -r '.params.min_bond.amount')$(dymd q sequencer params -o json --node ${HUB_RPC_URL} | jq -r '.params.min_bond.denom')"
+BOND_AMOUNT="$(dymd q sequencer params -o json | jq -r '.params.min_bond.amount')$(dymd q sequencer params -o json | jq -r '.params.min_bond.denom')"
 
-dymd tx bank send local-user $SEQUENCER_ADDR ${BOND_AMOUNT} --keyring-backend test --broadcast-mode block --fees 1dym -y --node ${HUB_RPC_URL}
+dymd tx bank send local-user $SEQUENCER_ADDR ${BOND_AMOUNT} --keyring-backend test --broadcast-mode block --fees 1dym -y 
 ```
 
 ### Generate denommetadata
@@ -143,7 +145,8 @@ sh scripts/settlement/register_sequencer_to_hub.sh
 
 ### Configure the rollapp
 
-Modify `dymint.toml` in the chain directory (`~/.rollapp_evm/config`)
+Modify `dymint.toml` in the chain directory (`${ROLLAPP_HOME_DIR}/config`)
+
 set:
 
 ```shell
