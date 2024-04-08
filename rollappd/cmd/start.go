@@ -10,6 +10,17 @@ import (
 	"strconv"
 	"time"
 
+	berpc "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc"
+	berpcbackend "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/backend"
+	berpccfg "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/config"
+	berpctypes "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/types"
+	"github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc"
+	wasmberpcbackend "github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc/backend/wasm"
+	rawberpcbackend "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/backend"
+	rawbeapi "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/namespaces/raw"
+	"github.com/ethereum/go-ethereum/rpc"
+	rpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
+
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/node"
 	"github.com/tendermint/tendermint/p2p"
@@ -30,6 +41,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	"github.com/dymensionxyz/dymension-rdk/utils"
 	rdklogger "github.com/dymensionxyz/dymension-rdk/utils/logger"
@@ -61,6 +74,11 @@ const (
 	FlagIAVLCacheSize       = "iavl-cache-size"
 	FlagDisableIAVLFastNode = "iavl-disable-fastnode"
 	FlagIAVLLazyLoading     = "iavl-lazy-loading"
+
+	// wasm max bytes flags
+	FlagMaxLabelSize        = "max-label-size"
+	FlagMaxWasmSize         = "max-wasm-size"
+	FlagMaxProposalWasmSize = "max-proposal-wasm-size"
 
 	// state sync-related flags
 	FlagStateSyncSnapshotInterval   = "state-sync.snapshot-interval"
@@ -147,9 +165,15 @@ which accepts a path for the resulting pprof file.
 				return err
 			}
 
+			beJsonRpcConfig := berpccfg.DefaultBeJsonRpcConfig()
+			err = beJsonRpcConfig.GetViperConfig(cmd, serverCtx.Viper.GetString(flags.FlagHome))
+			if err != nil {
+				return err
+			}
+
 			// amino is needed here for backwards compatibility of REST routes
 			err = wrapCPUProfile(serverCtx, func() error {
-				return startInProcess(serverCtx, clientCtx, dymconfig, appCreator)
+				return startInProcess(serverCtx, clientCtx, dymconfig, beJsonRpcConfig, appCreator)
 			})
 			errCode, ok := err.(server.ErrorCode)
 			if !ok {
@@ -178,6 +202,10 @@ which accepts a path for the resulting pprof file.
 	cmd.Flags().Uint(FlagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
 	cmd.Flags().Uint64(FlagMinRetainBlocks, 0, "Minimum block height offset during ABCI commit to prune Tendermint blocks")
 
+	cmd.Flags().Int(FlagMaxLabelSize, 128, "Maximum wasm label size")
+	cmd.Flags().Int(FlagMaxWasmSize, 819200, "Maximum wasm size")
+	cmd.Flags().Int(FlagMaxProposalWasmSize, 3145728, "Maximum wasm proposal size")
+
 	cmd.Flags().Bool(FlagAPIEnable, false, "Define if the API server should be enabled")
 	cmd.Flags().Bool(FlagAPISwagger, false, "Define if swagger documentation should automatically be registered (Note: the API must also be enabled)")
 	cmd.Flags().String(FlagAPIAddress, serverconfig.DefaultAPIAddress, "the API server address to listen on")
@@ -198,12 +226,14 @@ which accepts a path for the resulting pprof file.
 
 	cmd.Flags().Bool(FlagDisableIAVLFastNode, false, "Disable fast node for IAVL tree")
 
+	berpccfg.AddBeJsonRpcFlags(cmd)
+
 	dymintconf.AddNodeFlags(cmd)
 	rdklogger.AddLogFlags(cmd)
 	return cmd
 }
 
-func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *dymintconf.NodeConfig, appCreator types.AppCreator) error {
+func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *dymintconf.NodeConfig, beRpcCfg *berpccfg.BeJsonRpcConfig, appCreator types.AppCreator) error {
 	cfg := ctx.Config
 	home := cfg.RootDir
 
@@ -212,6 +242,10 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 		return err
 	}
 	defer db.Close()
+
+	wasmtypes.MaxLabelSize = ctx.Viper.GetInt(FlagMaxLabelSize)
+	wasmtypes.MaxWasmSize = ctx.Viper.GetInt(FlagMaxWasmSize)
+	wasmtypes.MaxProposalWasmSize = ctx.Viper.GetInt(FlagMaxProposalWasmSize)
 
 	traceWriterFile := ctx.Viper.GetString(flagTraceStore)
 	traceWriter, err := utils.OpenTraceWriter(traceWriterFile)
@@ -225,6 +259,10 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 	}
 
 	if err := config.ValidateBasic(); err != nil {
+		return err
+	}
+
+	if err := beRpcCfg.Validate(); err != nil {
 		return err
 	}
 
@@ -289,7 +327,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 	// Add the tx service to the gRPC router. We only need to register this
 	// service if API or gRPC is enabled, and avoid doing so in the general
 	// case, because it spawns a new local tendermint RPC client.
-	if (config.API.Enable || config.GRPC.Enable) && tmNode != nil {
+	if (config.API.Enable || config.GRPC.Enable || beRpcCfg.Enable) && tmNode != nil {
 		clientCtx = clientCtx.WithClient(dymserver.Client())
 
 		app.RegisterTxService(clientCtx)
@@ -306,7 +344,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 	}
 
 	var apiSrv *api.Server
-	if config.API.Enable {
+	if config.API.Enable || beRpcCfg.Enable {
 		genDoc, err := genDocProvider()
 		if err != nil {
 			return err
@@ -394,6 +432,56 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 				}
 			}()
 		}
+	}
+
+	if beRpcCfg.Enable {
+		genDoc, err := genDocProvider()
+		if err != nil {
+			return err
+		}
+
+		rawBeRpcBackend := rawberpcbackend.NewRollAppWasmBackend(ctx, ctx.Logger, clientCtx)
+
+		serverCloseDeferFunc, err := integrate_be_rpc.StartWasmBeJsonRPC(
+			ctx,
+			clientCtx,
+			genDoc.ChainID,
+			*beRpcCfg,
+			nil, // external services modifier
+			func(i wasmberpcbackend.WasmBackendI) {
+				_ = berpc.RegisterAPINamespace(rawbeapi.DymRollAppWasmBlockExplorerNamespace, func(ctx *server.Context,
+					_ client.Context,
+					_ *rpcclient.WSClient,
+					_ map[string]berpctypes.MessageParser,
+					_ map[string]berpctypes.MessageInvolversExtractor,
+					_ func(berpcbackend.BackendI) berpcbackend.RequestInterceptor,
+					_ berpctypes.ExternalServices,
+				) []rpc.API {
+					return []rpc.API{
+						{
+							Namespace: rawbeapi.DymRollAppWasmBlockExplorerNamespace,
+							Version:   rawbeapi.ApiVersion,
+							Service:   rawbeapi.NewRollAppWasmAPI(ctx, rawBeRpcBackend),
+							Public:    true,
+						},
+					}
+				}, false)
+			},
+			func(backend berpcbackend.BackendI, wasmBeRpcBackend wasmberpcbackend.WasmBackendI) berpcbackend.RequestInterceptor {
+				return rawberpcbackend.NewRollAppEvmRequestInterceptor(
+					backend,
+					rawBeRpcBackend,
+					wasmberpcbackend.NewDefaultRequestInterceptor(backend, wasmBeRpcBackend),
+				)
+			},
+			cfg.RPC.ListenAddress,
+			"/websocket",
+		)
+		if err != nil {
+			return err
+		}
+
+		defer serverCloseDeferFunc()
 	}
 
 	var rosettaSrv crgserver.Server

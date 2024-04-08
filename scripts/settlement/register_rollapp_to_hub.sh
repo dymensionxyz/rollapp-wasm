@@ -2,6 +2,7 @@
 
 KEYRING_PATH="$HOME/.rollapp/sequencer_keys"
 MAX_SEQUENCERS=5
+DEPLOYER="local-user"
 
 # this account must be whitelisted on the hub for permissioned deployment setup
 DEPLOYER="local-user"
@@ -13,7 +14,6 @@ dymd tx rollapp create-rollapp "$ROLLAPP_CHAIN_ID" "$MAX_SEQUENCERS" '{"Addresse
   --genesis-accounts-path "$GENESIS_ACCOUNTS_PATH" \
   --from "$DEPLOYER" \
   --keyring-backend test \
-  --keyring-dir "$KEYRING_PATH" \
   --broadcast-mode block \
   --fees 1dym \
   -y

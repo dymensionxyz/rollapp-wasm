@@ -33,9 +33,9 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
+	berpcconfig "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/config"
 	rdkserver "github.com/dymensionxyz/dymension-rdk/server"
 	"github.com/dymensionxyz/dymension-rdk/utils"
-	sequencercli "github.com/dymensionxyz/dymension-rdk/x/sequencers/client/cli"
 	dymintconf "github.com/dymensionxyz/dymint/config"
 	"github.com/dymensionxyz/rollapp-wasm/app"
 	"github.com/dymensionxyz/rollapp-wasm/app/params"
@@ -103,6 +103,9 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 			chainID := client.GetClientContextFromCmd(cmd).ChainID
 			dymintconf.EnsureRoot(home, dymintconf.DefaultConfig(home, chainID))
 
+			//create Block Explorer Json-RPC toml config file
+			berpcconfig.EnsureRoot(home, berpcconfig.DefaultBeJsonRpcConfig())
+
 			return nil
 		},
 	}
@@ -154,8 +157,6 @@ func initRootCmd(
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
 		genutilcli.MigrateGenesisCmd(),
 		genutilcli.GenTxCmd(app.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
-
-		sequencercli.GenTxCmd(),
 
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		AddGenesisAccountCmd(app.DefaultNodeHome),

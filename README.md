@@ -19,10 +19,6 @@ It uses Cosmos-SDK's [simapp](https://github.com/cosmos/cosmos-sdk/tree/main/sim
 
 **Note**: Requires [Go 1.21](https://go.dev/)
 
-## Quick guide
-
-Get started with [building RollApps](https://docs.dymension.xyz/develop/get-started/setup)
-
 ## Installing / Getting started
 
 Build and install the ```rollappd``` binary:
@@ -46,16 +42,26 @@ export ROLLAPP_HOME_DIR="$HOME/.rollapp"
 export ROLLAPP_SETTLEMENT_INIT_DIR_PATH="${ROLLAPP_HOME_DIR}/init"
 ```
 
-if you want to change the max wasm size:
-
-```shell
-export MAX_WASM_SIZE=WASM_SIZE_IN_BYTES # 2560000
-```
-
 And initialize the rollapp:
 
 ```shell
 sh scripts/init.sh
+```
+
+You can find out in <https://github.com/CosmWasm/wasmd#compile-time-parameters> that:
+
+There are a few variables was allow blockchains to customize at compile time. If you build your own chain and import x/wasm, you can adjust a few items via module parameters, but a few others did not fit in that, as they need to be used by stateless ValidateBasic(). Thus, we made them as flags and set them in start.go so that they can be overridden on your custom chain.
+
+```shell
+rollappd start --max-label-size 64 --max-wasm-size 2048000 --max-wasm-proposal-size 2048000
+```
+
+Those flags are optional, the default value was set as:
+
+```go
+wasmtypes.MaxLabelSize          = 128
+wasmtypes.MaxWasmSize           = 819200
+wasmtypes.MaxProposalWasmSize   = 3145728
 ```
 
 ### Download cw20-ics20 smartcontract
@@ -78,7 +84,7 @@ You should have a running local rollapp!
 
 ### Run local dymension hub node
 
-Follow the instructions on [Dymension Hub docs](https://docs.dymension.xyz/develop/get-started/run-base-layers) to run local dymension hub node
+Follow the instructions on [Dymension docs](https://docs.dymension.xyz/validate/dymension/build-dymd?network=localhost) to run local dymension hub node
 
 all scripts are adjusted to use local hub node that's hosted on the default port `localhost:36657`.
 
@@ -180,7 +186,3 @@ sh scripts/wasm/deploy_contract.sh
 ```shell
 sh scripts/wasm/ibc_transfer.sh
 ```
-
-## Developers guide
-
-TODO
