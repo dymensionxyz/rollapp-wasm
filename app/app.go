@@ -103,6 +103,7 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	rollappparams "github.com/dymensionxyz/rollapp-wasm/app/params"
+	v1upgrade "github.com/dymensionxyz/rollapp-wasm/app/upgrades/v1"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -187,7 +188,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		wasmtypes.ModuleName:           {authtypes.Burner},
-		hubgentypes.ModuleName: {authtypes.Burner},
+		hubgentypes.ModuleName:         {authtypes.Burner},
 	}
 )
 
@@ -623,6 +624,7 @@ func NewRollapp(
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 	app.setAnteHandler(encodingConfig.TxConfig, wasmConfig)
+	app.setupUpgradeHandlers()
 
 	if manager := app.SnapshotManager(); manager != nil {
 		err := manager.RegisterExtensions(
@@ -919,4 +921,31 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	return paramsKeeper
+}
+
+func (app *App) setupUpgradeHandlers() {
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v1upgrade.UpgradeName,
+		v1upgrade.CreateUpgradeHandler(
+			app.mm, app.configurator,
+		),
+	)
+
+	// When a planned update height is reached, the old binary will panic
+	// writing on disk the height and name of the update that triggered it
+	// This will read that value, and execute the preparations for the upgrade.
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
+	}
+
+	// Pre upgrade handler
+	switch upgradeInfo.Name {
+	// do nothing
+	}
+
+	if upgradeInfo.Name == "v1" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		// configure store loader with the store upgrades
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, v1upgrade.GetStoreUpgrades()))
+	}
 }
