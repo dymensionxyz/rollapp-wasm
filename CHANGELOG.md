@@ -43,17 +43,17 @@ Templates for Unreleased:
 
 ## Unreleased
 
-#### Features
+### Features
 
-#### Improvements
+### Improvements
 
-#### Bug Fixes
+### Bug Fixes
 
-#### Client Breaking
+### Client Breaking
 
-#### API Breaking
+### API Breaking
 
-#### State Machine Breaking
+### State Machine Breaking
 
 -->
 
@@ -61,6 +61,7 @@ Templates for Unreleased:
 
 ## Unreleased
 
-#### Improvements
+### Improvements
+
 - (deps) [#42](https://github.com/dymensionxyz/rollapp-wasm/issues/42) Bumps `block-explorer-rpc-cosmos v1.0.2` & `wasm-block-explorer-rpc-cosmos` v1.0.2
 - (deps) [#44](https://github.com/dymensionxyz/rollapp-wasm/issues/44) Bumps `block-explorer-rpc-cosmos v1.0.3`
