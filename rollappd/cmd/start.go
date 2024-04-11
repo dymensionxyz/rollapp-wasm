@@ -468,7 +468,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 				}, false)
 			},
 			func(backend berpcbackend.BackendI, wasmBeRpcBackend wasmberpcbackend.WasmBackendI) berpcbackend.RequestInterceptor {
-				return rawberpcbackend.NewRollAppEvmRequestInterceptor(
+				return rawberpcbackend.NewRollAppWasmRequestInterceptor(
 					backend,
 					rawBeRpcBackend,
 					wasmberpcbackend.NewDefaultRequestInterceptor(backend, wasmBeRpcBackend),
