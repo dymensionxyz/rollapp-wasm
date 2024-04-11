@@ -8,37 +8,37 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var _ berpcbackend.RequestInterceptor = (*RollAppEvmRequestInterceptor)(nil)
+var _ berpcbackend.RequestInterceptor = (*RollAppWasmRequestInterceptor)(nil)
 
-type RollAppEvmRequestInterceptor struct {
+type RollAppWasmRequestInterceptor struct {
 	beRpcBackend       berpcbackend.BackendI
 	backend            RollAppWasmBackendI
 	defaultInterceptor berpcbackend.RequestInterceptor
 }
 
-func NewRollAppEvmRequestInterceptor(
+func NewRollAppWasmRequestInterceptor(
 	beRpcBackend berpcbackend.BackendI,
 	backend RollAppWasmBackendI,
 	defaultInterceptor berpcbackend.RequestInterceptor,
-) *RollAppEvmRequestInterceptor {
-	return &RollAppEvmRequestInterceptor{
+) *RollAppWasmRequestInterceptor {
+	return &RollAppWasmRequestInterceptor{
 		beRpcBackend:       beRpcBackend,
 		backend:            backend,
 		defaultInterceptor: defaultInterceptor,
 	}
 }
 
-func (m *RollAppEvmRequestInterceptor) GetTransactionByHash(hashStr string) (intercepted bool, response berpctypes.GenericBackendResponse, err error) {
+func (m *RollAppWasmRequestInterceptor) GetTransactionByHash(hashStr string) (intercepted bool, response berpctypes.GenericBackendResponse, err error) {
 	// handled completely by the default interceptor
 	return m.defaultInterceptor.GetTransactionByHash(hashStr)
 }
 
-func (m *RollAppEvmRequestInterceptor) GetDenomsInformation() (intercepted, append bool, denoms map[string]string, err error) {
+func (m *RollAppWasmRequestInterceptor) GetDenomsInformation() (intercepted, append bool, denoms map[string]string, err error) {
 	// handled completely by the default interceptor
 	return m.defaultInterceptor.GetDenomsInformation()
 }
 
-func (m *RollAppEvmRequestInterceptor) GetModuleParams(moduleName string) (intercepted bool, res berpctypes.GenericBackendResponse, err error) {
+func (m *RollAppWasmRequestInterceptor) GetModuleParams(moduleName string) (intercepted bool, res berpctypes.GenericBackendResponse, err error) {
 	var params any
 
 	switch moduleName {
@@ -67,7 +67,7 @@ func (m *RollAppEvmRequestInterceptor) GetModuleParams(moduleName string) (inter
 	return
 }
 
-func (m *RollAppEvmRequestInterceptor) GetAccount(accountAddressStr string) (intercepted, append bool, response berpctypes.GenericBackendResponse, err error) {
+func (m *RollAppWasmRequestInterceptor) GetAccount(accountAddressStr string) (intercepted, append bool, response berpctypes.GenericBackendResponse, err error) {
 	// handled completely by the default interceptor
 	return m.defaultInterceptor.GetAccount(accountAddressStr)
 }
