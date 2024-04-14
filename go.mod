@@ -9,7 +9,7 @@ require (
 	github.com/bcdevtools/wasm-block-explorer-rpc-cosmos v1.0.3
 	github.com/cosmos/cosmos-sdk v0.46.16
 	github.com/cosmos/ibc-go/v6 v6.3.0
-	github.com/dymensionxyz/dymension-rdk v1.2.0-beta
+	github.com/dymensionxyz/dymension-rdk v1.5.0-beta
 	github.com/dymensionxyz/dymint v1.0.1-alpha.0.20240411212116-3cd56c57c597
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/gorilla/mux v1.8.1
