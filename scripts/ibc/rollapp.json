@@ -3,11 +3,11 @@
   "value": {
     "key": "relayer-rollapp-key",
     "chain-id": "rollappwasm_1234-1",
-    "rpc-addr": "http://127.0.0.1:26657",
+    "rpc-addr": "tcp://localhost:26657",
     "account-prefix": "rol",
     "keyring-backend": "test",
     "gas-adjustment": 1.2,
-    "gas-prices": "0.0urax",
+    "gas-prices": "0.0awsm",
     "debug": true,
     "timeout": "10s",
     "output-format": "json",

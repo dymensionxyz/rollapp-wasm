@@ -1,4 +1,4 @@
-name: Build Rollappd
+name: Build Rollapp-wasm
 on: ["push"]
 jobs:
   build:
@@ -21,7 +21,7 @@ jobs:
           GOOS: ${{ matrix.targetos }}
           GOARCH: ${{ matrix.arch }}
 
-      - name: Compile rollappd
+      - name: Compile rollapp-wasm
         run: |
           go mod download
           cd rollappd

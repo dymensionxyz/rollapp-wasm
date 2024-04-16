@@ -23,7 +23,7 @@ Get started with [building RollApps](https://docs.dymension.xyz/develop/get-star
 
 ## Installing / Getting started
 
-Build and install the ```rollappd``` binary:
+Build and install the ```rollapp-wasm``` binary:
 
 ```shell
 make install
@@ -34,26 +34,37 @@ make install
 export the following variables:
 
 ```shell
+export EXECUTABLE="rollapp-wasm"
 export ROLLAPP_CHAIN_ID="rollappwasm_1234-1"
 export KEY_NAME_ROLLAPP="rol-user"
 export BASE_DENOM="awsm"
 export DENOM=$(echo "$BASE_DENOM" | sed 's/^.//')
 export MONIKER="$ROLLAPP_CHAIN_ID-sequencer"
 
-export ROLLAPP_HOME_DIR="$HOME/.rollapp"
+export ROLLAPP_HOME_DIR="$HOME/.rollapp-wasm"
 export ROLLAPP_SETTLEMENT_INIT_DIR_PATH="${ROLLAPP_HOME_DIR}/init"
-```
-
-if you want to change the max wasm size:
-
-```shell
-export MAX_WASM_SIZE=WASM_SIZE_IN_BYTES
 ```
 
 And initialize the rollapp:
 
 ```shell
 sh scripts/init.sh
+```
+
+You can find out in <https://github.com/CosmWasm/wasmd#compile-time-parameters> that:
+
+There are a few variables was allow blockchains to customize at compile time. If you build your own chain and import x/wasm, you can adjust a few items via module parameters, but a few others did not fit in that, as they need to be used by stateless ValidateBasic(). Thus, we made them as flags and set them in start.go so that they can be overridden on your custom chain.
+
+```shell
+rollapp-wasm start --max-label-size 64 --max-wasm-size 2048000 --max-wasm-proposal-size 2048000
+```
+
+Those flags are optional, the default value was set as:
+
+```go
+wasmtypes.MaxLabelSize          = 128
+wasmtypes.MaxWasmSize           = 819200
+wasmtypes.MaxProposalWasmSize   = 3145728
 ```
 
 ### Download cw20-ics20 smartcontract
@@ -67,7 +78,7 @@ bash scripts/download_release.sh v1.0.0
 ### Run rollapp
 
 ```shell
-rollappd start
+rollapp-wasm start
 ```
 
 You should have a running local rollapp!
@@ -90,6 +101,8 @@ export HUB_CHAIN_ID="dymension_100-1"
 
 dymd config chain-id ${HUB_CHAIN_ID}
 dymd config node ${HUB_RPC_URL}
+
+export HUB_KEY_WITH_FUNDS="hub-user" # This key should exist on the keyring-backend test
 ```
 
 ### Create sequencer keys
@@ -97,8 +110,8 @@ dymd config node ${HUB_RPC_URL}
 create sequencer key using `dymd`
 
 ```shell
-dymd keys add sequencer --keyring-dir ${ROLLAPP_HOME_DIR}/sequencer_keys --keyring-backend test
-SEQUENCER_ADDR=`dymd keys show sequencer --address --keyring-backend test --keyring-dir ${ROLLAPP_HOME_DIR}/sequencer_keys`
+dymd keys add sequencer --keyring-dir ~/.rollapp-wasm/sequencer_keys --keyring-backend test
+SEQUENCER_ADDR=`dymd keys show sequencer --address --keyring-backend test --keyring-dir ~/.rollapp-wasm/sequencer_keys`
 ```
 
 fund the sequencer account (if you're using a remote hub node, you must fund the sequencer account or you must have an account with enough funds in your keyring)
@@ -107,9 +120,19 @@ fund the sequencer account (if you're using a remote hub node, you must fund the
 # this will retrieve the min bond amount from the hub
 # if you're using an new address for registering a sequencer,
 # you have to account for gas fees so it should the final value should be increased
-BOND_AMOUNT="$(dymd q sequencer params -o json | jq -r '.params.min_bond.amount')$(dymd q sequencer params -o json | jq -r '.params.min_bond.denom')"
+BOND_AMOUNT="$(dymd q sequencer params -o json --node ${HUB_RPC_URL} | jq -r '.params.min_bond.amount')$(dymd q sequencer params -o jsono | jq -r '.params.min_bond.denom')"
+echo $BOND_AMOUNT
 
-dymd tx bank send local-user $SEQUENCER_ADDR ${BOND_AMOUNT} --keyring-backend test --broadcast-mode block --fees 1dym -y 
+# Extract the numeric part
+NUMERIC_PART=$(echo $BOND_AMOUNT | sed 's/adym//')
+
+# Add 100000000000000000000 for fees
+NEW_NUMERIC_PART=$(echo "$NUMERIC_PART + 100000000000000000000" | bc)
+
+# Append 'adym' back
+TRANSFER_AMOUNT="${NEW_NUMERIC_PART}adym"
+
+dymd tx bank send $HUB_KEY_WITH_FUNDS $SEQUENCER_ADDR ${TRANSFER_AMOUNT} --keyring-backend test --broadcast-mode block --fees 1dym -y --node ${HUB_RPC_URL} --chain-id ${HUB_CHAIN_ID}
 ```
 
 ### Generate denommetadata
@@ -121,7 +144,6 @@ sh scripts/settlement/generate_denom_metadata.sh
 
 ### Add genesis accounts
 
-
 ```shell
 sh scripts/settlement/add_genesis_accounts.sh
 ```
@@ -129,11 +151,6 @@ sh scripts/settlement/add_genesis_accounts.sh
 ### Register rollapp on settlement
 
 ```shell
-# for permissioned deployment setup, you must have access to an account whitelisted for rollapp
-# registration, assuming you want to import an existing account, you can do:
-dymd keys add local-user --recover
-# input mnemonic from the account that has the permission to register rollapp
-
 sh scripts/settlement/register_rollapp_to_hub.sh
 ```
 
@@ -155,7 +172,7 @@ sed -i '/node_address =/c\node_address = '\"$HUB_RPC_URL\" "${ROLLAPP_HOME_DIR}/
 sed -i '/rollapp_id =/c\rollapp_id = '\"$ROLLAPP_CHAIN_ID\" "${ROLLAPP_HOME_DIR}/config/dymint.toml"
 ```
 
-### Update the Genesis file to include the denommetadata, genesis accounts, module account and elevated accounts 
+### Update the Genesis file to include the denommetadata, genesis accounts, module account and elevated accounts
 
 ```shell
 sh scripts/update_genesis_file.sh
@@ -177,14 +194,14 @@ rollappd start
 or as a systemd service:
 
 ```shell
-sudo tee /etc/systemd/system/rollapp.service > /dev/null <<EOF
+sudo tee /etc/systemd/system/rollapp-wasm.service > /dev/null <<EOF
 [Unit] 
-Description=rollapp
+Description=rollapp-wasm
 After=network.target 
 [Service] 
 Type=simple
 User=$USER
-ExecStart=$(which rollappd) start
+ExecStart=$(which rollapp-wasm) start
 Restart=on-failure
 RestartSec=10
 LimitNOFILE=65535

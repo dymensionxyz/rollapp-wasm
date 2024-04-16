@@ -120,7 +120,7 @@ import (
 
 const (
 	AccountAddressPrefix = "rol"
-	Name                 = "rollapp"
+	Name                 = "rollapp-wasm"
 )
 
 var (
@@ -187,7 +187,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		wasmtypes.ModuleName:           {authtypes.Burner},
-		hubgentypes.ModuleName: {authtypes.Burner},
+		hubgentypes.ModuleName:         {authtypes.Burner},
 	}
 )
 

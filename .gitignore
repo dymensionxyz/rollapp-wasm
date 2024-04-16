@@ -1,4 +1,4 @@
-cmd/rollappd/rollappd
+rollappd/rollappd
 scripts/ibc/*.json
 build/
 release/

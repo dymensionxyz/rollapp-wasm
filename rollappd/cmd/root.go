@@ -49,7 +49,7 @@ const rollappAscii = `
 ██   ██  ██████  ███████ ███████ ██   ██ ██      ██           ███ ███  ██   ██ ███████ ██      ██                 
 `
 
-// NewRootCmd creates a new root rollappd command. It is called once in the main function.
+// NewRootCmd creates a new root rollapp-wasm command. It is called once in the main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	encodingConfig := app.MakeEncodingConfig()
 
