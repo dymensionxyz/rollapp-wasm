@@ -178,7 +178,7 @@ sed -i '/rollapp_id =/c\rollapp_id = '\"$ROLLAPP_CHAIN_ID\" "${ROLLAPP_HOME_DIR}
 sh scripts/update_genesis_file.sh
 ```
 
-### Update the Genesis file to include the denommetadata, genesis accounts, module account and elevated accounts 
+### Update the Genesis file with 2 vesting accounts
 
 ```shell
 # this script automatically adds 2 vesting accounts, adjust the timestampts to your liking or skip this step
@@ -254,7 +254,6 @@ LimitNOFILE=65535
 WantedBy=multi-user.target
 EOF
 ```
-
 
 ## Developers guide
 
