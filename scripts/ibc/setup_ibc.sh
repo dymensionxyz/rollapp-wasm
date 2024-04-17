@@ -29,6 +29,11 @@ if ! command -v $RELAYER_EXECUTABLE >/dev/null; then
   exit 1
 fi
 
+# --------------------------------- change block time to easily create ibc channels --------------------------------- #
+kill $(pgrep rollapp-wasm)
+sed -i '' 's/empty_blocks_max_time = "3600s"/empty_blocks_max_time = "3s"/' ${ROLLAPP_HOME_DIR}/config/dymint.toml
+rollapp-wasm start
+
 # --------------------------------- rly init --------------------------------- #
 RLY_PATH="$HOME/.relayer"
 RLY_CONFIG_FILE="$RLY_PATH/config/config.yaml"
@@ -95,3 +100,8 @@ sleep 5
 echo '# -------------------------------- IBC channel established ------------------------------- #'
 echo "Channel Information:"
 echo $(rly q channels "$ROLLAPP_CHAIN_ID" | jq '{ "rollapp-channel": .channel_id, "hub-channel": .counterparty.channel_id }')
+
+# --------------------------------- revert empty block time to 1h --------------------------------- #
+kill $(pgrep rollapp-wasm)
+sed -i '' 's/empty_blocks_max_time = "3s"/empty_blocks_max_time = "3600s"/' ${ROLLAPP_HOME_DIR}/config/dymint.toml
+rollapp-wasm start
