@@ -3,7 +3,6 @@
 
 set -x
 tmp=$(mktemp)
-EXECUTABLE="rollappd"
 CONFIG_DIRECTORY="${ROLLAPP_HOME_DIR}/config"
 GENESIS_FILE="$CONFIG_DIRECTORY/genesis.json"
 DYMINT_CONFIG_FILE="$CONFIG_DIRECTORY/dymint.toml"

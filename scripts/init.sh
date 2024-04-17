@@ -1,9 +1,6 @@
 #!/bin/bash
 tmp=$(mktemp)
 
-EXECUTABLE="rollappd"
-ROLLAPP_CHAIN_DIR="$HOME/.rollapp"
-
 set_denom() {
   denom=$1
   jq --arg denom $denom '.app_state.mint.params.mint_denom = $denom' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
@@ -17,7 +14,7 @@ set_denom() {
 TOKEN_AMOUNT="1000000000000000000000000$BASE_DENOM"
 STAKING_AMOUNT="500000000000000000000000$BASE_DENOM"
 
-CONFIG_DIRECTORY="$ROLLAPP_CHAIN_DIR/config"
+CONFIG_DIRECTORY="$ROLLAPP_HOME_DIR/config"
 GENESIS_FILE="$CONFIG_DIRECTORY/genesis.json"
 TENDERMINT_CONFIG_FILE="$CONFIG_DIRECTORY/config.toml"
 APP_CONFIG_FILE="$CONFIG_DIRECTORY/app.toml"
@@ -41,7 +38,7 @@ if [ -f "$GENESIS_FILE" ]; then
   printf "\n======================================================================================================\n"
   read -r answer
   if [ "$answer" != "${answer#[Yy]}" ]; then
-    rm -rf "$ROLLAPP_CHAIN_DIR"
+    rm -rf "$ROLLAPP_HOME_DIR"
   else
     exit 1
   fi
@@ -75,8 +72,8 @@ echo "Do you want to include staker on genesis? (Y/n) "
 read -r answer
 if [ ! "$answer" != "${answer#[Nn]}" ]; then
   set -x
-  $EXECUTABLE gentx "$KEY_NAME_ROLLAPP" "$STAKING_AMOUNT" --chain-id "$ROLLAPP_CHAIN_ID" --keyring-backend test --home "$ROLLAPP_CHAIN_DIR"
-  $EXECUTABLE collect-gentxs --home "$ROLLAPP_CHAIN_DIR"
+  $EXECUTABLE gentx "$KEY_NAME_ROLLAPP" "$STAKING_AMOUNT" --chain-id "$ROLLAPP_CHAIN_ID" --keyring-backend test --home "$ROLLAPP_HOME_DIR"
+  $EXECUTABLE collect-gentxs --home "$ROLLAPP_HOME_DIR"
   set +x
 fi
 

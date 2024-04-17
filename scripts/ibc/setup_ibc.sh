@@ -11,16 +11,15 @@ RELAYER_EXECUTABLE="rly"
 SETTLEMENT_EXECUTABLE="dymd"
 SETTLEMENT_CHAIN_ID=$($SETTLEMENT_EXECUTABLE config | jq -r '."chain-id"')
 SETTLEMENT_RPC_FOR_RELAYER=$($SETTLEMENT_EXECUTABLE config | jq -r '."node"')
-SETTLEMENT_KEY_NAME_GENESIS="local-user"
 SETTLEMENT_BASE_DENOM="adym"
+SETTLEMENT_KEY_NAME_GENESIS="hub-user"
 
 # rollapp config
-EXECUTABLE="rollappd"
 ROLLAPP_CHAIN_ID=$($EXECUTABLE config | jq -r '."chain-id"')
 ROLLAPP_RPC_FOR_RELAYER=$($EXECUTABLE config | jq -r '."node"')
 ROLLAPP_KEY_NAME_GENESIS="rol-user"
 
-RELAYER_KEY_FOR_ROLLAP="relayer-rollapp-key"
+RELAYER_KEY_FOR_ROLLAPP="relayer-rollapp-key"
 RELAYER_KEY_FOR_HUB="relayer-hub-key"
 RELAYER_PATH="hub-rollapp"
 
@@ -31,8 +30,9 @@ if ! command -v $RELAYER_EXECUTABLE >/dev/null; then
 fi
 
 # --------------------------------- change block time to easily create ibc channels --------------------------------- #
-sed -i 's/empty_blocks_max_time =.*/empty_blocks_max_time = "3s"/' ${ROLLAPP_HOME_DIR}/config/dymint.toml
-sudo systemctl restart rollapp
+kill $(pgrep rollapp-wasm)
+sed -i '' 's/empty_blocks_max_time = "3600s"/empty_blocks_max_time = "3s"/' ${ROLLAPP_HOME_DIR}/config/dymint.toml
+rollapp-wasm start
 
 # --------------------------------- rly init --------------------------------- #
 RLY_PATH="$HOME/.relayer"
@@ -56,7 +56,7 @@ rly config init
 echo '# ------------------------- adding chains to rly config ------------------------- #'
 tmp=$(mktemp)
 
-jq --arg key "$RELAYER_KEY_FOR_ROLLAP" '.value.key = $key' $ROLLAPP_IBC_CONF_FILE >"$tmp" && mv "$tmp" $ROLLAPP_IBC_CONF_FILE
+jq --arg key "$RELAYER_KEY_FOR_ROLLAPP" '.value.key = $key' $ROLLAPP_IBC_CONF_FILE >"$tmp" && mv "$tmp" $ROLLAPP_IBC_CONF_FILE
 jq --arg chain "$ROLLAPP_CHAIN_ID" '.value."chain-id" = $chain' $ROLLAPP_IBC_CONF_FILE >"$tmp" && mv "$tmp" $ROLLAPP_IBC_CONF_FILE
 jq --arg rpc "$ROLLAPP_RPC_FOR_RELAYER" '.value."rpc-addr" = $rpc' $ROLLAPP_IBC_CONF_FILE >"$tmp" && mv "$tmp" $ROLLAPP_IBC_CONF_FILE
 jq --arg denom "0.0$BASE_DENOM" '.value."gas-prices" = $denom' $ROLLAPP_IBC_CONF_FILE >"$tmp" && mv "$tmp" $ROLLAPP_IBC_CONF_FILE
@@ -69,7 +69,7 @@ rly chains add --file "$ROLLAPP_IBC_CONF_FILE" "$ROLLAPP_CHAIN_ID"
 rly chains add --file "$HUB_IBC_CONF_FILE" "$SETTLEMENT_CHAIN_ID"
 
 echo '# -------------------------------- creating keys ------------------------------- #'
-rly keys add "$ROLLAPP_CHAIN_ID" "$RELAYER_KEY_FOR_ROLLAP"
+rly keys add "$ROLLAPP_CHAIN_ID" "$RELAYER_KEY_FOR_ROLLAPP"
 rly keys add "$SETTLEMENT_CHAIN_ID" "$RELAYER_KEY_FOR_HUB"
 
 RLY_HUB_ADDR=$(rly keys show "$SETTLEMENT_CHAIN_ID")
@@ -81,7 +81,7 @@ $EXECUTABLE tx bank send $ROLLAPP_KEY_NAME_GENESIS "$(rly keys show "$ROLLAPP_CH
 
 echo "# ------------------------------- balance of rly account on hub [$RLY_HUB_ADDR]------------------------------ #"
 $SETTLEMENT_EXECUTABLE q bank balances "$(rly keys show "$SETTLEMENT_CHAIN_ID")"
-echo "From within the hub node: \n\"$SETTLEMENT_EXECUTABLE tx bank send $SETTLEMENT_KEY_NAME_GENESIS $RLY_HUB_ADDR 100000000000000000000${SETTLEMENT_BASE_DENOM} --keyring-backend test --broadcast-mode block\""
+echo "From within the hub node: \n\"$SETTLEMENT_EXECUTABLE tx bank send $SETTLEMENT_KEY_NAME_GENESIS $RLY_HUB_ADDR 100000000000000000000${SETTLEMENT_BASE_DENOM} --keyring-backend test --broadcast-mode block --node $SETTLEMENT_RPC_FOR_RELAYER --chain-id $SETTLEMENT_CHAIN_ID\""
 
 echo "# ------------------------------- balance of rly account on rollapp [$RLY_ROLLAPP_ADDR] ------------------------------ #"
 $EXECUTABLE q bank balances "$(rly keys show "$ROLLAPP_CHAIN_ID")" --node "$ROLLAPP_RPC_FOR_RELAYER"
@@ -102,5 +102,6 @@ echo "Channel Information:"
 echo $(rly q channels "$ROLLAPP_CHAIN_ID" | jq '{ "rollapp-channel": .channel_id, "hub-channel": .counterparty.channel_id }')
 
 # --------------------------------- revert empty block time to 1h --------------------------------- #
-sed -i 's/empty_blocks_max_time =.*/empty_blocks_max_time = "3600s"/' ${ROLLAPP_HOME_DIR}/config/dymint.toml
-sudo systemctl restart rollapp
+kill $(pgrep rollapp-wasm)
+sed -i '' 's/empty_blocks_max_time = "3s"/empty_blocks_max_time = "3600s"/' ${ROLLAPP_HOME_DIR}/config/dymint.toml
+rollapp-wasm start

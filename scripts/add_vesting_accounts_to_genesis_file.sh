@@ -1,5 +1,5 @@
 #!/bin/bash
-BINARY="rollappd"
+BINARY="rollapp-wasm"
 
 $BINARY keys add three-year-vester --keyring-backend test
 $BINARY add-genesis-account three-year-vester \
