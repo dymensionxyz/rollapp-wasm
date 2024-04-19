@@ -295,8 +295,8 @@ github.com/aws/aws-sdk-go-v2/service/route53 v1.1.1/go.mod h1:rLiOUrPLW/Er5kRcQ7
 github.com/aws/aws-sdk-go-v2/service/sso v1.1.1/go.mod h1:SuZJxklHxLAXgLTc1iFXbEWkXs7QRTQpCLGaKIprQW0=
 github.com/aws/aws-sdk-go-v2/service/sts v1.1.1/go.mod h1:Wi0EBZwiz/K44YliU0EKxqTCJGUfYTWXrrBwkq736bM=
 github.com/aws/smithy-go v1.1.0/go.mod h1:EzMw8dbp/YJL4A5/sbhGddag+NPT7q084agLbB9LgIw=
-github.com/bcdevtools/block-explorer-rpc-cosmos v1.1.1 h1:GnHtsbNVEdofa0NgunqDsiNJixsy65WVllh40jkxAy0=
-github.com/bcdevtools/block-explorer-rpc-cosmos v1.1.1/go.mod h1:AWXHI5ICXK4wB+A59dNddzq5Xdc1wtQDRiIXfMw8cwc=
+github.com/bcdevtools/block-explorer-rpc-cosmos v1.1.2 h1:XS/OOOWXaAvFQ06qzrZStCkayQ8ZOEJM3zE6Pp/rOn4=
+github.com/bcdevtools/block-explorer-rpc-cosmos v1.1.2/go.mod h1:AWXHI5ICXK4wB+A59dNddzq5Xdc1wtQDRiIXfMw8cwc=
 github.com/bcdevtools/wasm-block-explorer-rpc-cosmos v1.1.1 h1:cLojf/WPvKXQZMtnt7Agf9ggmYFJrTBPcL1XBihRbxc=
 github.com/bcdevtools/wasm-block-explorer-rpc-cosmos v1.1.1/go.mod h1:UfmiHm431foFuByYwcsPrYBNll0knPH1o6ulec5VY04=
 github.com/benbjohnson/clock v1.1.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
@@ -554,8 +554,6 @@ github.com/dymensionxyz/dymension-rdk v1.5.0-beta h1:whKxcgcXB3l7rK7F0Vnq0EF0Ri9
 github.com/dymensionxyz/dymension-rdk v1.5.0-beta/go.mod h1:kzNFKt3yfFzZ2u3+47Nlpobub3/UXsICOg1WmGud3DE=
 github.com/dymensionxyz/dymension/v3 v3.1.0-rc03.0.20240411195658-f7cd96f53b56 h1:cmpJYdRviuUfmlJdHrcAND8Jd6JIY4rp63bWAQzPr54=
 github.com/dymensionxyz/dymension/v3 v3.1.0-rc03.0.20240411195658-f7cd96f53b56/go.mod h1:3Pfrr8j/BR9ztNKztGfC5PqDiO6CcrzMLCJtFtPEVW4=
-github.com/dymensionxyz/dymint v1.0.1-alpha.0.20240411212116-3cd56c57c597 h1:tIvgP75oCriRaxkOb2KtL8cExX2/QGlZQvY9qxJbr98=
-github.com/dymensionxyz/dymint v1.0.1-alpha.0.20240411212116-3cd56c57c597/go.mod h1:0h9bBg5vdTqkAdiWIaKv5UutD98+KUNODDy80dXMW9o=
 github.com/dymensionxyz/dymint v1.0.1-alpha.0.20240414124654-eb08e30da2c5 h1:7UEyfIyW54zJXUL4hSAJdLol7CkJtD0eL865vLTf9Lg=
 github.com/dymensionxyz/dymint v1.0.1-alpha.0.20240414124654-eb08e30da2c5/go.mod h1:0h9bBg5vdTqkAdiWIaKv5UutD98+KUNODDy80dXMW9o=
 github.com/dymensionxyz/evmos/v12 v12.1.6-dymension-v0.3 h1:vmAdUGUc4rTIiO3Phezr7vGq+0uPDVKSA4WAe8+yl6w=
