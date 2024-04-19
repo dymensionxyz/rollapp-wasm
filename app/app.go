@@ -334,7 +334,7 @@ func NewRollapp(
 		app.GetSubspace(authtypes.ModuleName),
 		authtypes.ProtoBaseAccount,
 		maccPerms,
-		sdk.Bech32PrefixAccAddr, //Bech32MainPrefix
+		sdk.GetConfig().GetBech32AccountAddrPrefix(),
 	)
 
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
