@@ -31,6 +31,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/dymensionxyz/dymension-rdk/utils"
 	rdklogger "github.com/dymensionxyz/dymension-rdk/utils/logger"
 	dymintconf "github.com/dymensionxyz/dymint/config"
@@ -61,6 +62,11 @@ const (
 	FlagIAVLCacheSize       = "iavl-cache-size"
 	FlagDisableIAVLFastNode = "iavl-disable-fastnode"
 	FlagIAVLLazyLoading     = "iavl-lazy-loading"
+
+	// wasm max bytes flags
+	FlagMaxLabelSize        = "max-label-size"
+	FlagMaxWasmSize         = "max-wasm-size"
+	FlagMaxProposalWasmSize = "max-proposal-wasm-size"
 
 	// state sync-related flags
 	FlagStateSyncSnapshotInterval   = "state-sync.snapshot-interval"
@@ -178,6 +184,10 @@ which accepts a path for the resulting pprof file.
 	cmd.Flags().Uint(FlagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
 	cmd.Flags().Uint64(FlagMinRetainBlocks, 0, "Minimum block height offset during ABCI commit to prune Tendermint blocks")
 
+	cmd.Flags().Int(FlagMaxLabelSize, 128, "Maximum wasm label size")
+	cmd.Flags().Int(FlagMaxWasmSize, 819200, "Maximum wasm size")
+	cmd.Flags().Int(FlagMaxProposalWasmSize, 3145728, "Maximum wasm proposal size")
+
 	cmd.Flags().Bool(FlagAPIEnable, false, "Define if the API server should be enabled")
 	cmd.Flags().Bool(FlagAPISwagger, false, "Define if swagger documentation should automatically be registered (Note: the API must also be enabled)")
 	cmd.Flags().String(FlagAPIAddress, serverconfig.DefaultAPIAddress, "the API server address to listen on")
@@ -212,6 +222,10 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 		return err
 	}
 	defer db.Close()
+
+	wasmtypes.MaxLabelSize = ctx.Viper.GetInt(FlagMaxLabelSize)
+	wasmtypes.MaxWasmSize = ctx.Viper.GetInt(FlagMaxWasmSize)
+	wasmtypes.MaxProposalWasmSize = ctx.Viper.GetInt(FlagMaxProposalWasmSize)
 
 	traceWriterFile := ctx.Viper.GetString(flagTraceStore)
 	traceWriter, err := utils.OpenTraceWriter(traceWriterFile)
