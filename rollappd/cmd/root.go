@@ -118,7 +118,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 				genDoc, _ := GenesisDocFromFile(genFile)
 				utils.SetPrefixes(sdkconfig, genDoc["bech32_prefix"].(string))
 			} else {
-				utils.SetPrefixes(sdkconfig, "ethm")
+				utils.SetPrefixes(sdkconfig, "rol")
 			}
 			sdkconfig.Seal()
 
