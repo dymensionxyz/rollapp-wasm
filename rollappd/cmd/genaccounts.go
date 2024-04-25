@@ -16,8 +16,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/cosmos/cosmos-sdk/x/genutil"
-	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	tmos "github.com/tendermint/tendermint/libs/os"
 )
 
 const (
@@ -128,7 +127,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			}
 
 			genFile := config.GenesisFile()
-			appState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFile)
+			appState, genDoc, err := GenesisStateFromGenFile(genFile)
 			if err != nil {
 				return fmt.Errorf("failed to unmarshal genesis state: %w", err)
 			}
@@ -186,13 +185,13 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			}
 			appState[banktypes.ModuleName] = bankGenStateBz
 
-			appStateJSON, err := json.Marshal(appState)
+			genDoc["app_state"] = appState
+			genDocBytes, err := json.MarshalIndent(genDoc, "", "  ")
 			if err != nil {
-				return fmt.Errorf("failed to marshal application genesis state: %w", err)
+				return err
 			}
 
-			genDoc.AppState = appStateJSON
-			return genutil.ExportGenesisFile(genDoc, genFile)
+			return tmos.WriteFile(genFile, genDocBytes, 0o644)
 		},
 	}
 

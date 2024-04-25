@@ -119,8 +119,7 @@ import (
 )
 
 const (
-	AccountAddressPrefix = "rol"
-	Name                 = "rollapp-wasm"
+	Name = "rollapp-wasm"
 )
 
 var (
