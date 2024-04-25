@@ -1,71 +1,18 @@
-<!--
-Guiding Principles:
+#  (2024-04-25)
 
-Changelogs are for humans, not machines.
-There should be an entry for every single version.
-The same types of changes should be grouped.
-Versions and sections should be linkable.
-The latest version comes first.
-The release date of each version is displayed.
-Mention whether you follow Semantic Versioning.
-
-Usage:
-
-Change log entries are to be added to the Unreleased section under the
-appropriate stanza (see below). Each entry should ideally include a tag and
-the GitHub issue reference in the following format:
-
-* (<tag>) \#<issue-number> message
-
-Tag must include `sql` if having any changes relate to schema
-
-The issue numbers will later be link-ified during the release process,
-so you do not have to worry about including a link manually, but you can if you wish.
-
-Types of changes (Stanzas):
-
-"Features" for new features.
-"Improvements" for changes in existing functionality.
-"Deprecated" for soon-to-be removed features.
-"Bug Fixes" for any bug fixes.
-"Client Breaking" for breaking CLI commands and REST routes used by end-users.
-"API Breaking" for breaking exported APIs used by developers building on SDK.
-"State Machine Breaking" for any changes that result in a different AppState
-given same genesisState and txList.
-
-If any PR belong to multiple types of change, reference it into all types with only ticket id, no need description (convention)
-
-Ref: https://keepachangelog.com/en/1.0.0/
--->
-
-<!--
-Templates for Unreleased:
-
-## Unreleased
-
-### Features
-
-### Improvements
 
 ### Bug Fixes
 
-### Client Breaking
+* **app:** Fixed bech32 on account keeper to not be hardcoded  ([#54](https://github.com/dymensionxyz/rollapp-wasm/issues/54)) ([883653a](https://github.com/dymensionxyz/rollapp-wasm/commit/883653af7053450af80719e1cfd93e8309ba7a7d))
+* merge conflict ([#13](https://github.com/dymensionxyz/rollapp-wasm/issues/13)) ([2cc8431](https://github.com/dymensionxyz/rollapp-wasm/commit/2cc8431a3dc57a60efece2a485c7298c08d22ecb))
 
-### API Breaking
 
-### State Machine Breaking
+### Features
 
--->
+* add hub genesis module ([#43](https://github.com/dymensionxyz/rollapp-wasm/issues/43)) ([73b3ceb](https://github.com/dymensionxyz/rollapp-wasm/commit/73b3cebef6c159494f0a4074ef5edb804b82bf0c))
+* Add wasm module for rollapp-wasm ([#10](https://github.com/dymensionxyz/rollapp-wasm/issues/10)) ([9829d4a](https://github.com/dymensionxyz/rollapp-wasm/commit/9829d4a10b9f7928c98151b7295b20f0d54a8ad0))
+* **be:** integrate block explorer Json-RPC server ([#41](https://github.com/dymensionxyz/rollapp-wasm/issues/41)) ([51fd3e3](https://github.com/dymensionxyz/rollapp-wasm/commit/51fd3e36a0404d68325c64f79f65a15afc3be82a))
+* **ci:** add auto update changelog workflow ([25a3ec8](https://github.com/dymensionxyz/rollapp-wasm/commit/25a3ec87506915de2330203bf48c340f3625d983))
 
-# Changelog
 
-## Unreleased
 
-### Improvements
-
-- (deps) [#42](https://github.com/dymensionxyz/rollapp-wasm/issues/42) Bumps `block-explorer-rpc-cosmos v1.0.2` & `wasm-block-explorer-rpc-cosmos v1.0.2`
-- (deps) [#45](https://github.com/dymensionxyz/rollapp-wasm/issues/45) Bumps `block-explorer-rpc-cosmos v1.0.3` & `wasm-block-explorer-rpc-cosmos v1.0.3`
-
-### API Breaking
-
-- (deps) [#49](https://github.com/dymensionxyz/rollapp-wasm/issues/49) Bumps `block-explorer-rpc-cosmos v1.1.1` & `wasm-block-explorer-rpc-cosmos v1.1.1`
