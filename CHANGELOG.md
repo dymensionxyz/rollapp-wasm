@@ -11,8 +11,9 @@
 
 * add hub genesis module ([#43](https://github.com/dymensionxyz/rollapp-wasm/issues/43)) ([73b3ceb](https://github.com/dymensionxyz/rollapp-wasm/commit/73b3cebef6c159494f0a4074ef5edb804b82bf0c))
 * Add wasm module for rollapp-wasm ([#10](https://github.com/dymensionxyz/rollapp-wasm/issues/10)) ([9829d4a](https://github.com/dymensionxyz/rollapp-wasm/commit/9829d4a10b9f7928c98151b7295b20f0d54a8ad0))
+* **app:** Add modules authz and feegrant ([#60](https://github.com/dymensionxyz/rollapp-wasm/issues/60)) ([a4451ea](https://github.com/dymensionxyz/rollapp-wasm/commit/a4451eaebd11eb49c89a40c239f6dd8593f201d1))
 * **be:** integrate block explorer Json-RPC server ([#41](https://github.com/dymensionxyz/rollapp-wasm/issues/41)) ([51fd3e3](https://github.com/dymensionxyz/rollapp-wasm/commit/51fd3e36a0404d68325c64f79f65a15afc3be82a))
-* **ci:** add auto update changelog workflow ([25a3ec8](https://github.com/dymensionxyz/rollapp-wasm/commit/25a3ec87506915de2330203bf48c340f3625d983))
+* **ci:** Add auto update changelog workflow ([#61](https://github.com/dymensionxyz/rollapp-wasm/issues/61)) ([ed9c6da](https://github.com/dymensionxyz/rollapp-wasm/commit/ed9c6da98f33a9842ae83007b46bc074f67d2152))
 
 
 
