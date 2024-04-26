@@ -16,4 +16,8 @@
 * **ci:** Add auto update changelog workflow ([#61](https://github.com/dymensionxyz/rollapp-wasm/issues/61)) ([ed9c6da](https://github.com/dymensionxyz/rollapp-wasm/commit/ed9c6da98f33a9842ae83007b46bc074f67d2152))
 
 
+### Improvement
 
+* **be:** bumps `block-explorer-rpc-cosmos v1.0.2` & `wasm-block-explorer-rpc-cosmos v1.0.2` ([#42](https://github.com/dymensionxyz/rollapp-wasm/issues/42)) ([eab8283](https://github.com/dymensionxyz/rollapp-wasm/commit/eab82830f8ac5586cdc5d67f134fe52cda48f502))
+* **be:** bumps `block-explorer-rpc-cosmos v1.0.3` & `wasm-block-explorer-rpc-cosmos v1.0.3` ([#45](https://github.com/dymensionxyz/rollapp-wasm/issues/45)) ([349bb7c](https://github.com/dymensionxyz/rollapp-wasm/commit/349bb7cf51b954aba087f951bdce02f914d32d6c))
+* **be:** bumps `block-explorer-rpc-cosmos v1.1.2` & `wasm-block-explorer-rpc-cosmos v1.1.2` ([#55](https://github.com/dymensionxyz/rollapp-wasm/issues/55))
