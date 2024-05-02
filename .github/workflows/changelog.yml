@@ -4,19 +4,20 @@ on:
   pull_request:
     branches:
       - main
-    types: [opened, synchronize, reopened]
+    types: [closed]
 
 permissions: write-all
 
 jobs:
   update_changelog:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -53,4 +54,4 @@ jobs:
         run: |
           git add CHANGELOG.md
           git diff --staged --quiet || git commit -m "Update CHANGELOG.md based on PR #${{ github.event.pull_request.number }} title"
-          git push origin HEAD:refs/heads/${{ github.head_ref }}
+          git push origin HEAD:refs/heads/main
