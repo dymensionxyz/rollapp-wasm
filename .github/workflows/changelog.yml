@@ -23,22 +23,16 @@ jobs:
         with:
           node-version: "18"
 
-      - name: Install conventional-changelog-cli
-        run: npm install -g conventional-changelog-cli
-
-      - name: Generate changelog diff
+      - name: Update Changelog
         run: |
-          echo "Pull Request Title: ${{ github.event.pull_request.title }}"
-          echo "Pull Request Body: ${{ github.event.pull_request.body }}"
-          conventional-changelog -p angular -i CHANGELOG.md -s -r 0
-          git diff CHANGELOG.md > changelog_diff.md
-          cat changelog_diff.md
+          echo "## PR #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}" >> CHANGELOG.md
+          echo "- ${{ github.event.pull_request.body }}" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
 
       - name: Commit and push changelog update
         run: |
           git config user.name 'github-actions'
           git config user.email 'github-actions@github.com'
           git add CHANGELOG.md
-          git commit -m "Update CHANGELOG.md based on PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}"
+          git commit -m "Update CHANGELOG.md for PR #${{ github.event.pull_request.number }}"
           git push origin HEAD:refs/heads/${{ github.head_ref }}
-          
