@@ -84,3 +84,5 @@ After reviewer approval:
 - [ ]  In case the PR targets a release branch, PR must be rebased.
 
 
+### PR #64: Feat(ci): fix changelog workflow
+
