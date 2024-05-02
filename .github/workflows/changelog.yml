@@ -33,14 +33,17 @@ jobs:
 
       - name: Simulate commit for PR title
         run: |
-          # Format PR title as a conventional commit message
           echo "${{ github.event.pull_request.title }}" > temp_message.txt
-          # Temporarily commit this message
           git commit --allow-empty -F temp_message.txt
 
       - name: Generate changelog
         run: |
           conventional-changelog -p angular -i CHANGELOG.md -s -r 0
+
+      - name: Show git status and changelog contents
+        run: |
+          git status
+          echo "Changelog contents:"
           cat CHANGELOG.md
 
       - name: Revert temporary commit
@@ -49,5 +52,5 @@ jobs:
       - name: Commit and push changelog update
         run: |
           git add CHANGELOG.md
-          git commit -m "Update CHANGELOG.md based on PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}"
+          git diff --staged --quiet || git commit -m "Update CHANGELOG.md based on PR #${{ github.event.pull_request.number }} title"
           git push origin HEAD:refs/heads/${{ github.head_ref }}
