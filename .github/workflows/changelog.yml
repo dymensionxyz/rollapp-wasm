@@ -41,3 +41,4 @@ jobs:
           git add CHANGELOG.md
           git commit -m "Update CHANGELOG.md based on PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}"
           git push origin HEAD:refs/heads/${{ github.head_ref }}
+          
