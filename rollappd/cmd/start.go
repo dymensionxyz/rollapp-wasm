@@ -65,7 +65,6 @@ const (
 	FlagUnsafeSkipUpgrades = "unsafe-skip-upgrades"
 	FlagTrace              = "trace"
 	FlagInvCheckPeriod     = "inv-check-period"
-	FlagBech32Prefix       = "bech32-prefix"
 
 	FlagPruning             = "pruning"
 	FlagPruningKeepRecent   = "pruning-keep-recent"
