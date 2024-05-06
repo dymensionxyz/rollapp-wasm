@@ -43,7 +43,7 @@ RUN ARCH=$(uname -m) && WASMVM_VERSION=$(go list -m github.com/CosmWasm/wasmvm |
 # Copy the remaining files
 COPY . .
 
-RUN make build
+RUN make build BECH32_PREFIX=rol
 
 FROM ubuntu:latest
 

@@ -60,6 +60,7 @@ jq --arg key "$RELAYER_KEY_FOR_ROLLAPP" '.value.key = $key' $ROLLAPP_IBC_CONF_FI
 jq --arg chain "$ROLLAPP_CHAIN_ID" '.value."chain-id" = $chain' $ROLLAPP_IBC_CONF_FILE >"$tmp" && mv "$tmp" $ROLLAPP_IBC_CONF_FILE
 jq --arg rpc "$ROLLAPP_RPC_FOR_RELAYER" '.value."rpc-addr" = $rpc' $ROLLAPP_IBC_CONF_FILE >"$tmp" && mv "$tmp" $ROLLAPP_IBC_CONF_FILE
 jq --arg denom "0.0$BASE_DENOM" '.value."gas-prices" = $denom' $ROLLAPP_IBC_CONF_FILE >"$tmp" && mv "$tmp" $ROLLAPP_IBC_CONF_FILE
+jq --arg bech "$BECH32_PREFIX" '.value["account-prefix"] = $bech' "$ROLLAPP_IBC_CONF_FILE" >"$tmp" && mv "$tmp" "$ROLLAPP_IBC_CONF_FILE"
 
 jq --arg key "$RELAYER_KEY_FOR_HUB" '.value.key = $key' $HUB_IBC_CONF_FILE >"$tmp" && mv "$tmp" $HUB_IBC_CONF_FILE
 jq --arg chain "$SETTLEMENT_CHAIN_ID" '.value."chain-id" = $chain' $HUB_IBC_CONF_FILE >"$tmp" && mv "$tmp" $HUB_IBC_CONF_FILE
@@ -76,8 +77,21 @@ RLY_HUB_ADDR=$(rly keys show "$SETTLEMENT_CHAIN_ID")
 RLY_ROLLAPP_ADDR=$(rly keys show "$ROLLAPP_CHAIN_ID")
 
 echo '# -------------------------------- funding for rly account  ------------------------------- #'
-$SETTLEMENT_EXECUTABLE tx bank send $SETTLEMENT_KEY_NAME_GENESIS "$(rly keys show "$SETTLEMENT_CHAIN_ID")" 1000000000000000000000${SETTLEMENT_BASE_DENOM} --keyring-backend test --broadcast-mode block --fees 20000000000000${SETTLEMENT_BASE_DENOM} -y
-$EXECUTABLE tx bank send $ROLLAPP_KEY_NAME_GENESIS "$(rly keys show "$ROLLAPP_CHAIN_ID")" 1000000000000000000000$BASE_DENOM --keyring-backend test --broadcast-mode block -y --node "$ROLLAPP_RPC_FOR_RELAYER"
+DYM_BALANCE=$(${SETTLEMENT_EXECUTABLE} q bank balances ${RLY_HUB_ADDR} -o json | jq -r '.balances[0].amount')
+
+if [ "$(echo "$DYM_BALANCE >= 100000000000000000000" | bc)" -eq 1 ]; then
+  echo "${RLY_HUB_ADDR} already funded"
+else
+  "$SETTLEMENT_EXECUTABLE" tx bank send "$SETTLEMENT_KEY_NAME_GENESIS" "$RLY_HUB_ADDR" 100dym --keyring-backend test --broadcast-mode block --fees 1dym --node "$SETTLEMENT_RPC_FOR_RELAYER" -y
+fi
+
+RA_BALANCE=$(${EXECUTABLE} q bank balances ${RLY_ROLLAPP_ADDR} -o json | jq -r '.balances[0].amount')
+
+if [ "$(echo "$RA_BALANCE >= 100000000000000000000" | bc)" -eq 1 ]; then
+  echo "${RLY_ROLLAPP_ADDR} already funded"
+else
+  "$EXECUTABLE" tx bank send "$KEY_NAME_ROLLAPP" "$RLY_ROLLAPP_ADDR" 100000000000000000000"$BASE_DENOM" --keyring-backend test --broadcast-mode block -y --fees 4000000000$BASE_DENOM
+fi
 
 echo "# ------------------------------- balance of rly account on hub [$RLY_HUB_ADDR]------------------------------ #"
 $SETTLEMENT_EXECUTABLE q bank balances "$(rly keys show "$SETTLEMENT_CHAIN_ID")"

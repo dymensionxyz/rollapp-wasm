@@ -125,12 +125,12 @@ import (
 )
 
 const (
-	AccountAddressPrefix = "rol"
-	Name                 = "rollapp-wasm"
+	Name = "rollapp-wasm"
 )
 
 var (
-	kvstorekeys = []string{
+	AccountAddressPrefix string
+	kvstorekeys          = []string{
 		authtypes.StoreKey, authzkeeper.StoreKey,
 		feegrant.StoreKey, banktypes.StoreKey,
 		stakingtypes.StoreKey, seqtypes.StoreKey,
