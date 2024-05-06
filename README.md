@@ -35,7 +35,6 @@ export the following variables:
 export EXECUTABLE="rollapp-wasm"
 export ROLLAPP_CHAIN_ID="rollappwasm_1234-1"
 export KEY_NAME_ROLLAPP="rol-user"
-export BECH32="rol"
 export BASE_DENOM="awsm"
 export DENOM=$(echo "$BASE_DENOM" | sed 's/^.//')
 export MONIKER="$ROLLAPP_CHAIN_ID-sequencer"

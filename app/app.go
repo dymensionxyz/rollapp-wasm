@@ -125,7 +125,8 @@ import (
 )
 
 const (
-	Name = "rollapp-wasm"
+	AccountAddressPrefix = "rol"
+	Name                 = "rollapp-wasm"
 )
 
 var (
