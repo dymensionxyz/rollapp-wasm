@@ -1,6 +1,8 @@
 module github.com/dymensionxyz/rollapp-wasm
 
-go 1.22.1
+go 1.22.2
+
+toolchain go1.22.3
 
 require (
 	cosmossdk.io/errors v1.0.1
@@ -9,8 +11,8 @@ require (
 	github.com/bcdevtools/wasm-block-explorer-rpc-cosmos v1.1.1
 	github.com/cosmos/cosmos-sdk v0.46.16
 	github.com/cosmos/ibc-go/v6 v6.3.0
-	github.com/dymensionxyz/dymension-rdk v1.5.0-beta
-	github.com/dymensionxyz/dymint v1.0.1-alpha.0.20240414124654-eb08e30da2c5
+	github.com/dymensionxyz/dymension-rdk v1.6.0
+	github.com/dymensionxyz/dymint v1.1.0-rc02
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/gorilla/mux v1.8.1
 	github.com/pkg/errors v0.9.1
@@ -252,7 +254,6 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.15.0 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
@@ -280,14 +281,14 @@ require (
 	go.uber.org/mock v0.4.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	golang.org/x/crypto v0.19.0 // indirect
+	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/exp v0.0.0-20240213143201-ec583247a57a // indirect
 	golang.org/x/mod v0.15.0 // indirect
-	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/oauth2 v0.16.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
-	golang.org/x/sys v0.17.0 // indirect
-	golang.org/x/term v0.17.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/term v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.18.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
