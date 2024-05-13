@@ -7,7 +7,7 @@ toolchain go1.22.3
 require (
 	cosmossdk.io/errors v1.0.1
 	github.com/CosmWasm/wasmd v0.33.0
-	github.com/bcdevtools/block-explorer-rpc-cosmos v1.1.2
+	github.com/bcdevtools/block-explorer-rpc-cosmos v1.2.3
 	github.com/bcdevtools/wasm-block-explorer-rpc-cosmos v1.1.1
 	github.com/cosmos/cosmos-sdk v0.46.16
 	github.com/cosmos/ibc-go/v6 v6.3.0
