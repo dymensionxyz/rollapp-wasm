@@ -1,3 +1,7 @@
+# Creating Pr with following name convention. Common types include feat (a new feature), fix (a bug fix), docs (documentation changes),
+# style (formatting, missing semi colons, etc.), refactor (code refactoring), test (adding missing tests), 
+# chore (changes to the build process or auxiliary tools and libraries such as documentation generation)
+# e.g: feat(ci): Add auto generate changelog workflow
 name: Auto Changelog Update
 
 on:

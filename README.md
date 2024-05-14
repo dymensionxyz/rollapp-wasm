@@ -24,7 +24,8 @@ It uses Cosmos-SDK's [simapp](https://github.com/cosmos/cosmos-sdk/tree/main/sim
 Build and install the ```rollapp-wasm``` binary:
 
 ```shell
-make install
+export BECH32_PREFIX=rol
+make install BECH32_PREFIX=$BECH32_PREFIX
 ```
 
 ### Initial configuration
@@ -33,9 +34,9 @@ export the following variables:
 
 ```shell
 export EXECUTABLE="rollapp-wasm"
+export BECH32_PREFIX="rol"
 export ROLLAPP_CHAIN_ID="rollappwasm_1234-1"
 export KEY_NAME_ROLLAPP="rol-user"
-export BECH32="rol"
 export BASE_DENOM="awsm"
 export DENOM=$(echo "$BASE_DENOM" | sed 's/^.//')
 export MONIKER="$ROLLAPP_CHAIN_ID-sequencer"
