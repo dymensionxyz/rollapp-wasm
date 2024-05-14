@@ -18,6 +18,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	etherminthd "github.com/evmos/ethermint/crypto/hd"
 )
 
 const (
@@ -39,7 +40,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 `,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx := client.GetClientContextFromCmd(cmd).WithKeyringOptions(etherminthd.EthSecp256k1Option())
 			cdc := clientCtx.Codec
 
 			serverCtx := server.GetServerContextFromCmd(cmd)
