@@ -18,7 +18,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	etherminthd "github.com/evmos/ethermint/crypto/hd"
+	etherminthd "github.com/evmos/evmos/v12/crypto/hd"
 )
 
 const (

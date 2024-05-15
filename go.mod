@@ -14,7 +14,7 @@ require (
 	github.com/dymensionxyz/dymension-rdk v1.6.0
 	github.com/dymensionxyz/dymint v1.1.0-rc02
 	github.com/ethereum/go-ethereum v1.12.0
-	github.com/evmos/ethermint v0.22.0
+	github.com/evmos/evmos/v12 v12.1.6
 	github.com/gorilla/mux v1.8.1
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.18.0
@@ -106,7 +106,6 @@ require (
 	github.com/dymensionxyz/cosmosclient v0.4.2-beta // indirect
 	github.com/dymensionxyz/dymension/v3 v3.1.0-rc03.0.20240411195658-f7cd96f53b56 // indirect
 	github.com/elastic/gosigar v0.14.2 // indirect
-	github.com/evmos/evmos/v12 v12.1.6 // indirect
 	github.com/felixge/httpsnoop v1.0.2 // indirect
 	github.com/filecoin-project/go-jsonrpc v0.3.1 // indirect
 	github.com/flynn/noise v1.1.0 // indirect

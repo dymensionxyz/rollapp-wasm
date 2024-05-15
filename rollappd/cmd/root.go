@@ -32,7 +32,7 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	etherminthd "github.com/evmos/ethermint/crypto/hd"
+	etherminthd "github.com/evmos/evmos/v12/crypto/hd"
 
 	berpcconfig "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/config"
 	rdkserver "github.com/dymensionxyz/dymension-rdk/server"
