@@ -15,7 +15,7 @@ INIT_CW20=$(cat <<EOF
 {
   "name": "My first token",
   "symbol": "test",
-  "decimals": 6,
+  "decimals": 18,
   "initial_balances": [{
     "address": "$ROLLAPP_GENESIS_ADDR",
     "amount": "100000000000"
