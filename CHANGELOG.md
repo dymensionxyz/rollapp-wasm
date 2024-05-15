@@ -22,3 +22,4 @@
 * **be:** bumps `block-explorer-rpc-cosmos v1.0.3` & `wasm-block-explorer-rpc-cosmos v1.0.3` ([#45](https://github.com/dymensionxyz/rollapp-wasm/issues/45)) ([349bb7c](https://github.com/dymensionxyz/rollapp-wasm/commit/349bb7cf51b954aba087f951bdce02f914d32d6c))
 * **be:** bumps `block-explorer-rpc-cosmos v1.1.2` & `wasm-block-explorer-rpc-cosmos v1.1.2` ([#55](https://github.com/dymensionxyz/rollapp-wasm/issues/55)) ([15c563b](https://github.com/dymensionxyz/rollapp-wasm/commit/15c563b10b8e2e5be4d85acfa4362ddd711bf377))
 * **be:** bumps `block-explorer-rpc-cosmos v1.2.3` ([#76](https://github.com/dymensionxyz/rollapp-wasm/issues/76))
+
