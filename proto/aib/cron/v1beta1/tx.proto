@@ -1,0 +1,32 @@
+syntax = "proto3";
+package aib.cron.v1beta1;
+import "gogoproto/gogo.proto";
+
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+import "aib/cron/v1beta1/params.proto";
+
+
+option go_package = "github.com/dymensionxyz/rollapp-wasm/x/cron/types";
+
+// Msg defines the Msg service.
+service Msg {
+    rpc RegisterContract(MsgRegisterContract) returns(MsgRegisterContractResponse);
+    rpc DeRegisterContract(MsgDeRegisterContract) returns(MsgDeRegisterContractResponse);
+}
+
+message MsgRegisterContract {
+    string security_address = 1;
+    string game_name = 2;
+    string contract_address = 3;
+    uint64 game_type = 4; // 1 -> single, 2 -> multi, 3 -> both
+  }
+  
+message MsgRegisterContractResponse {}
+
+message MsgDeRegisterContract {
+  string security_address = 1;
+  uint64 game_id = 2;
+}
+
+message MsgDeRegisterContractResponse {}

@@ -126,6 +126,15 @@ import (
 
 	distr "github.com/dymensionxyz/dymension-rdk/x/dist"
 	distrkeeper "github.com/dymensionxyz/dymension-rdk/x/dist/keeper"
+
+	"github.com/dymensionxyz/rollapp-wasm/x/cron"
+	cronkeeper "github.com/dymensionxyz/rollapp-wasm/x/cron/keeper"
+	crontypes "github.com/dymensionxyz/rollapp-wasm/x/cron/types"
+
+	"github.com/dymensionxyz/rollapp-wasm/x/gasless"
+	gaslessclient "github.com/dymensionxyz/rollapp-wasm/x/gasless/client"
+	gaslesskeeper "github.com/dymensionxyz/rollapp-wasm/x/gasless/keeper"
+	gaslesstypes "github.com/dymensionxyz/rollapp-wasm/x/gasless/types"
 )
 
 const (
@@ -145,6 +154,8 @@ var (
 		ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		wasmtypes.StoreKey,
 		denommetadatamoduletypes.StoreKey,
+		crontypes.StoreKey,
+		gaslesstypes.StoreKey,
 	}
 )
 
@@ -158,6 +169,7 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 		ibcclientclient.UpdateClientProposalHandler,
 		ibcclientclient.UpgradeProposalHandler,
 	)
+	govProposalHandlers = append(govProposalHandlers, gaslessclient.GaslessProposalHandler...)
 
 	return govProposalHandlers
 }
@@ -190,6 +202,8 @@ var (
 		hubgenesis.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 		denommetadata.AppModuleBasic{},
+		cron.AppModuleBasic{},
+		gasless.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -205,6 +219,8 @@ var (
 		wasmtypes.ModuleName:                {authtypes.Burner},
 		hubgentypes.ModuleName:              {authtypes.Burner},
 		denommetadatamoduletypes.ModuleName: nil,
+		crontypes.ModuleName:                nil,
+		gaslesstypes.ModuleName:             nil,
 	}
 )
 
@@ -257,6 +273,8 @@ type App struct {
 	TransferKeeper   ibctransferkeeper.Keeper
 	WasmKeeper       wasmkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
+	CronKeeper       cronkeeper.Keeper
+	GaslessKeeper    gaslesskeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -433,7 +451,8 @@ func NewRollapp(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
-		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
+		AddRoute(gaslesstypes.RouterKey, gasless.NewGaslessProposalHandler(app.GaslessKeeper))
 
 	govConfig := govtypes.DefaultConfig()
 	/*
@@ -483,6 +502,24 @@ func NewRollapp(
 		app.IBCKeeper.ChannelKeeper,
 		app.BankKeeper,
 		app.AccountKeeper,
+	)
+
+	app.CronKeeper = cronkeeper.NewKeeper(
+		appCodec,
+		app.keys[crontypes.StoreKey],
+		app.keys[crontypes.MemStoreKey],
+		app.GetSubspace(crontypes.ModuleName),
+		&app.WasmKeeper,
+	)
+
+	app.GaslessKeeper = gaslesskeeper.NewKeeper(
+		appCodec,
+		app.keys[gaslesstypes.StoreKey],
+		app.GetSubspace(gaslesstypes.ModuleName),
+		app.interfaceRegistry,
+		app.AccountKeeper,
+		app.BankKeeper,
+		&app.WasmKeeper,
 	)
 
 	wasmDir := filepath.Join(homePath, "wasm")
@@ -556,6 +593,8 @@ func NewRollapp(
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		hubgenesis.NewAppModule(appCodec, app.HubGenesisKeeper, app.AccountKeeper),
 		denommetadata.NewAppModule(app.DenomMetadataKeeper, app.BankKeeper),
+		cron.NewAppModule(appCodec, app.CronKeeper, app.AccountKeeper, app.BankKeeper, app.WasmKeeper),
+		gasless.NewAppModule(appCodec, app.GaslessKeeper, app.AccountKeeper, app.BankKeeper),
 	}
 
 	app.mm = module.NewManager(modules...)
@@ -586,6 +625,8 @@ func NewRollapp(
 		hubgentypes.ModuleName,
 		denommetadatamoduletypes.ModuleName,
 		wasm.ModuleName,
+		crontypes.ModuleName,
+		gaslesstypes.ModuleName,
 	}
 	app.mm.SetOrderBeginBlockers(beginBlockersList...)
 
@@ -610,6 +651,8 @@ func NewRollapp(
 		hubgentypes.ModuleName,
 		denommetadatamoduletypes.ModuleName,
 		wasm.ModuleName,
+		crontypes.ModuleName,
+		gaslesstypes.ModuleName,
 	}
 	app.mm.SetOrderEndBlockers(endBlockersList...)
 
@@ -640,6 +683,8 @@ func NewRollapp(
 		hubgentypes.ModuleName,
 		denommetadatamoduletypes.ModuleName,
 		wasm.ModuleName,
+		crontypes.ModuleName,
+		gaslesstypes.ModuleName,
 	}
 	app.mm.SetOrderInitGenesis(initGenesisList...)
 
@@ -729,6 +774,8 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.Wa
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
 			IBCKeeper:         app.IBCKeeper,
+			GaslessKeeper:     app.GaslessKeeper,
+			BankKeeper:        app.BankKeeper,
 			WasmConfig:        &wasmConfig,
 			TxCounterStoreKey: app.keys[wasmtypes.StoreKey],
 		},
@@ -972,5 +1019,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(denommetadatamoduletypes.ModuleName)
 
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
+	paramsKeeper.Subspace(crontypes.ModuleName)
+	paramsKeeper.Subspace(gaslesstypes.ModuleName)
 	return paramsKeeper
 }
