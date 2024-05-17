@@ -32,6 +32,12 @@ set_denom() {
 
 }
 
+set_consensus_params() {
+  BLOCK_SIZE="500000"
+  jq --arg block_size "$BLOCK_SIZE" '.consensus_params["block"]["max_bytes"] = $block_size' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq --arg block_size "$BLOCK_SIZE" '.consensus_params["evidence"]["max_bytes"] = $block_size' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
+}
+
 # ---------------------------- initial parameters ---------------------------- #
 # Assuming 1,000,000 tokens
 #half is staked
@@ -78,7 +84,7 @@ $EXECUTABLE config chain-id "$ROLLAPP_CHAIN_ID"
 # -------------------------------- app config -------------------------------- #
 sed -i'' -e "s/^minimum-gas-prices *= .*/minimum-gas-prices = \"0$BASE_DENOM\"/" "$APP_CONFIG_FILE"
 set_denom "$BASE_DENOM"
-
+set_consensus_params
 # --------------------- adding keys and genesis accounts --------------------- #
 #local genesis account
 $EXECUTABLE keys add "$KEY_NAME_ROLLAPP" --keyring-backend test
