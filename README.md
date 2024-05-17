@@ -287,3 +287,15 @@ Start the rollapp:
 ```shell
 rollapp-wasm start
 ```
+
+## Developer
+
+For support, join our [Discord](http://discord.gg/dymension) community and find us in the Developer section.
+
+### Setup push hooks
+
+To setup push hooks, run the following command:
+
+```sh
+./scripts/setup_push_hooks.sh
+```
