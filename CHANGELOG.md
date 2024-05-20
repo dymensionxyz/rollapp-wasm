@@ -1,4 +1,4 @@
-#  (2024-05-19)
+#  (2024-05-20)
 
 
 ### Bug Fixes
@@ -15,6 +15,7 @@
 * Add wasm module for rollapp-wasm ([#10](https://github.com/dymensionxyz/rollapp-wasm/issues/10)) ([9829d4a](https://github.com/dymensionxyz/rollapp-wasm/commit/9829d4a10b9f7928c98151b7295b20f0d54a8ad0))
 * **app:** Add modules authz and feegrant ([#60](https://github.com/dymensionxyz/rollapp-wasm/issues/60)) ([a4451ea](https://github.com/dymensionxyz/rollapp-wasm/commit/a4451eaebd11eb49c89a40c239f6dd8593f201d1))
 * **be:** integrate block explorer Json-RPC server ([#41](https://github.com/dymensionxyz/rollapp-wasm/issues/41)) ([51fd3e3](https://github.com/dymensionxyz/rollapp-wasm/commit/51fd3e36a0404d68325c64f79f65a15afc3be82a))
+* **ci:** add auto update changelog workflow ([5bc7247](https://github.com/dymensionxyz/rollapp-wasm/commit/5bc7247f4ecd073f9410024a7ce0944c126b1aaa))
 * **ci:** Add auto update changelog workflow ([#61](https://github.com/dymensionxyz/rollapp-wasm/issues/61)) ([ed9c6da](https://github.com/dymensionxyz/rollapp-wasm/commit/ed9c6da98f33a9842ae83007b46bc074f67d2152))
 * **ci:** Add setup script and push hook ([#86](https://github.com/dymensionxyz/rollapp-wasm/issues/86)) ([d4dc3e4](https://github.com/dymensionxyz/rollapp-wasm/commit/d4dc3e4d73a72ab0e99cefc79c82eb0dcd79b187))
 * set bech32 prefix without changing source code ([#68](https://github.com/dymensionxyz/rollapp-wasm/issues/68)) ([82c81a2](https://github.com/dymensionxyz/rollapp-wasm/commit/82c81a2e521669e2f0f48f34c9c8d56ed46d4196))
