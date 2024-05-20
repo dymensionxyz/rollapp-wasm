@@ -2,10 +2,40 @@
 tmp=$(mktemp)
 
 set_denom() {
-  denom=$1
-  jq --arg denom $denom '.app_state.mint.params.mint_denom = $denom' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
-  jq --arg denom $denom '.app_state.staking.params.bond_denom = $denom' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
-  jq --arg denom $denom '.app_state.gov.deposit_params.min_deposit[0].denom = $denom' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
+  base_denom=$1
+  denom=$(echo "$base_denom" | sed 's/^.//')
+  jq --arg base_denom $base_denom '.app_state.mint.params.mint_denom = $base_denom' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq --arg base_denom $base_denom '.app_state.staking.params.bond_denom = $base_denom' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq --arg base_denom $base_denom '.app_state.gov.deposit_params.min_deposit[0].denom = $base_denom' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
+
+  jq --arg base_denom $base_denom --arg denom $denom '.app_state.bank.denom_metadata = [
+        {
+            "base": $base_denom,
+            "denom_units": [
+                {
+                    "aliases": [],
+                    "denom": $base_denom,
+                    "exponent": 0
+                },
+                {
+                    "aliases": [],
+                    "denom": $denom,
+                    "exponent": 18
+                }
+            ],
+            "description": "Denom metadata for Rollapp Wasm",
+            "display": $denom,
+            "name": $denom,
+            "symbol": "WASM"
+        }
+    ]' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+
+}
+
+set_consensus_params() {
+  BLOCK_SIZE="500000"
+  jq --arg block_size "$BLOCK_SIZE" '.consensus_params["block"]["max_bytes"] = $block_size' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq --arg block_size "$BLOCK_SIZE" '.consensus_params["evidence"]["max_bytes"] = $block_size' "$GENESIS_FILE" >"$tmp" && mv "$tmp" "$GENESIS_FILE"
 }
 
 # ---------------------------- initial parameters ---------------------------- #
@@ -54,7 +84,7 @@ $EXECUTABLE config chain-id "$ROLLAPP_CHAIN_ID"
 # -------------------------------- app config -------------------------------- #
 sed -i'' -e "s/^minimum-gas-prices *= .*/minimum-gas-prices = \"0$BASE_DENOM\"/" "$APP_CONFIG_FILE"
 set_denom "$BASE_DENOM"
-
+set_consensus_params
 # --------------------- adding keys and genesis accounts --------------------- #
 #local genesis account
 $EXECUTABLE keys add "$KEY_NAME_ROLLAPP" --keyring-backend test

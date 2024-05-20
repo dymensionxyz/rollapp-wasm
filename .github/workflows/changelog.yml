@@ -1,61 +1,77 @@
-# Creating Pr with following name convention. Common types include feat (a new feature), fix (a bug fix), docs (documentation changes),
-# style (formatting, missing semi colons, etc.), refactor (code refactoring), test (adding missing tests), 
-# chore (changes to the build process or auxiliary tools and libraries such as documentation generation)
-# e.g: feat(ci): Add auto generate changelog workflow
-name: Changelog Update
+name: Auto Changelog Update
 
 on:
-  pull_request:
+  push:
     branches:
       - main
-    types: [closed]
-
-permissions: write-all
 
 jobs:
   update_changelog:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
     steps:
-      - name: Checkout code
+      - name: Checkout the repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 1
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
-
-      - name: Install conventional-changelog-cli
-        run: npm install -g conventional-changelog-cli
+          node-version: '18'
 
       - name: Configure Git
         run: |
-          git config user.name 'github-actions'
-          git config user.email 'github-actions@github.com'
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
 
-      - name: Simulate commit for PR title
+      - name: Check if "auto-changelog-update-do-not-create-manually" branch exists
+        id: check_branch
         run: |
-          echo "${{ github.event.pull_request.title }}" > temp_message.txt
-          git commit --allow-empty -F temp_message.txt
+          if [ -n "$(git ls-remote --heads origin auto-changelog-update-do-not-create-manually)" ]; then
+            git fetch origin auto-changelog-update-do-not-create-manually
+            echo "branch_exists=true" >> $GITHUB_ENV
+          else
+            echo "branch_exists=false" >> $GITHUB_ENV
+          fi
 
-      - name: Generate changelog
+      - name: Generate Changelog Update and update if branch exists
         run: |
-          conventional-changelog -p angular -i CHANGELOG.md -s -r 0
+          npm install -g conventional-changelog-cli
+          if [ "$branch_exists" == "true" ]; then
+            git checkout auto-changelog-update-do-not-create-manually
+            git merge main --strategy-option theirs --allow-unrelated-histories --no-edit
+            conventional-changelog -p angular -i CHANGELOG.md -s
+            git add CHANGELOG.md
+            git commit -m "Update CHANGELOG.md [skip ci]"
+            git push origin auto-changelog-update-do-not-create-manually
+            exit 0
+          else
+            git checkout main
+            git checkout -b auto-changelog-update-do-not-create-manually
+            git push origin auto-changelog-update-do-not-create-manually
+            conventional-changelog -p angular -i CHANGELOG.md -s
+          fi
 
-      - name: Show git status and changelog contents
+      - name: Create Pull Request
+        if: env.branch_exists == 'false'
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update CHANGELOG.md [skip ci]"
+          title: "Chore(changelog): Automated Changelog Update [skip ci]"
+          body: "Update the CHANGELOG.md with recent pushes to branch main."
+          base: "main"
+          branch: "auto-changelog-update-do-not-create-manually"
+          delete-branch: true
+
+      - name: Check outputs
+        if: env.branch_exists == 'false'
         run: |
-          git status
-          echo "Changelog contents:"
-          cat CHANGELOG.md
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
 
-      - name: Revert temporary commit
-        run: git reset HEAD~
-
-      - name: Commit and push changelog update
+      - name: Log if PR updated
+        if: steps.cpr.outputs.pull-request-operation == 'updated'
         run: |
-          git add CHANGELOG.md
-          git diff --staged --quiet || git commit -m "Update CHANGELOG.md based on PR #${{ github.event.pull_request.number }} title"
-          git push origin HEAD:refs/heads/main
+          echo "Changelog PR updated due to new commit to main."

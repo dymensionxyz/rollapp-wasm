@@ -211,7 +211,7 @@ sudo systemctl daemon-reload
 ### Install dymension relayer
 
 ```shell
-git clone https://github.com/dymensionxyz/go-relayer.git --branch v0.2.0-v2.3.1-relayer
+git clone https://github.com/dymensionxyz/go-relayer.git --branch v0.3.2-v2.5.2-relayer
 cd go-relayer && make install
 ```
 
@@ -286,4 +286,16 @@ Start the rollapp:
 
 ```shell
 rollapp-wasm start
+```
+
+## Developer
+
+For support, join our [Discord](http://discord.gg/dymension) community and find us in the Developer section.
+
+### Setup push hooks
+
+To setup push hooks, run the following command:
+
+```sh
+./scripts/setup_push_hooks.sh
 ```
