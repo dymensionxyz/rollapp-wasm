@@ -211,7 +211,7 @@ sudo systemctl daemon-reload
 ### Install dymension relayer
 
 ```shell
-git clone https://github.com/dymensionxyz/go-relayer.git --branch v0.3.2-v2.5.2-relayer
+git clone https://github.com/dymensionxyz/go-relayer.git --branch v0.3.3-v2.5.2-relayer
 cd go-relayer && make install
 ```
 
