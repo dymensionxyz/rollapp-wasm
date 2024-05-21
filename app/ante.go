@@ -12,8 +12,9 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/dymensionxyz/rollapp-wasm/x/gasless"
-	gaslesskeeper "github.com/dymensionxyz/rollapp-wasm/x/gasless/keeper"
+	// TODO: revisit
+	// "github.com/dymensionxyz/rollapp-wasm/x/gasless"
+	// gaslesskeeper "github.com/dymensionxyz/rollapp-wasm/x/gasless/keeper"
 )
 
 // HandlerOptions are the options required for constructing a default SDK AnteHandler.
@@ -21,8 +22,9 @@ type HandlerOptions struct {
 	ante.HandlerOptions
 
 	IBCKeeper         *ibckeeper.Keeper
-	GaslessKeeper     gaslesskeeper.Keeper
-	BankKeeper        gasless.BankKeeper
+	// TODO: revisit
+	// GaslessKeeper     gaslesskeeper.Keeper
+	// BankKeeper        gasless.BankKeeper
 	WasmConfig        *wasmtypes.WasmConfig
 	TxCounterStoreKey storetypes.StoreKey
 }
@@ -44,7 +46,8 @@ func GetAnteDecorators(options HandlerOptions) []sdk.AnteDecorator {
 
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		gasless.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker, options.GaslessKeeper),
+		// TODO: revisit
+		// gasless.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker, options.GaslessKeeper),
 		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
