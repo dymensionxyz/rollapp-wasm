@@ -12,9 +12,4 @@ message Params {
     (gogoproto.jsontag) = "security_address,omitempty",
     (gogoproto.moretags) = "yaml:\"security_address\""
   ];
-
-  uint64 contract_gas_limit = 2 [
-    (gogoproto.jsontag) = "contract_gas_limit,omitempty",
-    (gogoproto.moretags) = "yaml:\"contract_gas_limit\""
-  ];
 }

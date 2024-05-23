@@ -130,7 +130,6 @@ import (
 	"github.com/dymensionxyz/rollapp-wasm/x/cron"
 	cronkeeper "github.com/dymensionxyz/rollapp-wasm/x/cron/keeper"
 	crontypes "github.com/dymensionxyz/rollapp-wasm/x/cron/types"
-
 	// TODO: revisit
 	// "github.com/dymensionxyz/rollapp-wasm/x/gasless"
 	// gaslessclient "github.com/dymensionxyz/rollapp-wasm/x/gasless/client"
@@ -601,7 +600,7 @@ func NewRollapp(
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		hubgenesis.NewAppModule(appCodec, app.HubGenesisKeeper, app.AccountKeeper),
 		denommetadata.NewAppModule(app.DenomMetadataKeeper, app.BankKeeper),
-		cron.NewAppModule(appCodec, app.CronKeeper, app.AccountKeeper, app.BankKeeper, app.WasmKeeper),
+		cron.NewAppModule(appCodec, app.CronKeeper, app.WasmKeeper),
 		// TODO: revisit
 		// gasless.NewAppModule(appCodec, app.GaslessKeeper, app.AccountKeeper, app.BankKeeper),
 	}
@@ -785,7 +784,7 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.Wa
 				SignModeHandler: txConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			IBCKeeper:         app.IBCKeeper,
+			IBCKeeper: app.IBCKeeper,
 			// TODO: revisit
 			// GaslessKeeper:     app.GaslessKeeper,
 			// BankKeeper:        app.BankKeeper,

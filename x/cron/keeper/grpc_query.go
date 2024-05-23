@@ -3,10 +3,10 @@ package keeper
 import (
 	"context"
 
-	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
+	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -57,4 +57,11 @@ func (q QueryServer) QueryWhitelistedContracts(c context.Context, req *types.Que
 		WhilistedContracts: items,
 		Pagination:         pagination,
 	}, nil
+}
+
+func (q QueryServer) Params(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	params := q.Keeper.GetParams(ctx)
+
+	return &types.QueryParamsResponse{Params: params}, nil
 }
