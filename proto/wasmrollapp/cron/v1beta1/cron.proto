@@ -1,5 +1,5 @@
 syntax = "proto3";
-package aib.cron.v1beta1;
+package wasmrollapp.cron.v1beta1;
 
 import "gogoproto/gogo.proto";
 

@@ -47,7 +47,7 @@ func (s *KeeperTestSuite) TestSetContract() {
 			} else {
 
 				s.Require().NoError(err)
-				res, found := cronKeeper.GetContract(*ctx, tc.msg.GameId)
+				res, found := cronKeeper.GetWhitelistedContract(*ctx, tc.msg.GameId)
 				s.Require().True(found)
 				s.Require().Equal(res.GameId, tc.msg.GameId)
 				s.Require().Equal(res.SecurityAddress, tc.msg.SecurityAddress)

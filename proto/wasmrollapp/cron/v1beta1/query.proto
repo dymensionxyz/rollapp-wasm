@@ -1,11 +1,11 @@
 syntax = "proto3";
-package aib.cron.v1beta1;
+package wasmrollapp.cron.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "aib/cron/v1beta1/params.proto";
-import "aib/cron/v1beta1/cron.proto";
+import "wasmrollapp/cron/v1beta1/params.proto";
+import "wasmrollapp/cron/v1beta1/cron.proto";
 
 option go_package = "github.com/dymensionxyz/rollapp-wasm/x/cron/types";
 
@@ -13,10 +13,10 @@ option go_package = "github.com/dymensionxyz/rollapp-wasm/x/cron/types";
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/aib/cron/v1beta1/params";
+    option (google.api.http).get = "/wasmrollapp/cron/v1beta1/params";
   }
   rpc QueryWhitelistedContracts(QueryWhitelistedContractsRequest) returns (QueryWhitelistedContractsResponse) {
-    option (google.api.http).get = "/aib/cron/v1beta1/whitelisted_contracts";
+    option (google.api.http).get = "/wasmrollapp/cron/v1beta1/whitelisted_contracts";
   }
 }
 

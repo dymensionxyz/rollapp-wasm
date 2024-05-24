@@ -12,13 +12,13 @@ Developers can register their contracts if the address is whitelisted in the mod
 ### Registering a contract
 
 ```console
-foo@bar:~$ aibd tx cron register-contract [game name] [contract address] [game type]
+foo@bar:~$ wasmrollappd tx cron register-contract [game name] [contract address] [game type]
 ```
 
 e.g
 
 ```console
-foo@bar:~$ aibd tx cron register-contract coin-flip rol14hj2tavq8f.... 1 100000000aaib --from cooluser --chain-id test-1
+foo@bar:~$ wasmrollappd tx cron register-contract coin-flip rol14hj2tavq8f.... 1 100000000awasm --from cooluser --chain-id test-1
 ```
 
 In the above tx -
@@ -32,13 +32,13 @@ In the above tx -
 ### De-Registering a contract
 
 ```console
-foo@bar:~$ aibd tx cron de-register-contract [game id]
+foo@bar:~$ wasmrollappd tx cron de-register-contract [game id]
 ```
 
 e.g
 
 ```console
-foo@bar:~$ aibd tx cron de-register-contract 2 100000000aaib --from cooluser --chain-id test-1
+foo@bar:~$ wasmrollappd tx cron de-register-contract 2 100000000awasm --from cooluser --chain-id test-1
 ```
 
 In the above tx -

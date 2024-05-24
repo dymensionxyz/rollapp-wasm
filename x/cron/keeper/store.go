@@ -48,7 +48,7 @@ func (k Keeper) SetContract(ctx sdk.Context, msg types.WhitelistedContract) erro
 	return nil
 }
 
-func (k Keeper) GetContract(ctx sdk.Context, gameID uint64) (contract types.WhitelistedContract, found bool) {
+func (k Keeper) GetWhitelistedContract(ctx sdk.Context, gameID uint64) (contract types.WhitelistedContract, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ContractKey(gameID)
@@ -72,7 +72,7 @@ func (k Keeper) DeleteContract(ctx sdk.Context, gameID uint64) {
 	store.Delete(key)
 }
 
-func (k Keeper) GetAllContract(ctx sdk.Context) (contracts []types.WhitelistedContract) {
+func (k Keeper) GetWhitelistedContracts(ctx sdk.Context) (contracts []types.WhitelistedContract) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.SetContractKeyPrefix)

@@ -31,6 +31,6 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 
 	return &types.GenesisState{
 		Params:               k.GetParams(ctx),
-		WhitelistedContracts: k.GetAllContract(ctx),
+		WhitelistedContracts: k.GetWhitelistedContracts(ctx),
 	}
 }

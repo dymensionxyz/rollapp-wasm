@@ -13,8 +13,8 @@ import (
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	// this line is used by starport scaffolding # 2
-	cdc.RegisterConcrete(&MsgRegisterContract{}, "aib/cron/MsgRegisterContract", nil)
-	cdc.RegisterConcrete(&MsgDeRegisterContract{}, "aib/cron/MsgDeRegisterContract", nil)
+	cdc.RegisterConcrete(&MsgRegisterContract{}, "wasmrollapp/cron/MsgRegisterContract", nil)
+	cdc.RegisterConcrete(&MsgDeRegisterContract{}, "wasmrollapp/cron/MsgDeRegisterContract", nil)
 
 }
 

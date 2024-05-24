@@ -1,9 +1,9 @@
 syntax = "proto3";
-package aib.cron.v1beta1;
+package wasmrollapp.cron.v1beta1;
 
 import "gogoproto/gogo.proto";
-import "aib/cron/v1beta1/params.proto";
-import "aib/cron/v1beta1/cron.proto";
+import "wasmrollapp/cron/v1beta1/params.proto";
+import "wasmrollapp/cron/v1beta1/cron.proto";
 
 option go_package = "github.com/dymensionxyz/rollapp-wasm/x/cron/types";
 
