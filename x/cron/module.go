@@ -13,15 +13,15 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/dymensionxyz/rollapp-wasm/x/cron/client/cli"
-	"github.com/dymensionxyz/rollapp-wasm/x/cron/expected"
-	"github.com/dymensionxyz/rollapp-wasm/x/cron/keeper"
-	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/dymensionxyz/rollapp-wasm/x/cron/client/cli"
+	"github.com/dymensionxyz/rollapp-wasm/x/cron/expected"
+	"github.com/dymensionxyz/rollapp-wasm/x/cron/keeper"
+	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 )
 
 var (
@@ -67,7 +67,7 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 	if err := cdc.UnmarshalJSON(bz, &genState); err != nil {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", types.ModuleName, err)
 	}
-	return genState.ValidateGenesis()
+	return genState.Validate()
 }
 
 // RegisterRESTRoutes registers the capability module's REST service handlers.
@@ -98,24 +98,18 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 type AppModule struct {
 	AppModuleBasic
 
-	keeper        keeper.Keeper
-	accountKeeper types.AccountKeeper
-	bankKeeper    types.BankKeeper
-	conOps        expected.ContractOpsKeeper
+	keeper keeper.Keeper
+	conOps expected.ContractOpsKeeper
 }
 
 func NewAppModule(
 	cdc codec.Codec,
 	keeper keeper.Keeper,
-	accountKeeper types.AccountKeeper,
-	bankKeeper types.BankKeeper,
 	conOps expected.ContractOpsKeeper,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
 		keeper:         keeper,
-		accountKeeper:  accountKeeper,
-		bankKeeper:     bankKeeper,
 		conOps:         conOps,
 	}
 }

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"encoding/hex"
+	"golang.org/x/exp/slices"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -68,12 +69,7 @@ func (k Keeper) SudoContractCall(ctx sdk.Context, contractAddress string, p []by
 
 func (k Keeper) CheckSecurityAddress(ctx sdk.Context, from string) bool {
 	params := k.GetParams(ctx)
-	for _, addr := range params.SecurityAddress {
-		if addr == from {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(params.SecurityAddress, from)
 }
 
 func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {

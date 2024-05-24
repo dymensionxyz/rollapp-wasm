@@ -1,5 +1,5 @@
 syntax = "proto3";
-package aib.cron.v1beta1;
+package wasmrollapp.cron.v1beta1;
 
 import "gogoproto/gogo.proto";
 
@@ -11,10 +11,5 @@ message Params {
   repeated string security_address = 1 [    
     (gogoproto.jsontag) = "security_address,omitempty",
     (gogoproto.moretags) = "yaml:\"security_address\""
-  ];
-
-  uint64 contract_gas_limit = 2 [
-    (gogoproto.jsontag) = "contract_gas_limit,omitempty",
-    (gogoproto.moretags) = "yaml:\"contract_gas_limit\""
   ];
 }

@@ -7,9 +7,9 @@ import (
 )
 
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
-	allContracts := k.GetAllContract(ctx)
+	whitelistedContracts := k.GetWhitelistedContracts(ctx)
 
-	for _, data := range allContracts {
+	for _, data := range whitelistedContracts {
 		if data.GameType == 1 {
 			k.SinglePlayer(ctx, data.ContractAddress, cronTypes.ResolveSinglePlayer, data.GameName)
 		} else if data.GameType == 2 {

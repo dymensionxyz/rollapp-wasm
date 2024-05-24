@@ -1,5 +1,7 @@
 package types
 
+import "fmt"
+
 func NewGenesisState(whitelistedContracts []WhitelistedContract, params Params) *GenesisState {
 	return &GenesisState{
 		WhitelistedContracts: whitelistedContracts,
@@ -14,6 +16,16 @@ func DefaultGenesisState() *GenesisState {
 	)
 }
 
-func (m *GenesisState) ValidateGenesis() error {
+func (genState *GenesisState) Validate() error {
+	if err := genState.Params.Validate(); err != nil {
+		return fmt.Errorf("invalid params: %w", err)
+	}
+	// validates all the whitelisted contracts
+	for i, contract := range genState.WhitelistedContracts {
+		if err := contract.Validate(); err != nil {
+			return fmt.Errorf("invalid whitelisted contract %d: %w", i, err)
+		}
+	}
+
 	return nil
 }

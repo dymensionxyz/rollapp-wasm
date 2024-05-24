@@ -9,6 +9,9 @@ import (
 // InitGenesis initializes the capability module's state from a provided genesis
 // state.
 func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) {
+	if err := genState.Validate(); err != nil {
+		panic(err)
+	}
 	var (
 		GameID uint64
 	)
@@ -28,6 +31,6 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 
 	return &types.GenesisState{
 		Params:               k.GetParams(ctx),
-		WhitelistedContracts: k.GetAllContract(ctx),
+		WhitelistedContracts: k.GetWhitelistedContracts(ctx),
 	}
 }

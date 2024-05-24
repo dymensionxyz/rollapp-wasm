@@ -3,23 +3,13 @@ package cli
 import (
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/spf13/cobra"
 
-	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-)
-
-var (
-	DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
-)
-
-const (
-	flagPacketTimeoutTimestamp = "packet-timeout-timestamp"
-	listSeparator              = ","
+	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 )
 
 // GetTxCmd returns the transaction commands for this module

@@ -42,7 +42,7 @@ func (k msgServer) RegisterContract(goCtx context.Context, msg *types.MsgRegiste
 		return &types.MsgRegisterContractResponse{}, sdkerrors.ErrUnauthorized
 	}
 
-	allContracts := k.GetAllContract(ctx)
+	allContracts := k.GetWhitelistedContracts(ctx)
 
 	for _, data := range allContracts {
 		if data.ContractAddress == msg.ContractAddress {
@@ -78,7 +78,7 @@ func (k msgServer) DeRegisterContract(goCtx context.Context, msg *types.MsgDeReg
 	}
 
 	// Get Game info from Game Id
-	gameInfo, found := k.GetContract(ctx, msg.GameId)
+	gameInfo, found := k.GetWhitelistedContract(ctx, msg.GameId)
 	if !found {
 		return &types.MsgDeRegisterContractResponse{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no contract found for this game ID")
 	}

@@ -13,8 +13,8 @@ import (
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	// this line is used by starport scaffolding # 2
-	cdc.RegisterConcrete(&MsgRegisterContract{}, "aib/cron/MsgRegisterContract", nil)
-	cdc.RegisterConcrete(&MsgDeRegisterContract{}, "aib/cron/MsgDeRegisterContract", nil)
+	cdc.RegisterConcrete(&MsgRegisterContract{}, "wasmrollapp/cron/MsgRegisterContract", nil)
+	cdc.RegisterConcrete(&MsgDeRegisterContract{}, "wasmrollapp/cron/MsgDeRegisterContract", nil)
 
 }
 
@@ -30,14 +30,13 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 }
 
 var (
-	Amino     = codec.NewLegacyAmino()
-	ModuleCdc = codec.NewAminoCodec(Amino)
-	// ModuleCdc = codec.NewProtoCodec(cdctypes.NewInterfaceRegistry())
+	amino     = codec.NewLegacyAmino()
+	moduleCdc = codec.NewAminoCodec(amino)
 )
 
 func init() {
-	RegisterLegacyAminoCodec(Amino)
-	cryptocodec.RegisterCrypto(Amino)
+	RegisterLegacyAminoCodec(amino)
+	cryptocodec.RegisterCrypto(amino)
 	RegisterLegacyAminoCodec(authzcodec.Amino)
-	Amino.Seal()
+	amino.Seal()
 }
