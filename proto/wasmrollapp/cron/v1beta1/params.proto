@@ -12,4 +12,6 @@ message Params {
     (gogoproto.jsontag) = "security_address,omitempty",
     (gogoproto.moretags) = "yaml:\"security_address\""
   ];
+  // set module enabled or not
+  bool enable_cron = 2;
 }

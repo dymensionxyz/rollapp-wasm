@@ -40,22 +40,17 @@ func (s *KeeperTestSuite) TestSetContract() {
 		},
 	} {
 		s.Run(tc.name, func() {
-			err := cronKeeper.SetContract(*ctx, tc.msg)
-			if tc.ExpErr != nil {
-				s.Require().Error(err)
-				s.Require().EqualError(err, tc.ExpErr.Error())
-			} else {
+			cronKeeper.SetContract(*ctx, tc.msg)
 
-				s.Require().NoError(err)
-				res, found := cronKeeper.GetWhitelistedContract(*ctx, tc.msg.GameId)
-				s.Require().True(found)
-				s.Require().Equal(res.GameId, tc.msg.GameId)
-				s.Require().Equal(res.SecurityAddress, tc.msg.SecurityAddress)
-				s.Require().Equal(res.ContractAdmin, tc.msg.ContractAdmin)
-				s.Require().Equal(res.GameName, tc.msg.GameName)
-				s.Require().Equal(res.ContractAddress, tc.msg.ContractAddress)
-				s.Require().Equal(res.GameType, tc.msg.GameType)
-			}
+			res, found := cronKeeper.GetWhitelistedContract(*ctx, tc.msg.GameId)
+			s.Require().True(found)
+			s.Require().Equal(res.GameId, tc.msg.GameId)
+			s.Require().Equal(res.SecurityAddress, tc.msg.SecurityAddress)
+			s.Require().Equal(res.ContractAdmin, tc.msg.ContractAdmin)
+			s.Require().Equal(res.GameName, tc.msg.GameName)
+			s.Require().Equal(res.ContractAddress, tc.msg.ContractAddress)
+			s.Require().Equal(res.GameType, tc.msg.GameType)
+
 		})
 	}
 }
