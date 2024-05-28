@@ -15,7 +15,7 @@ func TestGetParams(t *testing.T) {
 	ctx := appd.BaseApp.NewContext(false, tmproto.Header{})
 
 	DefaultSecurityAddress := []string{"cosmos1xkxed7rdzvmyvgdshpe445ddqwn47fru24fnlp"}
-	params := cronTypes.Params{SecurityAddress: DefaultSecurityAddress}
+	params := cronTypes.Params{SecurityAddress: DefaultSecurityAddress, EnableCron: true}
 
 	appd.CronKeeper.SetParams(ctx, params)
 

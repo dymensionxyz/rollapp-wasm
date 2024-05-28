@@ -23,6 +23,11 @@ var _ types.MsgServer = msgServer{}
 
 func (k msgServer) RegisterContract(goCtx context.Context, msg *types.MsgRegisterContract) (*types.MsgRegisterContractResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	// check if the cron is globally enabled
+	params := k.GetParams(ctx)
+	if !params.EnableCron {
+		return &types.MsgRegisterContractResponse{}, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "Cron is disabled")
+	}
 
 	if err := msg.ValidateBasic(); err != nil {
 		ctx.Logger().Error(fmt.Sprintf("request invalid: %s", err))
@@ -59,11 +64,7 @@ func (k msgServer) RegisterContract(goCtx context.Context, msg *types.MsgRegiste
 		GameType:        msg.GameType,
 	}
 
-	err = k.SetContract(ctx, contract)
-	if err != nil {
-		ctx.Logger().Error("failed to set new contract")
-		return &types.MsgRegisterContractResponse{}, err
-	}
+	k.SetContract(ctx, contract)
 	k.SetGameID(ctx, gameID+1)
 
 	return &types.MsgRegisterContractResponse{}, nil
@@ -71,6 +72,10 @@ func (k msgServer) RegisterContract(goCtx context.Context, msg *types.MsgRegiste
 
 func (k msgServer) DeRegisterContract(goCtx context.Context, msg *types.MsgDeRegisterContract) (*types.MsgDeRegisterContractResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	params := k.GetParams(ctx)
+	if !params.EnableCron {
+		return &types.MsgDeRegisterContractResponse{}, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "Cron is disabled")
+	}
 
 	if err := msg.ValidateBasic(); err != nil {
 		ctx.Logger().Error(fmt.Sprintf("request invalid: %s", err))

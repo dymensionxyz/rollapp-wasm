@@ -1,9 +1,9 @@
 package keeper
 
 import (
-	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
+	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 )
 
 func (k Keeper) SetGameID(ctx sdk.Context, id uint64) {
@@ -37,7 +37,7 @@ func (k Keeper) GetGameID(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
-func (k Keeper) SetContract(ctx sdk.Context, msg types.WhitelistedContract) error {
+func (k Keeper) SetContract(ctx sdk.Context, msg types.WhitelistedContract) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ContractKey(msg.GameId)
@@ -45,7 +45,6 @@ func (k Keeper) SetContract(ctx sdk.Context, msg types.WhitelistedContract) erro
 	)
 
 	store.Set(key, value)
-	return nil
 }
 
 func (k Keeper) GetWhitelistedContract(ctx sdk.Context, gameID uint64) (contract types.WhitelistedContract, found bool) {
