@@ -15,6 +15,7 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/wasmrollapp/cron/v1beta1/params";
   }
+  // WhitelistedContracts queries the whitelisted contracts of the module.
   rpc QueryWhitelistedContracts(QueryWhitelistedContractsRequest) returns (QueryWhitelistedContractsResponse) {
     option (google.api.http).get = "/wasmrollapp/cron/v1beta1/whitelisted_contracts";
   }
@@ -29,11 +30,13 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryWhitelistedContractsRequest is request type for the Query/WhitelistedContracts RPC method.
 message QueryWhitelistedContractsRequest{
   cosmos.base.query.v1beta1.PageRequest pagination = 1
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
+// QueryWhitelistedContractsResponse is response type for the Query/WhitelistedContracts RPC method.
 message QueryWhitelistedContractsResponse {
   repeated WhitelistedContract whilisted_contracts = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2

@@ -11,7 +11,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	// "github.com/dymensionxyz/dymension-rdk/utils/logger"
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/expected"
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 )
@@ -76,8 +75,8 @@ func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
 }
 
-func (k Keeper) SinglePlayer(ctx sdk.Context, contractAddress string, ResolveSinglePlayer []byte, gameName string) {
-	err := k.SudoContractCall(ctx, contractAddress, ResolveSinglePlayer)
+func (k Keeper) SinglePlayer(ctx sdk.Context, contractAddress string, resolveSinglePlayer []byte, gameName string) {
+	err := k.SudoContractCall(ctx, contractAddress, resolveSinglePlayer)
 	if err != nil {
 		ctx.Logger().Error("Game %s contract call error for single-player", gameName)
 	} else {
@@ -85,15 +84,15 @@ func (k Keeper) SinglePlayer(ctx sdk.Context, contractAddress string, ResolveSin
 	}
 }
 
-func (k Keeper) MultiPlayer(ctx sdk.Context, contractAddress string, SetupMultiPlayer []byte, ResolveMultiPlayer []byte, gameName string) {
-	err := k.SudoContractCall(ctx, contractAddress, SetupMultiPlayer)
+func (k Keeper) MultiPlayer(ctx sdk.Context, contractAddress string, setupMultiPlayer []byte, resolveMultiPlayer []byte, gameName string) {
+	err := k.SudoContractCall(ctx, contractAddress, setupMultiPlayer)
 	if err != nil {
 		ctx.Logger().Error("Game %s contract call error for setup multi-player", gameName)
 	} else {
 		ctx.Logger().Info("Game %s contract call for setup multi-player success", gameName)
 	}
 
-	err = k.SudoContractCall(ctx, contractAddress, ResolveMultiPlayer)
+	err = k.SudoContractCall(ctx, contractAddress, resolveMultiPlayer)
 	if err != nil {
 		ctx.Logger().Error("Game %s contract call error for resolve multi-player", gameName)
 	} else {

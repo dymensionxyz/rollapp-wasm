@@ -3,9 +3,9 @@ package cli
 import (
 	"context"
 
-	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 	"github.com/spf13/cobra"
 )
 

@@ -9,7 +9,7 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 var (
-	DefaultSecurityAddress = []string{}
+	DefaultSecurityAddress []string
 	// KeySecurityAddress is store's key for SecurityAddress Params
 	KeySecurityAddress = []byte("SecurityAddress")
 	KeyEnableCron      = []byte("EnableCron")
@@ -23,11 +23,11 @@ func ParamKeyTable() paramtypes.KeyTable {
 func NewParams(securityAddress []string, enableCron bool) Params {
 	return Params{
 		SecurityAddress: securityAddress,
-		EnableCron: 	 enableCron,
+		EnableCron:      enableCron,
 	}
 }
 
-// default minting module parameters
+// DefaultParams default minting module parameters
 func DefaultParams() Params {
 	return NewParams(DefaultSecurityAddress, true)
 }
@@ -40,7 +40,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	}
 }
 
-// validateSecurityAddress validates that the security addressess are valid
+// validateSecurityAddress validates that the security addresses are valid
 func validateSecurityAddress(i interface{}) error {
 	v, ok := i.([]string)
 	if !ok {

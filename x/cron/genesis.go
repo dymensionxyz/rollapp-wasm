@@ -1,9 +1,9 @@
 package cron
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/keeper"
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // InitGenesis initializes the capability module's state from a provided genesis

@@ -113,6 +113,7 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
+// QueryWhitelistedContractsRequest is request type for the Query/WhitelistedContracts RPC method.
 type QueryWhitelistedContractsRequest struct {
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
 }
@@ -157,6 +158,7 @@ func (m *QueryWhitelistedContractsRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
+// QueryWhitelistedContractsResponse is response type for the Query/WhitelistedContracts RPC method.
 type QueryWhitelistedContractsResponse struct {
 	WhilistedContracts []WhitelistedContract `protobuf:"bytes,1,rep,name=whilisted_contracts,json=whilistedContracts,proto3" json:"whilisted_contracts"`
 	Pagination         *query.PageResponse   `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
@@ -268,6 +270,7 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// WhitelistedContracts queries the whitelisted contracts of the module.
 	QueryWhitelistedContracts(ctx context.Context, in *QueryWhitelistedContractsRequest, opts ...grpc.CallOption) (*QueryWhitelistedContractsResponse, error)
 }
 
@@ -301,6 +304,7 @@ func (c *queryClient) QueryWhitelistedContracts(ctx context.Context, in *QueryWh
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// WhitelistedContracts queries the whitelisted contracts of the module.
 	QueryWhitelistedContracts(context.Context, *QueryWhitelistedContractsRequest) (*QueryWhitelistedContractsResponse, error)
 }
 

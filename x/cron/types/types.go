@@ -1,8 +1,9 @@
 package types
 
 import (
-	"fmt"
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	errors "github.com/cosmos/cosmos-sdk/types/errors"
 	"golang.org/x/exp/slices"
 )
 
@@ -25,26 +26,26 @@ func NewWhitelistContract(gameId uint64, securityAddress, contractAdmin sdk.AccA
 
 func (m WhitelistedContract) Validate() error {
 	if m.GameId == 0 {
-		return fmt.Errorf("invalid GameId: %d", m.GameId)
+		return errorsmod.Wrap(errors.ErrInvalidRequest, "game id must not be 0")
 	}
 	// check if the security address is valid
 	if _, err := sdk.AccAddressFromBech32(m.SecurityAddress); err != nil {
-		return fmt.Errorf("invalid SecurityAddress: %s", m.SecurityAddress)
+		return errorsmod.Wrapf(errors.ErrInvalidAddress, "invalid security address: %v", err)
 	}
 	// check if the contract admin is valid
 	if _, err := sdk.AccAddressFromBech32(m.ContractAdmin); err != nil {
-		return fmt.Errorf("invalid ContractAdmin: %s", m.ContractAdmin)
+		return errorsmod.Wrapf(errors.ErrInvalidAddress, "invalid contract admin: %v", err)
 	}
 	if m.GameName == "" {
-		return fmt.Errorf("invalid GameName: %s", m.GameName)
+		return errorsmod.Wrap(errors.ErrInvalidRequest, "game name must not be empty")
 	}
 	// check if the contract address is valid
 	if _, err := sdk.AccAddressFromBech32(m.ContractAddress); err != nil {
-		return fmt.Errorf("invalid ContractAddress: %s", m.ContractAddress)
+		return errorsmod.Wrapf(errors.ErrInvalidAddress, "invalid ContractAddress: %v", err)
 	}
-	// check if game type does not contain 1,2,3 
+	// check if game type does not contain 1,2,3
 	if !slices.Contains([]uint64{1, 2, 3}, m.GameType) {
-		return fmt.Errorf("invalid GameType: %d", m.GameType)
+		return errorsmod.Wrapf(errors.ErrInvalidRequest, "invalid game type, should be 1, 2 or 3")
 	}
 
 	return nil

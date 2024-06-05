@@ -14,7 +14,7 @@ import (
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	// this line is used by starport scaffolding # 2
 	cdc.RegisterConcrete(&MsgRegisterContract{}, "wasmrollapp/cron/MsgRegisterContract", nil)
-	cdc.RegisterConcrete(&MsgDeRegisterContract{}, "wasmrollapp/cron/MsgDeRegisterContract", nil)
+	cdc.RegisterConcrete(&MsgDeregisterContract{}, "wasmrollapp/cron/MsgDeregisterContract", nil)
 
 }
 
@@ -23,7 +23,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
 		&MsgRegisterContract{},
-		&MsgDeRegisterContract{},
+		&MsgDeregisterContract{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
