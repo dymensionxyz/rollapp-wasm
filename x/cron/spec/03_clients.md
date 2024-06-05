@@ -17,7 +17,7 @@ The CLI has been updated with new queries and transactions for the `x/cron` modu
 
 ### Transactions
 
-| Command                | Subcommand             | Arguments                                  | Description                            |
-| :--------------------- | :--------------------- | :----------------------------------------- | :------------------------------------- |
-| `wasmrollappd tx cron` | `register-contract`    | [game-name] [contract-address] [game-type] | Register the contract for cron job     |
-| `wasmrollappd tx cron` | `de-register-contract` | [game-id]                                  | De-Register the contract from cron job |
+| Command                | Subcommand             | Arguments                                  | Description                           |
+| :--------------------- | :--------------------- | :----------------------------------------- | :------------------------------------ |
+| `wasmrollappd tx cron` | `register-contract`    | [game-name] [contract-address] [game-type] | Register the contract for cron job    |
+| `wasmrollappd tx cron` | `de-register-contract` | [game-id]                                  | Deregister the contract from cron job |

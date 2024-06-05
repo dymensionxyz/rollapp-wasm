@@ -1,32 +1,34 @@
 syntax = "proto3";
 package wasmrollapp.cron.v1beta1;
-import "gogoproto/gogo.proto";
-
-import "cosmos/msg/v1/msg.proto";
-import "cosmos_proto/cosmos.proto";
-import "wasmrollapp/cron/v1beta1/params.proto";
-
 
 option go_package = "github.com/dymensionxyz/rollapp-wasm/x/cron/types";
 
 // Msg defines the Msg service.
 service Msg {
     rpc RegisterContract(MsgRegisterContract) returns(MsgRegisterContractResponse);
-    rpc DeRegisterContract(MsgDeRegisterContract) returns(MsgDeRegisterContractResponse);
+    rpc DeregisterContract(MsgDeregisterContract) returns(MsgDeregisterContractResponse);
 }
 
+// MsgRegisterContract defines the Msg/RegisterContract request type.
 message MsgRegisterContract {
+    // security_address is the address of the security module
     string security_address = 1;
+    // game_name is the name of the game
     string game_name = 2;
+    // contract_address is the address of the contract
     string contract_address = 3;
-    uint64 game_type = 4; // 1 -> single, 2 -> multi, 3 -> both
+    // game_type is the type of the game 1 -> single, 2 -> multi, 3 -> both
+    uint64 game_type = 4;
   }
   
+// MsgRegisterContractResponse defines the Msg/RegisterContract response type.
 message MsgRegisterContractResponse {}
 
-message MsgDeRegisterContract {
+// MsgDeregisterContract defines the Msg/DeregisterContract request type.
+message MsgDeregisterContract {
   string security_address = 1;
   uint64 game_id = 2;
 }
 
-message MsgDeRegisterContractResponse {}
+// MsgDeregisterContractResponse defines the Msg/DeregisterContract response type.
+message MsgDeregisterContractResponse {}

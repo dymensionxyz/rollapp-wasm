@@ -13,16 +13,15 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) {
 		panic(err)
 	}
 	var (
-		GameID uint64
+		gameID uint64
 	)
 	// this line is used by starport scaffolding # genesis/module/init
 	for _, item := range genState.WhitelistedContracts {
-		if item.GameId > GameID {
-			GameID = item.GameId
-		}
 		k.SetContract(ctx, item)
+		// Set the gameID to the gameID in the whitelisted contract
+		gameID = item.GameId
 	}
-	k.SetGameID(ctx, GameID)
+	k.SetGameID(ctx, gameID)
 	k.SetParams(ctx, genState.Params)
 }
 

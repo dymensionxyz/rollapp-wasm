@@ -32,7 +32,7 @@ message WhitelistedContract {
 
 ## Genesis & Params
 
-The `x/cron` module's `GenesisState` defines the state necessary for initializing the chain from a previously exported height. It contains the module Parameters and Whitelisted Contract. The params are used to control the Contract GasLimit and Security Address which is responsible to whitelist contract. This value can be modified with a governance proposal.
+The `x/cron` module's `GenesisState` defines the state necessary for initializing the chain from a previously exported height. It contains the module Parameters and Whitelisted Contract. The params are used to control the Security Address which is responsible to whitelist contract. This value can be modified with a governance proposal.
 
 ```go
 // GenesisState defines the cron module's genesis state.
@@ -57,10 +57,8 @@ message Params {
     (gogoproto.moretags) = "yaml:\"security_address\""
   ];
 
-  uint64 contract_gas_limit = 2 [
-    (gogoproto.jsontag) = "contract_gas_limit,omitempty",
-    (gogoproto.moretags) = "yaml:\"contract_gas_limit\""
-  ];
+  // set module enabled or not
+  bool enable_cron = 2;
 }
 ```
 
@@ -69,4 +67,4 @@ message Params {
 The following state transitions are possible:
 
 - Register the contract for cronjob
-- DeRegister the contract from cronjob
+- Deregister the contract from cronjob

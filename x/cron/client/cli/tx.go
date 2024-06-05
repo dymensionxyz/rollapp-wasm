@@ -80,7 +80,7 @@ func CmdDeRegisterContract() *cobra.Command {
 				return fmt.Errorf("game-id '%s' not a valid uint", args[0])
 			}
 
-			msg := types.NewMsgDeRegisterContract(
+			msg := types.NewMsgDeregisterContract(
 				clientCtx.GetFromAddress().String(),
 				gameID,
 			)

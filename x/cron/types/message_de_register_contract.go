@@ -1,33 +1,34 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgDeRegisterContract = "de_register_contract"
+const TypeMsgDeregisterContract = "de_register_contract"
 
-var _ sdk.Msg = &MsgDeRegisterContract{}
+var _ sdk.Msg = &MsgDeregisterContract{}
 
-func NewMsgDeRegisterContract(
+func NewMsgDeregisterContract(
 	securityAddress string,
 	gameID uint64,
-) *MsgDeRegisterContract {
-	return &MsgDeRegisterContract{
+) *MsgDeregisterContract {
+	return &MsgDeregisterContract{
 		SecurityAddress: securityAddress,
-		GameId: gameID,
+		GameId:          gameID,
 	}
 }
 
-func (msg *MsgDeRegisterContract) Route() string {
+func (msg *MsgDeregisterContract) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgDeRegisterContract) Type() string {
-	return TypeMsgDeRegisterContract
+func (msg *MsgDeregisterContract) Type() string {
+	return TypeMsgDeregisterContract
 }
 
-func (msg *MsgDeRegisterContract) GetSigners() []sdk.AccAddress {
+func (msg *MsgDeregisterContract) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.SecurityAddress)
 	if err != nil {
 		panic(err)
@@ -35,15 +36,15 @@ func (msg *MsgDeRegisterContract) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgDeRegisterContract) GetSignBytes() []byte {
+func (msg *MsgDeregisterContract) GetSignBytes() []byte {
 	bz := moduleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgDeRegisterContract) ValidateBasic() error {
+func (msg *MsgDeregisterContract) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.SecurityAddress)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid security address (%s)", err)
 	}
 
 	return nil

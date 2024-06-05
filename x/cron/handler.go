@@ -1,12 +1,13 @@
 package cron
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	"fmt"
 
-	"github.com/dymensionxyz/rollapp-wasm/x/cron/keeper"
-	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/dymensionxyz/rollapp-wasm/x/cron/keeper"
+	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 )
 
 // NewHandler ...
@@ -22,13 +23,13 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgRegisterContract:
 			res, err := server.RegisterContract(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgDeRegisterContract:
-			res, err := server.DeRegisterContract(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgDeregisterContract:
+			res, err := server.DeregisterContract(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		// this line is used by starport scaffolding # 1
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)
-			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
+			return nil, errorsmod.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 		}
 	}
 }

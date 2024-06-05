@@ -1,9 +1,10 @@
 package types
 
 import (
-	"slices"
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"slices"
 )
 
 const TypeMsgRegisterContract = "register_contract"
@@ -48,16 +49,16 @@ func (msg *MsgRegisterContract) GetSignBytes() []byte {
 func (msg *MsgRegisterContract) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.SecurityAddress)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
 
 	_, err = sdk.AccAddressFromBech32(msg.ContractAddress)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid contract address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid contract address (%s)", err)
 	}
 	gameType := []uint64{1, 2, 3}
 	if !slices.Contains(gameType, msg.GameType) {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidType, "invalid game type, should be 1,2 or 3")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidType, "invalid game type, should be 1,2 or 3")
 	}
 
 	return nil

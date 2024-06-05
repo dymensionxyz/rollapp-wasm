@@ -1,9 +1,9 @@
 package cron
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/keeper"
 	cronTypes "github.com/dymensionxyz/rollapp-wasm/x/cron/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
