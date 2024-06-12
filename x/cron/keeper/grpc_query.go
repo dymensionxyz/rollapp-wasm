@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -23,45 +22,49 @@ func NewQueryServerImpl(k Keeper) types.QueryServer {
 	}
 }
 
-func (q QueryServer) QueryWhitelistedContracts(c context.Context, req *types.QueryWhitelistedContractsRequest) (*types.QueryWhitelistedContractsResponse, error) {
+func (q QueryServer) Cron(c context.Context, req *types.QueryCronRequest) (*types.QueryCronResponse, error) {
 	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
+	ctx := sdk.UnwrapSDKContext(c)
+	cronJob, found := q.Keeper.GetCronJob(ctx, req.Id)
+	if !found {
+		return nil, status.Error(codes.NotFound, "cron job not found")
+	}
+	return &types.QueryCronResponse{CronJob: cronJob}, nil
 
+}
+
+func (q QueryServer) Crons(c context.Context, req *types.QueryCronsRequest) (*types.QueryCronsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
 	var (
-		items []types.WhitelistedContract
+		items []types.CronJob
 		ctx   = sdk.UnwrapSDKContext(c)
 	)
-
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.SetContractKeyPrefix),
+		prefix.NewStore(q.Store(ctx), types.CronJobKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
-			var item types.WhitelistedContract
+			var item types.CronJob
 			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
-
 			if accumulate {
 				items = append(items, item)
 			}
-
 			return true, nil
 		},
 	)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-
-	return &types.QueryWhitelistedContractsResponse{
-		WhilistedContracts: items,
-		Pagination:         pagination,
-	}, nil
+	return &types.QueryCronsResponse{CronJobs: items, Pagination: pagination}, nil
 }
 
 func (q QueryServer) Params(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	params := q.Keeper.GetParams(ctx)
-
 	return &types.QueryParamsResponse{Params: params}, nil
 }

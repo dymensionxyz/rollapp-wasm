@@ -82,8 +82,8 @@ func Setup(t *testing.T, isCheckTx bool) *App {
 	DefaultSecurityAddress := []string{"cosmos1xkxed7rdzvmyvgdshpe445ddqwn47fru24fnlp"}
 	params := cronTypes.Params{SecurityAddress: DefaultSecurityAddress}
 	cronGenesis := cronTypes.GenesisState{
-		Params:               params,
-		WhitelistedContracts: []cronTypes.WhitelistedContract{},
+		Params:   params,
+		CronJobs: []cronTypes.CronJob{},
 	}
 	genesisState[cronTypes.ModuleName] = app.AppCodec().MustMarshalJSON(&cronGenesis)
 

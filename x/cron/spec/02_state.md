@@ -6,33 +6,38 @@ order: 2
 
 ## State Objects
 
-The `x/cron` module keeps the following object in the state: WhitelistedContract.
+The `x/cron` module keeps the following object in the state: CronJob.
 
 This object is used to store the state of a
 
-- `WhitelistedContract` - to store the contract which is whitelisted according to game type.
+- `CronJob` - to store the details of the cron jobs
 
 ```go
-// this defines the details of the contract registered for cronjob
-message WhitelistedContract {
-    // id of the game(counter)
-    uint64 game_id = 1;
-    // address which was used to register the contract
-    string security_address = 2;
-    // admin of the contract
-    string contract_admin = 3;
-    // name of the game contract
-    string game_name = 4;
-    // CosmWasm contract address
-    string contract_address = 5;
-    // single player -> 1, multi player -> 2, both single and multiplayer -> 3
-    uint64 game_type = 6;
-}
+// this defines the details of the cronjob
+message CronJob {
+    // id is the unique identifier for the cron job
+    uint64 id = 1;
+    // name is the name of the cron job
+    string name = 2;
+    // description is the description of the cron job
+    string description = 3;
+    // Msgs that will be executed every period amount of time
+    repeated MsgContractCron msg_contract_cron = 4 [(gogoproto.nullable) = false];
+  }
+```
+
+```go
+message MsgContractCron {
+    // Contract is the address of the smart contract
+    string contract_address = 1;
+    // Msg is json encoded message to be passed to the contract
+    string json_msg = 2;
+  }
 ```
 
 ## Genesis & Params
 
-The `x/cron` module's `GenesisState` defines the state necessary for initializing the chain from a previously exported height. It contains the module Parameters and Whitelisted Contract. The params are used to control the Security Address which is responsible to whitelist contract. This value can be modified with a governance proposal.
+The `x/cron` module's `GenesisState` defines the state necessary for initializing the chain from a previously exported height. It contains the module Parameters and Cron jobs. The params are used to control the Security Address which is responsible to register cron operations. This value can be modified with a governance proposal.
 
 ```go
 // GenesisState defines the cron module's genesis state.
@@ -41,8 +46,8 @@ message GenesisState {
     (gogoproto.moretags) = "yaml:\"params\"",
     (gogoproto.nullable) = false
   ];
-  repeated WhitelistedContract whitelisted_contracts  = 2  [
-    (gogoproto.moretags) = "yaml:\"whitelisted_contracts\"",
+  repeated CronJob cron_jobs  = 2  [
+    (gogoproto.moretags) = "yaml:\"cron_jobs\"",
     (gogoproto.nullable) = false
   ];
 }
@@ -66,5 +71,6 @@ message Params {
 
 The following state transitions are possible:
 
-- Register the contract for cronjob
-- Deregister the contract from cronjob
+- Register the cron job
+- Update the cron job
+- Delete the cron job

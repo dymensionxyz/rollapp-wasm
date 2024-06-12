@@ -22,10 +22,10 @@ const (
 )
 
 var (
-	SetContractKeyPrefix = []byte{0x11}
-	GameIDKey            = []byte{0x12}
+	CronJobKeyPrefix = []byte{0x11}
+	CronIDKey        = []byte{0x12}
 )
 
-func ContractKey(gameID uint64) []byte {
-	return append(SetContractKeyPrefix, sdk.Uint64ToBigEndian(gameID)...)
+func CronKey(cronID uint64) []byte {
+	return append(CronJobKeyPrefix, sdk.Uint64ToBigEndian(cronID)...)
 }

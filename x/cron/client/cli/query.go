@@ -1,15 +1,13 @@
 package cli
 
 import (
+	"context"
 	"fmt"
-
-	"github.com/spf13/cobra"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-
-
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
+	"github.com/spf13/cobra"
+	"strconv"
 )
 
 // GetQueryCmd returns the cli query commands for this module
@@ -23,41 +21,82 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(CmdQueryParams(),
-		QueryWhitelistedContracts())
-	// this line is used by starport scaffolding # 1
+	cmd.AddCommand(CmdQueryCron(),
+		CmdQueryCrons(),
+		CmdQueryParams())
 
 	return cmd
 }
 
-func QueryWhitelistedContracts() *cobra.Command {
+// CmdQueryCron implements the cron query command.
+func CmdQueryCron() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "whitelisted-contracts",
-		Short: "Query all whitelisted contracts",
+		Use:   "cron [id]",
+		Short: "Query a cron by id",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientQueryContext(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			pagination, err := client.ReadPageRequest(cmd.Flags())
+			queryClient := types.NewQueryClient(clientCtx)
+			cronID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("cron-id '%s' not a valid uint", args[0])
+			}
+			params := &types.QueryCronRequest{
+				Id: cronID,
+			}
+			res, err := queryClient.Cron(cmd.Context(), params)
 			if err != nil {
 				return err
 			}
-
-			queryClient := types.NewQueryClient(ctx)
-
-			res, err := queryClient.QueryWhitelistedContracts(cmd.Context(), &types.QueryWhitelistedContractsRequest{
-				Pagination: pagination,
-			})
-			if err != nil {
-				return err
-			}
-			return ctx.PrintProto(res)
+			return clientCtx.PrintProto(res)
 		},
 	}
-
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "whitelisted-contracts")
+	return cmd
+}
 
+// CmdQueryCrons implements the crons query command.
+func CmdQueryCrons() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "crons",
+		Short: "Query all crons",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.Crons(cmd.Context(), &types.QueryCronsRequest{})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// CmdQueryParams implements the params query command.
+func CmdQueryParams() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "params",
+		Short: "shows the parameters of the module",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.Params(context.Background(), &types.QueryParamsRequest{})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }

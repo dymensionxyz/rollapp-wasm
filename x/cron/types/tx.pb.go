@@ -27,30 +27,32 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgRegisterContract defines the Msg/RegisterContract request type.
-type MsgRegisterContract struct {
-	// security_address is the address of the security module
+// MsgRegisterCron defines the Msg/RegisterCron request type.
+type MsgRegisterCron struct {
+	// security_address is the address authorised to register the cron job
 	SecurityAddress string `protobuf:"bytes,1,opt,name=security_address,json=securityAddress,proto3" json:"security_address,omitempty"`
-	// game_name is the name of the game
-	GameName string `protobuf:"bytes,2,opt,name=game_name,json=gameName,proto3" json:"game_name,omitempty"`
+	// name is the name of the cron job
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// description is the description of the cron job
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	// contract_address is the address of the contract
-	ContractAddress string `protobuf:"bytes,3,opt,name=contract_address,json=contractAddress,proto3" json:"contract_address,omitempty"`
-	// game_type is the type of the game 1 -> single, 2 -> multi, 3 -> both
-	GameType uint64 `protobuf:"varint,4,opt,name=game_type,json=gameType,proto3" json:"game_type,omitempty"`
+	ContractAddress string `protobuf:"bytes,4,opt,name=contract_address,json=contractAddress,proto3" json:"contract_address,omitempty"`
+	// Msg is json encoded message to be passed to the contract
+	JsonMsg string `protobuf:"bytes,5,opt,name=json_msg,json=jsonMsg,proto3" json:"json_msg,omitempty"`
 }
 
-func (m *MsgRegisterContract) Reset()         { *m = MsgRegisterContract{} }
-func (m *MsgRegisterContract) String() string { return proto.CompactTextString(m) }
-func (*MsgRegisterContract) ProtoMessage()    {}
-func (*MsgRegisterContract) Descriptor() ([]byte, []int) {
+func (m *MsgRegisterCron) Reset()         { *m = MsgRegisterCron{} }
+func (m *MsgRegisterCron) String() string { return proto.CompactTextString(m) }
+func (*MsgRegisterCron) ProtoMessage()    {}
+func (*MsgRegisterCron) Descriptor() ([]byte, []int) {
 	return fileDescriptor_7921049427efd58c, []int{0}
 }
-func (m *MsgRegisterContract) XXX_Unmarshal(b []byte) error {
+func (m *MsgRegisterCron) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRegisterContract) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRegisterCron) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRegisterContract.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRegisterCron.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -60,62 +62,69 @@ func (m *MsgRegisterContract) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgRegisterContract) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRegisterContract.Merge(m, src)
+func (m *MsgRegisterCron) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRegisterCron.Merge(m, src)
 }
-func (m *MsgRegisterContract) XXX_Size() int {
+func (m *MsgRegisterCron) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRegisterContract) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRegisterContract.DiscardUnknown(m)
+func (m *MsgRegisterCron) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRegisterCron.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRegisterContract proto.InternalMessageInfo
+var xxx_messageInfo_MsgRegisterCron proto.InternalMessageInfo
 
-func (m *MsgRegisterContract) GetSecurityAddress() string {
+func (m *MsgRegisterCron) GetSecurityAddress() string {
 	if m != nil {
 		return m.SecurityAddress
 	}
 	return ""
 }
 
-func (m *MsgRegisterContract) GetGameName() string {
+func (m *MsgRegisterCron) GetName() string {
 	if m != nil {
-		return m.GameName
+		return m.Name
 	}
 	return ""
 }
 
-func (m *MsgRegisterContract) GetContractAddress() string {
+func (m *MsgRegisterCron) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *MsgRegisterCron) GetContractAddress() string {
 	if m != nil {
 		return m.ContractAddress
 	}
 	return ""
 }
 
-func (m *MsgRegisterContract) GetGameType() uint64 {
+func (m *MsgRegisterCron) GetJsonMsg() string {
 	if m != nil {
-		return m.GameType
+		return m.JsonMsg
 	}
-	return 0
+	return ""
 }
 
-// MsgRegisterContractResponse defines the Msg/RegisterContract response type.
-type MsgRegisterContractResponse struct {
+// MsgRegisterCronResponse defines the Msg/RegisterCron response type.
+type MsgRegisterCronResponse struct {
 }
 
-func (m *MsgRegisterContractResponse) Reset()         { *m = MsgRegisterContractResponse{} }
-func (m *MsgRegisterContractResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgRegisterContractResponse) ProtoMessage()    {}
-func (*MsgRegisterContractResponse) Descriptor() ([]byte, []int) {
+func (m *MsgRegisterCronResponse) Reset()         { *m = MsgRegisterCronResponse{} }
+func (m *MsgRegisterCronResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgRegisterCronResponse) ProtoMessage()    {}
+func (*MsgRegisterCronResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_7921049427efd58c, []int{1}
 }
-func (m *MsgRegisterContractResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgRegisterCronResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRegisterContractResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRegisterCronResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRegisterContractResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRegisterCronResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -125,36 +134,42 @@ func (m *MsgRegisterContractResponse) XXX_Marshal(b []byte, deterministic bool) 
 		return b[:n], nil
 	}
 }
-func (m *MsgRegisterContractResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRegisterContractResponse.Merge(m, src)
+func (m *MsgRegisterCronResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRegisterCronResponse.Merge(m, src)
 }
-func (m *MsgRegisterContractResponse) XXX_Size() int {
+func (m *MsgRegisterCronResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRegisterContractResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRegisterContractResponse.DiscardUnknown(m)
+func (m *MsgRegisterCronResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRegisterCronResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRegisterContractResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgRegisterCronResponse proto.InternalMessageInfo
 
-// MsgDeregisterContract defines the Msg/DeregisterContract request type.
-type MsgDeregisterContract struct {
+// MsgUpdateCronJob defines the Msg/UpdateCronJob request type.
+type MsgUpdateCronJob struct {
+	// security_address is the address authorised to update the cron job
 	SecurityAddress string `protobuf:"bytes,1,opt,name=security_address,json=securityAddress,proto3" json:"security_address,omitempty"`
-	GameId          uint64 `protobuf:"varint,2,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
+	// id is the unique identifier for the cron job
+	Id uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	// contract_address is the address of the contract
+	ContractAddress string `protobuf:"bytes,3,opt,name=contract_address,json=contractAddress,proto3" json:"contract_address,omitempty"`
+	// Msg is json encoded message to be passed to the contract
+	JsonMsg string `protobuf:"bytes,4,opt,name=json_msg,json=jsonMsg,proto3" json:"json_msg,omitempty"`
 }
 
-func (m *MsgDeregisterContract) Reset()         { *m = MsgDeregisterContract{} }
-func (m *MsgDeregisterContract) String() string { return proto.CompactTextString(m) }
-func (*MsgDeregisterContract) ProtoMessage()    {}
-func (*MsgDeregisterContract) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateCronJob) Reset()         { *m = MsgUpdateCronJob{} }
+func (m *MsgUpdateCronJob) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateCronJob) ProtoMessage()    {}
+func (*MsgUpdateCronJob) Descriptor() ([]byte, []int) {
 	return fileDescriptor_7921049427efd58c, []int{2}
 }
-func (m *MsgDeregisterContract) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateCronJob) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDeregisterContract) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateCronJob) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDeregisterContract.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateCronJob.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -164,48 +179,62 @@ func (m *MsgDeregisterContract) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *MsgDeregisterContract) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDeregisterContract.Merge(m, src)
+func (m *MsgUpdateCronJob) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateCronJob.Merge(m, src)
 }
-func (m *MsgDeregisterContract) XXX_Size() int {
+func (m *MsgUpdateCronJob) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDeregisterContract) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDeregisterContract.DiscardUnknown(m)
+func (m *MsgUpdateCronJob) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateCronJob.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDeregisterContract proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateCronJob proto.InternalMessageInfo
 
-func (m *MsgDeregisterContract) GetSecurityAddress() string {
+func (m *MsgUpdateCronJob) GetSecurityAddress() string {
 	if m != nil {
 		return m.SecurityAddress
 	}
 	return ""
 }
 
-func (m *MsgDeregisterContract) GetGameId() uint64 {
+func (m *MsgUpdateCronJob) GetId() uint64 {
 	if m != nil {
-		return m.GameId
+		return m.Id
 	}
 	return 0
 }
 
-// MsgDeregisterContractResponse defines the Msg/DeregisterContract response type.
-type MsgDeregisterContractResponse struct {
+func (m *MsgUpdateCronJob) GetContractAddress() string {
+	if m != nil {
+		return m.ContractAddress
+	}
+	return ""
 }
 
-func (m *MsgDeregisterContractResponse) Reset()         { *m = MsgDeregisterContractResponse{} }
-func (m *MsgDeregisterContractResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgDeregisterContractResponse) ProtoMessage()    {}
-func (*MsgDeregisterContractResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateCronJob) GetJsonMsg() string {
+	if m != nil {
+		return m.JsonMsg
+	}
+	return ""
+}
+
+// MsgUpdateCronJobResponse defines the Msg/UpdateCron response type.
+type MsgUpdateCronJobResponse struct {
+}
+
+func (m *MsgUpdateCronJobResponse) Reset()         { *m = MsgUpdateCronJobResponse{} }
+func (m *MsgUpdateCronJobResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateCronJobResponse) ProtoMessage()    {}
+func (*MsgUpdateCronJobResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_7921049427efd58c, []int{3}
 }
-func (m *MsgDeregisterContractResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateCronJobResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDeregisterContractResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateCronJobResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDeregisterContractResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateCronJobResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -215,51 +244,157 @@ func (m *MsgDeregisterContractResponse) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *MsgDeregisterContractResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDeregisterContractResponse.Merge(m, src)
+func (m *MsgUpdateCronJobResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateCronJobResponse.Merge(m, src)
 }
-func (m *MsgDeregisterContractResponse) XXX_Size() int {
+func (m *MsgUpdateCronJobResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDeregisterContractResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDeregisterContractResponse.DiscardUnknown(m)
+func (m *MsgUpdateCronJobResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateCronJobResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDeregisterContractResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateCronJobResponse proto.InternalMessageInfo
+
+// MsgDeleteCronJob defines the Msg/DeleteCronJob request type.
+type MsgDeleteCronJob struct {
+	// security_address is the address authorised to delete the cron job
+	SecurityAddress string `protobuf:"bytes,1,opt,name=security_address,json=securityAddress,proto3" json:"security_address,omitempty"`
+	// id is the unique identifier for the cron job
+	Id uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	// contract_address is the address of the contract
+	ContractAddress string `protobuf:"bytes,3,opt,name=contract_address,json=contractAddress,proto3" json:"contract_address,omitempty"`
+}
+
+func (m *MsgDeleteCronJob) Reset()         { *m = MsgDeleteCronJob{} }
+func (m *MsgDeleteCronJob) String() string { return proto.CompactTextString(m) }
+func (*MsgDeleteCronJob) ProtoMessage()    {}
+func (*MsgDeleteCronJob) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7921049427efd58c, []int{4}
+}
+func (m *MsgDeleteCronJob) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgDeleteCronJob) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgDeleteCronJob.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgDeleteCronJob) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDeleteCronJob.Merge(m, src)
+}
+func (m *MsgDeleteCronJob) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgDeleteCronJob) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDeleteCronJob.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgDeleteCronJob proto.InternalMessageInfo
+
+func (m *MsgDeleteCronJob) GetSecurityAddress() string {
+	if m != nil {
+		return m.SecurityAddress
+	}
+	return ""
+}
+
+func (m *MsgDeleteCronJob) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *MsgDeleteCronJob) GetContractAddress() string {
+	if m != nil {
+		return m.ContractAddress
+	}
+	return ""
+}
+
+// MsgDeleteCronJobResponse defines the Msg/DeleteCronJob response type.
+type MsgDeleteCronJobResponse struct {
+}
+
+func (m *MsgDeleteCronJobResponse) Reset()         { *m = MsgDeleteCronJobResponse{} }
+func (m *MsgDeleteCronJobResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgDeleteCronJobResponse) ProtoMessage()    {}
+func (*MsgDeleteCronJobResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7921049427efd58c, []int{5}
+}
+func (m *MsgDeleteCronJobResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgDeleteCronJobResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgDeleteCronJobResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgDeleteCronJobResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDeleteCronJobResponse.Merge(m, src)
+}
+func (m *MsgDeleteCronJobResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgDeleteCronJobResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDeleteCronJobResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgDeleteCronJobResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgRegisterContract)(nil), "wasmrollapp.cron.v1beta1.MsgRegisterContract")
-	proto.RegisterType((*MsgRegisterContractResponse)(nil), "wasmrollapp.cron.v1beta1.MsgRegisterContractResponse")
-	proto.RegisterType((*MsgDeregisterContract)(nil), "wasmrollapp.cron.v1beta1.MsgDeregisterContract")
-	proto.RegisterType((*MsgDeregisterContractResponse)(nil), "wasmrollapp.cron.v1beta1.MsgDeregisterContractResponse")
+	proto.RegisterType((*MsgRegisterCron)(nil), "wasmrollapp.cron.v1beta1.MsgRegisterCron")
+	proto.RegisterType((*MsgRegisterCronResponse)(nil), "wasmrollapp.cron.v1beta1.MsgRegisterCronResponse")
+	proto.RegisterType((*MsgUpdateCronJob)(nil), "wasmrollapp.cron.v1beta1.MsgUpdateCronJob")
+	proto.RegisterType((*MsgUpdateCronJobResponse)(nil), "wasmrollapp.cron.v1beta1.MsgUpdateCronJobResponse")
+	proto.RegisterType((*MsgDeleteCronJob)(nil), "wasmrollapp.cron.v1beta1.MsgDeleteCronJob")
+	proto.RegisterType((*MsgDeleteCronJobResponse)(nil), "wasmrollapp.cron.v1beta1.MsgDeleteCronJobResponse")
 }
 
 func init() { proto.RegisterFile("wasmrollapp/cron/v1beta1/tx.proto", fileDescriptor_7921049427efd58c) }
 
 var fileDescriptor_7921049427efd58c = []byte{
-	// 350 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x92, 0xcd, 0x4a, 0xc3, 0x40,
-	0x14, 0x85, 0x3b, 0xb6, 0x54, 0x3b, 0x1b, 0x4b, 0x44, 0x0c, 0x2d, 0x8d, 0x35, 0xab, 0xba, 0x68,
-	0x86, 0x2a, 0xe2, 0xda, 0x9f, 0x8d, 0x48, 0x5d, 0x04, 0x57, 0xba, 0x28, 0xd3, 0xe4, 0x12, 0x03,
-	0x4d, 0x26, 0xcc, 0x4c, 0x35, 0x71, 0xe1, 0x33, 0xf8, 0x12, 0xbe, 0x8b, 0xcb, 0x2e, 0x5d, 0x4a,
-	0xfb, 0x20, 0xca, 0xe4, 0x47, 0xc4, 0x46, 0xa1, 0xb8, 0xcc, 0xe1, 0xcc, 0x77, 0xee, 0xb9, 0xb9,
-	0x78, 0xef, 0x81, 0x8a, 0x80, 0xb3, 0xc9, 0x84, 0x46, 0x11, 0x71, 0x38, 0x0b, 0xc9, 0xfd, 0x60,
-	0x0c, 0x92, 0x0e, 0x88, 0x8c, 0xad, 0x88, 0x33, 0xc9, 0x34, 0xfd, 0x9b, 0xc5, 0x52, 0x16, 0x2b,
-	0xb7, 0x98, 0x2f, 0x08, 0x6f, 0x0d, 0x85, 0x67, 0x83, 0xe7, 0x0b, 0x09, 0xfc, 0x8c, 0x85, 0x92,
-	0x53, 0x47, 0x6a, 0xfb, 0xb8, 0x29, 0xc0, 0x99, 0x72, 0x5f, 0x26, 0x23, 0xea, 0xba, 0x1c, 0x84,
-	0xd0, 0x51, 0x17, 0xf5, 0x1a, 0xf6, 0x66, 0xa1, 0x9f, 0x64, 0xb2, 0xd6, 0xc6, 0x0d, 0x8f, 0x06,
-	0x30, 0x0a, 0x69, 0x00, 0xfa, 0x5a, 0xea, 0xd9, 0x50, 0xc2, 0x15, 0x0d, 0x40, 0x71, 0x9c, 0x9c,
-	0xf9, 0xc5, 0xa9, 0x66, 0x9c, 0x42, 0xff, 0xc9, 0x91, 0x49, 0x04, 0x7a, 0xad, 0x8b, 0x7a, 0xb5,
-	0x8c, 0x73, 0x9d, 0x44, 0x60, 0x76, 0x70, 0xbb, 0x64, 0x4c, 0x1b, 0x44, 0xc4, 0x42, 0x01, 0xe6,
-	0x2d, 0xde, 0x1e, 0x0a, 0xef, 0x1c, 0xf8, 0x3f, 0x7a, 0xec, 0xe0, 0xf5, 0x34, 0xdf, 0x77, 0xd3,
-	0x16, 0x35, 0xbb, 0xae, 0x3e, 0x2f, 0x5c, 0x73, 0x17, 0x77, 0x4a, 0xe1, 0x45, 0xfa, 0xc1, 0x07,
-	0xc2, 0xd5, 0xa1, 0xf0, 0xb4, 0x18, 0x37, 0x97, 0x16, 0xd9, 0xb7, 0x7e, 0xdb, 0xbd, 0x55, 0x52,
-	0xa8, 0x75, 0xb4, 0x92, 0xbd, 0x98, 0x40, 0x7b, 0xc2, 0x5a, 0x49, 0x79, 0xf2, 0x27, 0x6c, 0xf9,
-	0x41, 0xeb, 0x78, 0xc5, 0x07, 0x45, 0xfe, 0xe9, 0xe5, 0xeb, 0xdc, 0x40, 0xb3, 0xb9, 0x81, 0xde,
-	0xe7, 0x06, 0x7a, 0x5e, 0x18, 0x95, 0xd9, 0xc2, 0xa8, 0xbc, 0x2d, 0x8c, 0xca, 0xcd, 0xc0, 0xf3,
-	0xe5, 0xdd, 0x74, 0x6c, 0x39, 0x2c, 0x20, 0x6e, 0x12, 0x40, 0x28, 0x7c, 0x16, 0xc6, 0xc9, 0x23,
-	0xc9, 0x53, 0xfa, 0x2a, 0x91, 0xc4, 0xd9, 0xe1, 0xaa, 0x5f, 0x2f, 0xc6, 0xf5, 0xf4, 0x68, 0x0f,
-	0x3f, 0x03, 0x00, 0x00, 0xff, 0xff, 0xde, 0xfe, 0x28, 0xbc, 0xd9, 0x02, 0x00, 0x00,
+	// 398 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x93, 0xcb, 0x4e, 0xbb, 0x40,
+	0x14, 0x87, 0x0b, 0xe5, 0x7f, 0x71, 0xbc, 0xb4, 0x61, 0x23, 0xed, 0x82, 0xd4, 0xae, 0xd4, 0x44,
+	0x08, 0xf5, 0x09, 0xbc, 0xac, 0x34, 0x6c, 0x48, 0xdc, 0xb8, 0x69, 0xb8, 0x4c, 0x70, 0x0c, 0xcc,
+	0x90, 0x39, 0x53, 0x05, 0x9f, 0xc2, 0xc4, 0x97, 0xf1, 0x11, 0x5c, 0x76, 0x63, 0xe2, 0xd2, 0xb4,
+	0x2f, 0x62, 0xa0, 0xa5, 0x29, 0x4d, 0x6d, 0xeb, 0xc6, 0x1d, 0x9c, 0xf3, 0xcb, 0x7c, 0xdf, 0x5c,
+	0x0e, 0x3a, 0x78, 0x74, 0x21, 0xe6, 0x2c, 0x8a, 0xdc, 0x24, 0x31, 0x7d, 0xce, 0xa8, 0xf9, 0x60,
+	0x79, 0x58, 0xb8, 0x96, 0x29, 0x52, 0x23, 0xe1, 0x4c, 0x30, 0x55, 0x9b, 0x8b, 0x18, 0x79, 0xc4,
+	0x98, 0x46, 0xba, 0xaf, 0x12, 0x6a, 0xd8, 0x10, 0x3a, 0x38, 0x24, 0x20, 0x30, 0xbf, 0xe0, 0x8c,
+	0xaa, 0x47, 0xa8, 0x09, 0xd8, 0x1f, 0x70, 0x22, 0xb2, 0xbe, 0x1b, 0x04, 0x1c, 0x03, 0x68, 0x52,
+	0x47, 0x3a, 0xdc, 0x72, 0x1a, 0x65, 0xfd, 0x6c, 0x52, 0x56, 0x55, 0xa4, 0x50, 0x37, 0xc6, 0x9a,
+	0x5c, 0xb4, 0x8b, 0x6f, 0xb5, 0x83, 0xb6, 0x03, 0x0c, 0x3e, 0x27, 0x89, 0x20, 0x8c, 0x6a, 0xf5,
+	0xa2, 0x35, 0x5f, 0xca, 0x01, 0x3e, 0xa3, 0x82, 0xbb, 0xbe, 0x98, 0x01, 0x94, 0x09, 0xa0, 0xac,
+	0x97, 0x80, 0x16, 0xfa, 0x7f, 0x0f, 0x8c, 0xf6, 0x63, 0x08, 0xb5, 0x3f, 0x45, 0xe4, 0x5f, 0xfe,
+	0x6f, 0x43, 0xd8, 0x6d, 0xa1, 0xfd, 0x05, 0x73, 0x07, 0x43, 0xc2, 0x28, 0xe0, 0xee, 0x8b, 0x84,
+	0x9a, 0x36, 0x84, 0x37, 0x49, 0xe0, 0x0a, 0x9c, 0x77, 0xae, 0x98, 0xf7, 0x93, 0x6d, 0xed, 0x21,
+	0x99, 0x04, 0xc5, 0xa6, 0x14, 0x47, 0x26, 0xc1, 0x52, 0xe1, 0xfa, 0x7a, 0x61, 0xa5, 0x2a, 0xdc,
+	0x46, 0xda, 0xa2, 0xd4, 0xcc, 0x38, 0x2d, 0x84, 0x2f, 0x71, 0x84, 0x7f, 0x59, 0x78, 0x6a, 0x55,
+	0x21, 0x97, 0x56, 0xbd, 0x77, 0x19, 0xd5, 0x6d, 0x08, 0xd5, 0x08, 0xed, 0x54, 0x5f, 0x88, 0xf1,
+	0xdd, 0x83, 0x32, 0x16, 0xae, 0xa4, 0x6d, 0x6d, 0x1c, 0x2d, 0xa9, 0x2a, 0x43, 0xbb, 0xd5, 0x9b,
+	0x3b, 0x5e, 0xb9, 0x46, 0x25, 0xdb, 0xee, 0x6d, 0x9e, 0x9d, 0x07, 0x56, 0x4f, 0x7e, 0x35, 0xb0,
+	0x92, 0x5d, 0x03, 0x5c, 0x7a, 0xae, 0xe7, 0xd7, 0x6f, 0x23, 0x5d, 0x1a, 0x8e, 0x74, 0xe9, 0x73,
+	0xa4, 0x4b, 0xcf, 0x63, 0xbd, 0x36, 0x1c, 0xeb, 0xb5, 0x8f, 0xb1, 0x5e, 0xbb, 0xb5, 0x42, 0x22,
+	0xee, 0x06, 0x9e, 0xe1, 0xb3, 0xd8, 0x0c, 0xb2, 0x18, 0x53, 0x20, 0x8c, 0xa6, 0xd9, 0x93, 0x39,
+	0x05, 0x9c, 0xe4, 0x30, 0x33, 0x9d, 0xcc, 0xb9, 0xc8, 0x12, 0x0c, 0xde, 0xdf, 0x62, 0xc6, 0x4f,
+	0xbf, 0x02, 0x00, 0x00, 0xff, 0xff, 0xb6, 0x7f, 0x74, 0xea, 0x08, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -274,8 +409,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	RegisterContract(ctx context.Context, in *MsgRegisterContract, opts ...grpc.CallOption) (*MsgRegisterContractResponse, error)
-	DeregisterContract(ctx context.Context, in *MsgDeregisterContract, opts ...grpc.CallOption) (*MsgDeregisterContractResponse, error)
+	RegisterCron(ctx context.Context, in *MsgRegisterCron, opts ...grpc.CallOption) (*MsgRegisterCronResponse, error)
+	UpdateCronJob(ctx context.Context, in *MsgUpdateCronJob, opts ...grpc.CallOption) (*MsgUpdateCronJobResponse, error)
+	DeleteCronJob(ctx context.Context, in *MsgDeleteCronJob, opts ...grpc.CallOption) (*MsgDeleteCronJobResponse, error)
 }
 
 type msgClient struct {
@@ -286,18 +422,27 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) RegisterContract(ctx context.Context, in *MsgRegisterContract, opts ...grpc.CallOption) (*MsgRegisterContractResponse, error) {
-	out := new(MsgRegisterContractResponse)
-	err := c.cc.Invoke(ctx, "/wasmrollapp.cron.v1beta1.Msg/RegisterContract", in, out, opts...)
+func (c *msgClient) RegisterCron(ctx context.Context, in *MsgRegisterCron, opts ...grpc.CallOption) (*MsgRegisterCronResponse, error) {
+	out := new(MsgRegisterCronResponse)
+	err := c.cc.Invoke(ctx, "/wasmrollapp.cron.v1beta1.Msg/RegisterCron", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) DeregisterContract(ctx context.Context, in *MsgDeregisterContract, opts ...grpc.CallOption) (*MsgDeregisterContractResponse, error) {
-	out := new(MsgDeregisterContractResponse)
-	err := c.cc.Invoke(ctx, "/wasmrollapp.cron.v1beta1.Msg/DeregisterContract", in, out, opts...)
+func (c *msgClient) UpdateCronJob(ctx context.Context, in *MsgUpdateCronJob, opts ...grpc.CallOption) (*MsgUpdateCronJobResponse, error) {
+	out := new(MsgUpdateCronJobResponse)
+	err := c.cc.Invoke(ctx, "/wasmrollapp.cron.v1beta1.Msg/UpdateCronJob", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) DeleteCronJob(ctx context.Context, in *MsgDeleteCronJob, opts ...grpc.CallOption) (*MsgDeleteCronJobResponse, error) {
+	out := new(MsgDeleteCronJobResponse)
+	err := c.cc.Invoke(ctx, "/wasmrollapp.cron.v1beta1.Msg/DeleteCronJob", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -306,57 +451,79 @@ func (c *msgClient) DeregisterContract(ctx context.Context, in *MsgDeregisterCon
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	RegisterContract(context.Context, *MsgRegisterContract) (*MsgRegisterContractResponse, error)
-	DeregisterContract(context.Context, *MsgDeregisterContract) (*MsgDeregisterContractResponse, error)
+	RegisterCron(context.Context, *MsgRegisterCron) (*MsgRegisterCronResponse, error)
+	UpdateCronJob(context.Context, *MsgUpdateCronJob) (*MsgUpdateCronJobResponse, error)
+	DeleteCronJob(context.Context, *MsgDeleteCronJob) (*MsgDeleteCronJobResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) RegisterContract(ctx context.Context, req *MsgRegisterContract) (*MsgRegisterContractResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterContract not implemented")
+func (*UnimplementedMsgServer) RegisterCron(ctx context.Context, req *MsgRegisterCron) (*MsgRegisterCronResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterCron not implemented")
 }
-func (*UnimplementedMsgServer) DeregisterContract(ctx context.Context, req *MsgDeregisterContract) (*MsgDeregisterContractResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeregisterContract not implemented")
+func (*UnimplementedMsgServer) UpdateCronJob(ctx context.Context, req *MsgUpdateCronJob) (*MsgUpdateCronJobResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCronJob not implemented")
+}
+func (*UnimplementedMsgServer) DeleteCronJob(ctx context.Context, req *MsgDeleteCronJob) (*MsgDeleteCronJobResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCronJob not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_RegisterContract_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRegisterContract)
+func _Msg_RegisterCron_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRegisterCron)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).RegisterContract(ctx, in)
+		return srv.(MsgServer).RegisterCron(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/wasmrollapp.cron.v1beta1.Msg/RegisterContract",
+		FullMethod: "/wasmrollapp.cron.v1beta1.Msg/RegisterCron",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RegisterContract(ctx, req.(*MsgRegisterContract))
+		return srv.(MsgServer).RegisterCron(ctx, req.(*MsgRegisterCron))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_DeregisterContract_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgDeregisterContract)
+func _Msg_UpdateCronJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateCronJob)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).DeregisterContract(ctx, in)
+		return srv.(MsgServer).UpdateCronJob(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/wasmrollapp.cron.v1beta1.Msg/DeregisterContract",
+		FullMethod: "/wasmrollapp.cron.v1beta1.Msg/UpdateCronJob",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).DeregisterContract(ctx, req.(*MsgDeregisterContract))
+		return srv.(MsgServer).UpdateCronJob(ctx, req.(*MsgUpdateCronJob))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_DeleteCronJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDeleteCronJob)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).DeleteCronJob(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/wasmrollapp.cron.v1beta1.Msg/DeleteCronJob",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).DeleteCronJob(ctx, req.(*MsgDeleteCronJob))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -366,19 +533,23 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "RegisterContract",
-			Handler:    _Msg_RegisterContract_Handler,
+			MethodName: "RegisterCron",
+			Handler:    _Msg_RegisterCron_Handler,
 		},
 		{
-			MethodName: "DeregisterContract",
-			Handler:    _Msg_DeregisterContract_Handler,
+			MethodName: "UpdateCronJob",
+			Handler:    _Msg_UpdateCronJob_Handler,
+		},
+		{
+			MethodName: "DeleteCronJob",
+			Handler:    _Msg_DeleteCronJob_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "wasmrollapp/cron/v1beta1/tx.proto",
 }
 
-func (m *MsgRegisterContract) Marshal() (dAtA []byte, err error) {
+func (m *MsgRegisterCron) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -388,32 +559,41 @@ func (m *MsgRegisterContract) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRegisterContract) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRegisterCron) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRegisterContract) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRegisterCron) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.GameType != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.GameType))
+	if len(m.JsonMsg) > 0 {
+		i -= len(m.JsonMsg)
+		copy(dAtA[i:], m.JsonMsg)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.JsonMsg)))
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x2a
 	}
 	if len(m.ContractAddress) > 0 {
 		i -= len(m.ContractAddress)
 		copy(dAtA[i:], m.ContractAddress)
 		i = encodeVarintTx(dAtA, i, uint64(len(m.ContractAddress)))
 		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Description)))
+		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.GameName) > 0 {
-		i -= len(m.GameName)
-		copy(dAtA[i:], m.GameName)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.GameName)))
+	if len(m.Name) > 0 {
+		i -= len(m.Name)
+		copy(dAtA[i:], m.Name)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Name)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -427,7 +607,7 @@ func (m *MsgRegisterContract) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRegisterContractResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgRegisterCronResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -437,12 +617,12 @@ func (m *MsgRegisterContractResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRegisterContractResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRegisterCronResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRegisterContractResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRegisterCronResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -450,7 +630,7 @@ func (m *MsgRegisterContractResponse) MarshalToSizedBuffer(dAtA []byte) (int, er
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDeregisterContract) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateCronJob) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -460,18 +640,32 @@ func (m *MsgDeregisterContract) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDeregisterContract) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateCronJob) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDeregisterContract) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateCronJob) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.GameId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.GameId))
+	if len(m.JsonMsg) > 0 {
+		i -= len(m.JsonMsg)
+		copy(dAtA[i:], m.JsonMsg)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.JsonMsg)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.ContractAddress) > 0 {
+		i -= len(m.ContractAddress)
+		copy(dAtA[i:], m.ContractAddress)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ContractAddress)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.Id != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Id))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -485,7 +679,7 @@ func (m *MsgDeregisterContract) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDeregisterContractResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateCronJobResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -495,12 +689,77 @@ func (m *MsgDeregisterContractResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDeregisterContractResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateCronJobResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDeregisterContractResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateCronJobResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgDeleteCronJob) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgDeleteCronJob) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgDeleteCronJob) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ContractAddress) > 0 {
+		i -= len(m.ContractAddress)
+		copy(dAtA[i:], m.ContractAddress)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ContractAddress)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.Id != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.SecurityAddress) > 0 {
+		i -= len(m.SecurityAddress)
+		copy(dAtA[i:], m.SecurityAddress)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.SecurityAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgDeleteCronJobResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgDeleteCronJobResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgDeleteCronJobResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -519,7 +778,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgRegisterContract) Size() (n int) {
+func (m *MsgRegisterCron) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -529,7 +788,11 @@ func (m *MsgRegisterContract) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.GameName)
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Description)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -537,13 +800,14 @@ func (m *MsgRegisterContract) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.GameType != 0 {
-		n += 1 + sovTx(uint64(m.GameType))
+	l = len(m.JsonMsg)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
 
-func (m *MsgRegisterContractResponse) Size() (n int) {
+func (m *MsgRegisterCronResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -552,7 +816,7 @@ func (m *MsgRegisterContractResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgDeregisterContract) Size() (n int) {
+func (m *MsgUpdateCronJob) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -562,13 +826,50 @@ func (m *MsgDeregisterContract) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.GameId != 0 {
-		n += 1 + sovTx(uint64(m.GameId))
+	if m.Id != 0 {
+		n += 1 + sovTx(uint64(m.Id))
+	}
+	l = len(m.ContractAddress)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.JsonMsg)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
 
-func (m *MsgDeregisterContractResponse) Size() (n int) {
+func (m *MsgUpdateCronJobResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgDeleteCronJob) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SecurityAddress)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.Id != 0 {
+		n += 1 + sovTx(uint64(m.Id))
+	}
+	l = len(m.ContractAddress)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgDeleteCronJobResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -583,7 +884,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgRegisterContract) Unmarshal(dAtA []byte) error {
+func (m *MsgRegisterCron) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -606,10 +907,10 @@ func (m *MsgRegisterContract) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRegisterContract: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRegisterCron: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRegisterContract: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRegisterCron: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -646,7 +947,7 @@ func (m *MsgRegisterContract) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GameName", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -674,8 +975,255 @@ func (m *MsgRegisterContract) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.GameName = string(dAtA[iNdEx:postIndex])
+			m.Name = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContractAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ContractAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field JsonMsg", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.JsonMsg = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRegisterCronResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgRegisterCronResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgRegisterCronResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateCronJob) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateCronJob: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateCronJob: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SecurityAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SecurityAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ContractAddress", wireType)
@@ -709,10 +1257,10 @@ func (m *MsgRegisterContract) Unmarshal(dAtA []byte) error {
 			m.ContractAddress = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GameType", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field JsonMsg", wireType)
 			}
-			m.GameType = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -722,11 +1270,24 @@ func (m *MsgRegisterContract) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.GameType |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.JsonMsg = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -748,7 +1309,7 @@ func (m *MsgRegisterContract) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRegisterContractResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateCronJobResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -771,10 +1332,10 @@ func (m *MsgRegisterContractResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRegisterContractResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateCronJobResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRegisterContractResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateCronJobResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -798,7 +1359,7 @@ func (m *MsgRegisterContractResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDeregisterContract) Unmarshal(dAtA []byte) error {
+func (m *MsgDeleteCronJob) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -821,10 +1382,10 @@ func (m *MsgDeregisterContract) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDeregisterContract: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgDeleteCronJob: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDeregisterContract: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgDeleteCronJob: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -861,9 +1422,9 @@ func (m *MsgDeregisterContract) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GameId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
-			m.GameId = 0
+			m.Id = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -873,11 +1434,43 @@ func (m *MsgDeregisterContract) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.GameId |= uint64(b&0x7F) << shift
+				m.Id |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContractAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ContractAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -899,7 +1492,7 @@ func (m *MsgDeregisterContract) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDeregisterContractResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgDeleteCronJobResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -922,10 +1515,10 @@ func (m *MsgDeregisterContractResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDeregisterContractResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgDeleteCronJobResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDeregisterContractResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgDeleteCronJobResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

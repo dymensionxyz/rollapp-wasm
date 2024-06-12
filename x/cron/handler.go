@@ -10,23 +10,20 @@ import (
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 )
 
-// NewHandler ...
 func NewHandler(k keeper.Keeper) sdk.Handler {
-	// this line is used by starport scaffolding # handler/msgServer
-
 	server := keeper.NewMsgServerImpl(k)
-
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
-
 		switch msg := msg.(type) {
-		case *types.MsgRegisterContract:
-			res, err := server.RegisterContract(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgRegisterCron:
+			res, err := server.RegisterCron(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgDeregisterContract:
-			res, err := server.DeregisterContract(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgUpdateCronJob:
+			res, err := server.UpdateCronJob(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		// this line is used by starport scaffolding # 1
+		case *types.MsgDeleteCronJob:
+			res, err := server.DeleteCronJob(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)
 			return nil, errorsmod.Wrap(sdkerrors.ErrUnknownRequest, errMsg)

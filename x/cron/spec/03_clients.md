@@ -10,14 +10,16 @@ The CLI has been updated with new queries and transactions for the `x/cron` modu
 
 ### Queries
 
-| Command                   | Subcommand              | Arguments | Description                                       |
-| :------------------------ | :---------------------- | :-------- | :------------------------------------------------ |
-| `wasmrollappd query cron` | `params`                |           | Get Cron params                                   |
-| `wasmrollappd query cron` | `whitelisted-contracts` |           | Get the list of Whitelisted Contracts for cronjob |
+| Command                   | Subcommand | Arguments | Description                    |
+| :------------------------ | :--------- | :-------- | :----------------------------- |
+| `wasmrollappd query cron` | `params`   |           | Get Cron params                |
+| `wasmrollappd query cron` | `crons`    |           | Get the list of the cronJobs   |
+| `wasmrollappd query cron` | `cron`     | [id]      | Get the details of the cronJob |
 
 ### Transactions
 
-| Command                | Subcommand             | Arguments                                  | Description                           |
-| :--------------------- | :--------------------- | :----------------------------------------- | :------------------------------------ |
-| `wasmrollappd tx cron` | `register-contract`    | [game-name] [contract-address] [game-type] | Register the contract for cron job    |
-| `wasmrollappd tx cron` | `de-register-contract` | [game-id]                                  | Deregister the contract from cron job |
+| Command                | Subcommand        | Arguments                                          | Description                          |
+| :--------------------- | :---------------- | :------------------------------------------------- | :----------------------------------- |
+| `wasmrollappd tx cron` | `register-cron`   | [name] [description] [contract_address] [json_msg] | Register the cron job                |
+| `wasmrollappd tx cron` | `update-cron-job` | [id] [contract_address] [json_msg]                 | update the cron job                  |
+| `wasmrollappd tx cron` | `delete-cron-job` | [id] [contract_address]                            | delete the cron job for the contract |

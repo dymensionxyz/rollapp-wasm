@@ -1,4 +1,4 @@
-package expected
+package types
 
 import (
 	wasmvmtypes "github.com/CosmWasm/wasmd/x/wasm/types"

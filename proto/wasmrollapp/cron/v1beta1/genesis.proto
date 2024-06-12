@@ -13,8 +13,8 @@ message GenesisState {
     (gogoproto.moretags) = "yaml:\"params\"",
     (gogoproto.nullable) = false
   ];
-  repeated WhitelistedContract whitelisted_contracts  = 2  [
-    (gogoproto.moretags) = "yaml:\"whitelisted_contracts\"",
+  repeated CronJob cron_jobs  = 2  [
+    (gogoproto.moretags) = "yaml:\"cron_jobs\"",
     (gogoproto.nullable) = false
   ];
 }

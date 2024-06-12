@@ -4,28 +4,24 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-
-	// this line is used by starport scaffolding # 1
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	authzcodec "github.com/cosmos/cosmos-sdk/x/authz/codec"
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	// this line is used by starport scaffolding # 2
-	cdc.RegisterConcrete(&MsgRegisterContract{}, "wasmrollapp/cron/MsgRegisterContract", nil)
-	cdc.RegisterConcrete(&MsgDeregisterContract{}, "wasmrollapp/cron/MsgDeregisterContract", nil)
-
+	cdc.RegisterConcrete(&MsgRegisterCron{}, "wasmrollapp/cron/MsgRegisterCron", nil)
+	cdc.RegisterConcrete(&MsgUpdateCronJob{}, "wasmrollapp/cron/MsgUpdateCronJob", nil)
+	cdc.RegisterConcrete(&MsgDeleteCronJob{}, "wasmrollapp/cron/MsgDeleteCronJob", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
-	// this line is used by starport scaffolding # 3
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
-		&MsgRegisterContract{},
-		&MsgDeregisterContract{},
+		&MsgRegisterCron{},
+		&MsgUpdateCronJob{},
+		&MsgDeleteCronJob{},
 	)
-
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 
