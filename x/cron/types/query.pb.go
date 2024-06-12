@@ -113,23 +113,24 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
-// QueryWhitelistedContractsRequest is request type for the Query/WhitelistedContracts RPC method.
-type QueryWhitelistedContractsRequest struct {
-	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+// QueryCronRequest is request type for the Query/Cron RPC method.
+type QueryCronRequest struct {
+	// id defines the id of the cron to query.
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *QueryWhitelistedContractsRequest) Reset()         { *m = QueryWhitelistedContractsRequest{} }
-func (m *QueryWhitelistedContractsRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryWhitelistedContractsRequest) ProtoMessage()    {}
-func (*QueryWhitelistedContractsRequest) Descriptor() ([]byte, []int) {
+func (m *QueryCronRequest) Reset()         { *m = QueryCronRequest{} }
+func (m *QueryCronRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCronRequest) ProtoMessage()    {}
+func (*QueryCronRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_e02468b100a941b9, []int{2}
 }
-func (m *QueryWhitelistedContractsRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryCronRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryWhitelistedContractsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCronRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryWhitelistedContractsRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCronRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -139,43 +140,137 @@ func (m *QueryWhitelistedContractsRequest) XXX_Marshal(b []byte, deterministic b
 		return b[:n], nil
 	}
 }
-func (m *QueryWhitelistedContractsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryWhitelistedContractsRequest.Merge(m, src)
+func (m *QueryCronRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCronRequest.Merge(m, src)
 }
-func (m *QueryWhitelistedContractsRequest) XXX_Size() int {
+func (m *QueryCronRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryWhitelistedContractsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryWhitelistedContractsRequest.DiscardUnknown(m)
+func (m *QueryCronRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCronRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryWhitelistedContractsRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryCronRequest proto.InternalMessageInfo
 
-func (m *QueryWhitelistedContractsRequest) GetPagination() *query.PageRequest {
+func (m *QueryCronRequest) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+// QueryCronResponse is response type for the Query/Cron RPC method.
+type QueryCronResponse struct {
+	// cron defines the cron of the requested id.
+	CronJob CronJob `protobuf:"bytes,1,opt,name=cron_job,json=cronJob,proto3" json:"cron_job"`
+}
+
+func (m *QueryCronResponse) Reset()         { *m = QueryCronResponse{} }
+func (m *QueryCronResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCronResponse) ProtoMessage()    {}
+func (*QueryCronResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e02468b100a941b9, []int{3}
+}
+func (m *QueryCronResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCronResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCronResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCronResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCronResponse.Merge(m, src)
+}
+func (m *QueryCronResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCronResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCronResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCronResponse proto.InternalMessageInfo
+
+func (m *QueryCronResponse) GetCronJob() CronJob {
+	if m != nil {
+		return m.CronJob
+	}
+	return CronJob{}
+}
+
+// QueryCronsRequest is request type for the Query/Crons RPC method.
+type QueryCronsRequest struct {
+	// pagination defines an optional pagination for the request.
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryCronsRequest) Reset()         { *m = QueryCronsRequest{} }
+func (m *QueryCronsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCronsRequest) ProtoMessage()    {}
+func (*QueryCronsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e02468b100a941b9, []int{4}
+}
+func (m *QueryCronsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCronsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCronsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCronsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCronsRequest.Merge(m, src)
+}
+func (m *QueryCronsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCronsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCronsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCronsRequest proto.InternalMessageInfo
+
+func (m *QueryCronsRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-// QueryWhitelistedContractsResponse is response type for the Query/WhitelistedContracts RPC method.
-type QueryWhitelistedContractsResponse struct {
-	WhilistedContracts []WhitelistedContract `protobuf:"bytes,1,rep,name=whilisted_contracts,json=whilistedContracts,proto3" json:"whilisted_contracts"`
-	Pagination         *query.PageResponse   `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+// QueryCronsResponse is response type for the Query/Crons RPC method.
+type QueryCronsResponse struct {
+	// crons defines all the crons.
+	CronJobs []CronJob `protobuf:"bytes,1,rep,name=cron_jobs,json=cronJobs,proto3" json:"cron_jobs"`
+	// pagination defines the pagination in the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryWhitelistedContractsResponse) Reset()         { *m = QueryWhitelistedContractsResponse{} }
-func (m *QueryWhitelistedContractsResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryWhitelistedContractsResponse) ProtoMessage()    {}
-func (*QueryWhitelistedContractsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e02468b100a941b9, []int{3}
+func (m *QueryCronsResponse) Reset()         { *m = QueryCronsResponse{} }
+func (m *QueryCronsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCronsResponse) ProtoMessage()    {}
+func (*QueryCronsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e02468b100a941b9, []int{5}
 }
-func (m *QueryWhitelistedContractsResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryCronsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryWhitelistedContractsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCronsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryWhitelistedContractsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCronsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -185,26 +280,26 @@ func (m *QueryWhitelistedContractsResponse) XXX_Marshal(b []byte, deterministic 
 		return b[:n], nil
 	}
 }
-func (m *QueryWhitelistedContractsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryWhitelistedContractsResponse.Merge(m, src)
+func (m *QueryCronsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCronsResponse.Merge(m, src)
 }
-func (m *QueryWhitelistedContractsResponse) XXX_Size() int {
+func (m *QueryCronsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryWhitelistedContractsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryWhitelistedContractsResponse.DiscardUnknown(m)
+func (m *QueryCronsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCronsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryWhitelistedContractsResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryCronsResponse proto.InternalMessageInfo
 
-func (m *QueryWhitelistedContractsResponse) GetWhilistedContracts() []WhitelistedContract {
+func (m *QueryCronsResponse) GetCronJobs() []CronJob {
 	if m != nil {
-		return m.WhilistedContracts
+		return m.CronJobs
 	}
 	return nil
 }
 
-func (m *QueryWhitelistedContractsResponse) GetPagination() *query.PageResponse {
+func (m *QueryCronsResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
@@ -214,8 +309,10 @@ func (m *QueryWhitelistedContractsResponse) GetPagination() *query.PageResponse 
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "wasmrollapp.cron.v1beta1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "wasmrollapp.cron.v1beta1.QueryParamsResponse")
-	proto.RegisterType((*QueryWhitelistedContractsRequest)(nil), "wasmrollapp.cron.v1beta1.QueryWhitelistedContractsRequest")
-	proto.RegisterType((*QueryWhitelistedContractsResponse)(nil), "wasmrollapp.cron.v1beta1.QueryWhitelistedContractsResponse")
+	proto.RegisterType((*QueryCronRequest)(nil), "wasmrollapp.cron.v1beta1.QueryCronRequest")
+	proto.RegisterType((*QueryCronResponse)(nil), "wasmrollapp.cron.v1beta1.QueryCronResponse")
+	proto.RegisterType((*QueryCronsRequest)(nil), "wasmrollapp.cron.v1beta1.QueryCronsRequest")
+	proto.RegisterType((*QueryCronsResponse)(nil), "wasmrollapp.cron.v1beta1.QueryCronsResponse")
 }
 
 func init() {
@@ -223,37 +320,39 @@ func init() {
 }
 
 var fileDescriptor_e02468b100a941b9 = []byte{
-	// 480 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x53, 0x4f, 0x6b, 0x13, 0x41,
-	0x14, 0xcf, 0x44, 0xcd, 0x61, 0x7a, 0x72, 0x5a, 0x21, 0x06, 0xd9, 0xae, 0xeb, 0xbf, 0x20, 0x66,
-	0x86, 0xc4, 0x83, 0x50, 0xc1, 0x43, 0x3c, 0x7a, 0xd1, 0x80, 0x08, 0x82, 0xca, 0x64, 0x33, 0x6c,
-	0x16, 0x76, 0xe7, 0x6d, 0x77, 0x26, 0xa6, 0xeb, 0x4d, 0xbf, 0x80, 0x82, 0x5f, 0xaa, 0x17, 0xa1,
-	0xe0, 0xc5, 0x53, 0x91, 0xc4, 0x4b, 0xaf, 0x7e, 0x02, 0xd9, 0x99, 0x49, 0xb6, 0x45, 0xb7, 0x29,
-	0xde, 0x42, 0xe6, 0xf7, 0xf7, 0xbd, 0xb7, 0xf8, 0xf6, 0x9c, 0xab, 0x34, 0x87, 0x24, 0xe1, 0x59,
-	0xc6, 0xc2, 0x1c, 0x24, 0x7b, 0xdf, 0x1f, 0x0b, 0xcd, 0xfb, 0x6c, 0x7f, 0x26, 0xf2, 0x82, 0x66,
-	0x39, 0x68, 0x20, 0xed, 0x53, 0x28, 0x5a, 0xa2, 0xa8, 0x43, 0x75, 0x76, 0x22, 0x88, 0xc0, 0x80,
-	0x58, 0xf9, 0xcb, 0xe2, 0x3b, 0x37, 0x22, 0x80, 0x28, 0x11, 0x8c, 0x67, 0x31, 0xe3, 0x52, 0x82,
-	0xe6, 0x3a, 0x06, 0xa9, 0xdc, 0xeb, 0xfd, 0x10, 0x54, 0x0a, 0x8a, 0x8d, 0xb9, 0x12, 0xd6, 0x66,
-	0x6d, 0x9a, 0xf1, 0x28, 0x96, 0x06, 0xec, 0xb0, 0x77, 0x6a, 0xf3, 0x65, 0x3c, 0xe7, 0xe9, 0x4a,
-	0xf2, 0x56, 0x2d, 0xcc, 0xa4, 0x35, 0xa0, 0x60, 0x07, 0x93, 0x17, 0xa5, 0xdb, 0x73, 0xc3, 0x1c,
-	0x89, 0xfd, 0x99, 0x50, 0x3a, 0x78, 0x89, 0xb7, 0xcf, 0xfc, 0xab, 0x32, 0x90, 0x4a, 0x90, 0x27,
-	0xb8, 0x65, 0x1d, 0xda, 0xc8, 0x47, 0xdd, 0xad, 0x81, 0x4f, 0xeb, 0x66, 0x40, 0x2d, 0x73, 0x78,
-	0xf9, 0xf0, 0x78, 0xb7, 0x31, 0x72, 0xac, 0xe0, 0x23, 0xc2, 0xbe, 0xd1, 0x7d, 0x35, 0x8d, 0xb5,
-	0x48, 0x62, 0xa5, 0xc5, 0xe4, 0x29, 0x48, 0x9d, 0xf3, 0x50, 0xaf, 0xbc, 0xc9, 0x1b, 0x8c, 0xab,
-	0xc6, 0xce, 0xe8, 0x2e, 0xb5, 0xe3, 0xa1, 0xe5, 0x78, 0xa8, 0xdd, 0x42, 0xe5, 0x14, 0x09, 0xc7,
-	0x1d, 0x5e, 0xfb, 0x7d, 0xbc, 0x7b, 0xb5, 0xe0, 0x69, 0xb2, 0x17, 0x54, 0x1a, 0xc1, 0xe8, 0x94,
-	0x60, 0x70, 0x82, 0xf0, 0xcd, 0x73, 0x32, 0xb8, 0xa6, 0x13, 0xbc, 0x3d, 0x9f, 0xc6, 0xf6, 0xf5,
-	0x5d, 0xb8, 0x7a, 0x6e, 0x23, 0xff, 0x52, 0x77, 0x6b, 0xd0, 0xab, 0xaf, 0xfd, 0x0f, 0x51, 0x37,
-	0x03, 0xb2, 0xd6, 0x5b, 0xbb, 0x91, 0xb7, 0x67, 0xaa, 0x36, 0x4d, 0xd5, 0x7b, 0x1b, 0xab, 0xda,
-	0x88, 0x17, 0xe8, 0x3a, 0x38, 0x69, 0xe2, 0x2b, 0xa6, 0x2b, 0xf9, 0x8c, 0x70, 0xcb, 0xae, 0x84,
-	0x3c, 0xa8, 0x4f, 0xff, 0xf7, 0x25, 0x74, 0x7a, 0x17, 0x44, 0xdb, 0x50, 0x41, 0xf7, 0xd3, 0xf7,
-	0x5f, 0x5f, 0x9b, 0x01, 0xf1, 0xd9, 0x86, 0x1b, 0x25, 0xdf, 0x10, 0xbe, 0x5e, 0xbb, 0x07, 0xb2,
-	0xb7, 0xc1, 0xf6, 0x9c, 0x03, 0xea, 0x3c, 0xfe, 0x2f, 0xae, 0x2b, 0xf0, 0xc8, 0x14, 0xe8, 0x13,
-	0x56, 0x5f, 0x60, 0x5e, 0xf1, 0xab, 0xd3, 0x18, 0x3e, 0x3b, 0x5c, 0x78, 0xe8, 0x68, 0xe1, 0xa1,
-	0x9f, 0x0b, 0x0f, 0x7d, 0x59, 0x7a, 0x8d, 0xa3, 0xa5, 0xd7, 0xf8, 0xb1, 0xf4, 0x1a, 0xaf, 0xfb,
-	0x51, 0xac, 0xa7, 0xb3, 0x31, 0x0d, 0x21, 0x65, 0x93, 0x22, 0x15, 0x52, 0xc5, 0x20, 0x0f, 0x8a,
-	0x0f, 0xcc, 0xa9, 0xf7, 0x4a, 0x27, 0x76, 0x60, 0x4d, 0x74, 0x91, 0x09, 0x35, 0x6e, 0x99, 0x8f,
-	0xf3, 0xe1, 0x9f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xa7, 0xd0, 0xea, 0xbc, 0x8a, 0x04, 0x00, 0x00,
+	// 512 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x93, 0x4f, 0x6b, 0x13, 0x41,
+	0x18, 0xc6, 0x33, 0x69, 0x1a, 0xeb, 0x08, 0xa2, 0x63, 0x0f, 0x25, 0xc8, 0x36, 0x1d, 0x6b, 0x5b,
+	0x6a, 0x3a, 0x43, 0xea, 0xdd, 0x43, 0x14, 0x05, 0xbd, 0x68, 0x40, 0x04, 0x3d, 0xc8, 0x6c, 0x32,
+	0xac, 0x2b, 0xd9, 0x79, 0xb7, 0x3b, 0x1b, 0x6d, 0x14, 0x2f, 0x5e, 0x45, 0x14, 0xfc, 0x08, 0x7e,
+	0x08, 0xbf, 0x42, 0x8f, 0x05, 0x2f, 0x9e, 0x44, 0x12, 0x3f, 0x88, 0xcc, 0x9f, 0xb4, 0x5b, 0x64,
+	0xcd, 0x7a, 0xdb, 0x3f, 0xcf, 0xfb, 0x3c, 0xbf, 0x79, 0xdf, 0x77, 0xf0, 0xe6, 0x6b, 0xa1, 0x93,
+	0x0c, 0x46, 0x23, 0x91, 0xa6, 0x7c, 0x90, 0x81, 0xe2, 0xaf, 0xba, 0xa1, 0xcc, 0x45, 0x97, 0x1f,
+	0x8c, 0x65, 0x36, 0x61, 0x69, 0x06, 0x39, 0x90, 0xb5, 0x82, 0x8a, 0x19, 0x15, 0xf3, 0xaa, 0xd6,
+	0x6a, 0x04, 0x11, 0x58, 0x11, 0x37, 0x4f, 0x4e, 0xdf, 0xba, 0x1a, 0x01, 0x44, 0x23, 0xc9, 0x45,
+	0x1a, 0x73, 0xa1, 0x14, 0xe4, 0x22, 0x8f, 0x41, 0x69, 0xff, 0x77, 0x77, 0x00, 0x3a, 0x01, 0xcd,
+	0x43, 0xa1, 0xa5, 0x8b, 0x39, 0x09, 0x4d, 0x45, 0x14, 0x2b, 0x2b, 0xf6, 0xda, 0xeb, 0xa5, 0x7c,
+	0xa9, 0xc8, 0x44, 0x32, 0xb7, 0xbc, 0x56, 0x2a, 0xb3, 0xb4, 0x56, 0x44, 0x57, 0x31, 0x79, 0x64,
+	0xd2, 0x1e, 0xda, 0xca, 0xbe, 0x3c, 0x18, 0x4b, 0x9d, 0xd3, 0xc7, 0xf8, 0xca, 0x99, 0xaf, 0x3a,
+	0x05, 0xa5, 0x25, 0xb9, 0x85, 0x9b, 0x2e, 0x61, 0x0d, 0xb5, 0xd1, 0xce, 0x85, 0xfd, 0x36, 0x2b,
+	0xeb, 0x01, 0x73, 0x95, 0xbd, 0xc6, 0xd1, 0xcf, 0xf5, 0x5a, 0xdf, 0x57, 0x51, 0x8a, 0x2f, 0x59,
+	0xdb, 0xdb, 0x19, 0x28, 0x1f, 0x45, 0x2e, 0xe2, 0x7a, 0x3c, 0xb4, 0x7e, 0x8d, 0x7e, 0x3d, 0x1e,
+	0xd2, 0x27, 0xf8, 0x72, 0x41, 0xe3, 0x83, 0x7b, 0x78, 0xc5, 0xb8, 0x3f, 0x7f, 0x09, 0xa1, 0x8f,
+	0xde, 0x28, 0x8f, 0x36, 0x95, 0xf7, 0x21, 0xf4, 0xd9, 0xe7, 0x06, 0xee, 0x95, 0x3e, 0x2b, 0x18,
+	0xcf, 0x0f, 0x4a, 0xee, 0x62, 0x7c, 0xda, 0x5e, 0x6f, 0xbd, 0xc5, 0xdc, 0x2c, 0x98, 0x99, 0x05,
+	0x73, 0x23, 0x3f, 0x3d, 0x56, 0x24, 0x7d, 0x6d, 0xbf, 0x50, 0x49, 0xbf, 0x22, 0xdf, 0x47, 0xef,
+	0xee, 0xb9, 0xef, 0xe0, 0xf3, 0x73, 0x6e, 0xd3, 0xb3, 0xa5, 0xff, 0x01, 0x5f, 0xf1, 0xe0, 0x9a,
+	0xdc, 0x3b, 0x03, 0x59, 0xb7, 0x90, 0xdb, 0x0b, 0x21, 0x1d, 0x42, 0x91, 0x72, 0xff, 0xdb, 0x12,
+	0x5e, 0xb6, 0x94, 0xe4, 0x13, 0xc2, 0x4d, 0x37, 0x22, 0xd2, 0x29, 0x07, 0xfa, 0x7b, 0x33, 0x5a,
+	0x7b, 0x15, 0xd5, 0x2e, 0x9d, 0xee, 0xbc, 0xff, 0xfe, 0xfb, 0x4b, 0x9d, 0x92, 0x36, 0x5f, 0xb0,
+	0xb3, 0xe4, 0x23, 0xc2, 0x0d, 0xd3, 0x00, 0xb2, 0xbb, 0x20, 0xa1, 0xb0, 0x3c, 0xad, 0x1b, 0x95,
+	0xb4, 0x9e, 0xa5, 0x63, 0x59, 0xb6, 0xc8, 0x26, 0xff, 0xe7, 0xc5, 0xd0, 0xfc, 0x6d, 0x3c, 0x7c,
+	0x47, 0x3e, 0x20, 0xbc, 0x6c, 0x87, 0x49, 0xaa, 0x84, 0x9c, 0xf4, 0xa7, 0x53, 0x4d, 0xec, 0x91,
+	0xb6, 0x2d, 0xd2, 0x06, 0x59, 0x5f, 0x80, 0xd4, 0x7b, 0x70, 0x34, 0x0d, 0xd0, 0xf1, 0x34, 0x40,
+	0xbf, 0xa6, 0x01, 0xfa, 0x3c, 0x0b, 0x6a, 0xc7, 0xb3, 0xa0, 0xf6, 0x63, 0x16, 0xd4, 0x9e, 0x76,
+	0xa3, 0x38, 0x7f, 0x31, 0x0e, 0xd9, 0x00, 0x12, 0x3e, 0x9c, 0x24, 0x52, 0xe9, 0x18, 0xd4, 0xe1,
+	0xe4, 0x0d, 0xf7, 0x6e, 0x7b, 0xc6, 0x99, 0x1f, 0x3a, 0xd3, 0x7c, 0x92, 0x4a, 0x1d, 0x36, 0xed,
+	0xd5, 0xbf, 0xf9, 0x27, 0x00, 0x00, 0xff, 0xff, 0x76, 0xf6, 0x59, 0x28, 0xe8, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -270,8 +369,10 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// WhitelistedContracts queries the whitelisted contracts of the module.
-	QueryWhitelistedContracts(ctx context.Context, in *QueryWhitelistedContractsRequest, opts ...grpc.CallOption) (*QueryWhitelistedContractsResponse, error)
+	// Cron queries a cron by id.
+	Cron(ctx context.Context, in *QueryCronRequest, opts ...grpc.CallOption) (*QueryCronResponse, error)
+	// Crons queries all the crons.
+	Crons(ctx context.Context, in *QueryCronsRequest, opts ...grpc.CallOption) (*QueryCronsResponse, error)
 }
 
 type queryClient struct {
@@ -291,9 +392,18 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
-func (c *queryClient) QueryWhitelistedContracts(ctx context.Context, in *QueryWhitelistedContractsRequest, opts ...grpc.CallOption) (*QueryWhitelistedContractsResponse, error) {
-	out := new(QueryWhitelistedContractsResponse)
-	err := c.cc.Invoke(ctx, "/wasmrollapp.cron.v1beta1.Query/QueryWhitelistedContracts", in, out, opts...)
+func (c *queryClient) Cron(ctx context.Context, in *QueryCronRequest, opts ...grpc.CallOption) (*QueryCronResponse, error) {
+	out := new(QueryCronResponse)
+	err := c.cc.Invoke(ctx, "/wasmrollapp.cron.v1beta1.Query/Cron", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Crons(ctx context.Context, in *QueryCronsRequest, opts ...grpc.CallOption) (*QueryCronsResponse, error) {
+	out := new(QueryCronsResponse)
+	err := c.cc.Invoke(ctx, "/wasmrollapp.cron.v1beta1.Query/Crons", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -304,8 +414,10 @@ func (c *queryClient) QueryWhitelistedContracts(ctx context.Context, in *QueryWh
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// WhitelistedContracts queries the whitelisted contracts of the module.
-	QueryWhitelistedContracts(context.Context, *QueryWhitelistedContractsRequest) (*QueryWhitelistedContractsResponse, error)
+	// Cron queries a cron by id.
+	Cron(context.Context, *QueryCronRequest) (*QueryCronResponse, error)
+	// Crons queries all the crons.
+	Crons(context.Context, *QueryCronsRequest) (*QueryCronsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -315,8 +427,11 @@ type UnimplementedQueryServer struct {
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
-func (*UnimplementedQueryServer) QueryWhitelistedContracts(ctx context.Context, req *QueryWhitelistedContractsRequest) (*QueryWhitelistedContractsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryWhitelistedContracts not implemented")
+func (*UnimplementedQueryServer) Cron(ctx context.Context, req *QueryCronRequest) (*QueryCronResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Cron not implemented")
+}
+func (*UnimplementedQueryServer) Crons(ctx context.Context, req *QueryCronsRequest) (*QueryCronsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Crons not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -341,20 +456,38 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryWhitelistedContracts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryWhitelistedContractsRequest)
+func _Query_Cron_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCronRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryWhitelistedContracts(ctx, in)
+		return srv.(QueryServer).Cron(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/wasmrollapp.cron.v1beta1.Query/QueryWhitelistedContracts",
+		FullMethod: "/wasmrollapp.cron.v1beta1.Query/Cron",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryWhitelistedContracts(ctx, req.(*QueryWhitelistedContractsRequest))
+		return srv.(QueryServer).Cron(ctx, req.(*QueryCronRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Crons_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCronsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Crons(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/wasmrollapp.cron.v1beta1.Query/Crons",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Crons(ctx, req.(*QueryCronsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -368,8 +501,12 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Params_Handler,
 		},
 		{
-			MethodName: "QueryWhitelistedContracts",
-			Handler:    _Query_QueryWhitelistedContracts_Handler,
+			MethodName: "Cron",
+			Handler:    _Query_Cron_Handler,
+		},
+		{
+			MethodName: "Crons",
+			Handler:    _Query_Crons_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -432,7 +569,7 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryWhitelistedContractsRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryCronRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -442,12 +579,73 @@ func (m *QueryWhitelistedContractsRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryWhitelistedContractsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCronRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryWhitelistedContractsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCronRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Id != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryCronResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCronResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCronResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.CronJob.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryCronsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCronsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCronsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -467,7 +665,7 @@ func (m *QueryWhitelistedContractsRequest) MarshalToSizedBuffer(dAtA []byte) (in
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryWhitelistedContractsResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryCronsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -477,12 +675,12 @@ func (m *QueryWhitelistedContractsResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryWhitelistedContractsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCronsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryWhitelistedContractsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCronsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -499,10 +697,10 @@ func (m *QueryWhitelistedContractsResponse) MarshalToSizedBuffer(dAtA []byte) (i
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.WhilistedContracts) > 0 {
-		for iNdEx := len(m.WhilistedContracts) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.CronJobs) > 0 {
+		for iNdEx := len(m.CronJobs) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.WhilistedContracts[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.CronJobs[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -547,7 +745,30 @@ func (m *QueryParamsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryWhitelistedContractsRequest) Size() (n int) {
+func (m *QueryCronRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Id != 0 {
+		n += 1 + sovQuery(uint64(m.Id))
+	}
+	return n
+}
+
+func (m *QueryCronResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.CronJob.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryCronsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -560,14 +781,14 @@ func (m *QueryWhitelistedContractsRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryWhitelistedContractsResponse) Size() (n int) {
+func (m *QueryCronsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.WhilistedContracts) > 0 {
-		for _, e := range m.WhilistedContracts {
+	if len(m.CronJobs) > 0 {
+		for _, e := range m.CronJobs {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -718,7 +939,7 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryWhitelistedContractsRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryCronRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -741,10 +962,162 @@ func (m *QueryWhitelistedContractsRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryWhitelistedContractsRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCronRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryWhitelistedContractsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCronRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCronResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCronResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCronResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CronJob", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.CronJob.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCronsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCronsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCronsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -804,7 +1177,7 @@ func (m *QueryWhitelistedContractsRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryWhitelistedContractsResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryCronsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -827,15 +1200,15 @@ func (m *QueryWhitelistedContractsResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryWhitelistedContractsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCronsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryWhitelistedContractsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCronsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field WhilistedContracts", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CronJobs", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -862,8 +1235,8 @@ func (m *QueryWhitelistedContractsResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.WhilistedContracts = append(m.WhilistedContracts, WhitelistedContract{})
-			if err := m.WhilistedContracts[len(m.WhilistedContracts)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.CronJobs = append(m.CronJobs, CronJob{})
+			if err := m.CronJobs[len(m.CronJobs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

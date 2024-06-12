@@ -1,19 +1,24 @@
 syntax = "proto3";
 package wasmrollapp.cron.v1beta1;
 
+import "gogoproto/gogo.proto";
+
 option go_package = "github.com/dymensionxyz/rollapp-wasm/x/cron/types";
 
-message WhitelistedContract {
-    // game_id is the unique identifier for the game
-    uint64 game_id = 1;
-    // security_address is the address of the security contract
-    string security_address = 2;
-    // contract_admin is the address of the contract admin
-    string contract_admin = 3;
-    // game_name is the name of the game
-    string game_name = 4;
-    // contract_address is the address of the contract
-    string contract_address = 5;
-    // game_type is the type of the game, single player or multiplayer or both
-    uint64 game_type = 6;
-}
+message CronJob {
+    // id is the unique identifier for the cron job
+    uint64 id = 1;
+    // name is the name of the cron job
+    string name = 2;
+    // description is the description of the cron job
+    string description = 3;
+    // Msgs that will be executed every period amount of time
+    repeated MsgContractCron msg_contract_cron = 4 [(gogoproto.nullable) = false];
+  }
+  
+  message MsgContractCron {
+    // Contract is the address of the smart contract
+    string contract_address = 1;
+    // Msg is json encoded message to be passed to the contract
+    string json_msg = 2;
+  }

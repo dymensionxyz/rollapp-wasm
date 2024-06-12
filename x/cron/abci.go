@@ -3,20 +3,18 @@ package cron
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/keeper"
-	cronTypes "github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 )
 
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
-	whitelistedContracts := k.GetWhitelistedContracts(ctx)
-
-	for _, data := range whitelistedContracts {
-		if data.GameType == 1 {
-			k.SinglePlayer(ctx, data.ContractAddress, cronTypes.ResolveSinglePlayer, data.GameName)
-		} else if data.GameType == 2 {
-			k.MultiPlayer(ctx, data.ContractAddress, cronTypes.SetupMultiPlayer, cronTypes.ResolveMultiPlayer, data.GameName)
-		} else {
-			k.SinglePlayer(ctx, data.ContractAddress, cronTypes.ResolveSinglePlayer, data.GameName)
-			k.MultiPlayer(ctx, data.ContractAddress, cronTypes.SetupMultiPlayer, cronTypes.ResolveMultiPlayer, data.GameName)
+	crons := k.GetCronJobs(ctx)
+	for _, cron := range crons {
+		for _, job := range cron.MsgContractCron {
+			err := k.SudoContractCall(ctx, job.ContractAddress, []byte(job.JsonMsg))
+			if err != nil {
+				ctx.Logger().Error("Cronjob failed for: ", cron.Name, " contract: ", job.ContractAddress)
+			} else {
+				ctx.Logger().Error("Cronjob success for: ", cron.Name, " contract: ", job.ContractAddress)
+			}
 		}
 	}
 }

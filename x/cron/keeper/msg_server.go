@@ -4,7 +4,6 @@ import (
 	"context"
 	errorsmod "cosmossdk.io/errors"
 	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
@@ -22,87 +21,113 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
-func (k msgServer) RegisterContract(goCtx context.Context, msg *types.MsgRegisterContract) (*types.MsgRegisterContractResponse, error) {
+func (k msgServer) RegisterCron(goCtx context.Context, msg *types.MsgRegisterCron) (*types.MsgRegisterCronResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	// check if the cron is globally enabled
 	params := k.GetParams(ctx)
 	if !params.EnableCron {
-		return &types.MsgRegisterContractResponse{}, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "Cron is disabled")
+		return &types.MsgRegisterCronResponse{}, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "Cron is disabled")
 	}
-
 	if err := msg.ValidateBasic(); err != nil {
 		ctx.Logger().Error(fmt.Sprintf("request invalid: %s", err))
-		return &types.MsgRegisterContractResponse{}, err
+		return &types.MsgRegisterCronResponse{}, err
 	}
-
 	// Validation such that only the user who instantiated the contract can register contract
 	contractAddr, err := sdk.AccAddressFromBech32(msg.ContractAddress)
 	if err != nil {
-		return &types.MsgRegisterContractResponse{}, sdkerrors.ErrInvalidAddress
+		return &types.MsgRegisterCronResponse{}, sdkerrors.ErrInvalidAddress
 	}
 	contractInfo := k.conOps.GetContractInfo(ctx, contractAddr)
-
+	if contractInfo == nil {
+		return &types.MsgRegisterCronResponse{}, errorsmod.Wrapf(sdkerrors.ErrNotFound, "contract not found")
+	}
 	// check if sender is authorized
 	exists := k.CheckSecurityAddress(ctx, msg.SecurityAddress)
 	if !exists {
-		return &types.MsgRegisterContractResponse{}, sdkerrors.ErrUnauthorized
+		return &types.MsgRegisterCronResponse{}, sdkerrors.ErrUnauthorized
 	}
-
-	allContracts := k.GetWhitelistedContracts(ctx)
-
-	for _, data := range allContracts {
-		if data.ContractAddress == msg.ContractAddress {
-			return &types.MsgRegisterContractResponse{}, errorsmod.Wrapf(sdkerrors.ErrNotFound, "contract already registered")
-		}
-	}
-	gameID := k.GetGameID(ctx)
-	contract := types.WhitelistedContract{
-		GameId:          gameID + 1,
-		SecurityAddress: msg.SecurityAddress,
-		ContractAdmin:   contractInfo.Admin,
-		GameName:        msg.GameName,
+	// create a struct of type MsgContractCron
+	msgContractCron := types.MsgContractCron{
 		ContractAddress: msg.ContractAddress,
-		GameType:        msg.GameType,
+		JsonMsg:         msg.JsonMsg,
 	}
-
-	k.SetContract(ctx, contract)
-	k.SetGameID(ctx, gameID+1)
-
-	return &types.MsgRegisterContractResponse{}, nil
+	cronId := k.GetCronID(ctx)
+	cron := types.CronJob{
+		Id:              cronId + 1,
+		Name:            msg.Name,
+		Description:     msg.Description,
+		MsgContractCron: []types.MsgContractCron{msgContractCron},
+	}
+	k.SetCronJob(ctx, cron)
+	k.SetCronID(ctx, cronId+1)
+	return &types.MsgRegisterCronResponse{}, nil
 }
 
-func (k msgServer) DeregisterContract(goCtx context.Context, msg *types.MsgDeregisterContract) (*types.MsgDeregisterContractResponse, error) {
+func (k msgServer) UpdateCronJob(goCtx context.Context, msg *types.MsgUpdateCronJob) (*types.MsgUpdateCronJobResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	params := k.GetParams(ctx)
 	if !params.EnableCron {
-		return &types.MsgDeregisterContractResponse{}, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "Cron is disabled")
+		return &types.MsgUpdateCronJobResponse{}, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "Cron is disabled")
 	}
-
 	if err := msg.ValidateBasic(); err != nil {
 		ctx.Logger().Error(fmt.Sprintf("request invalid: %s", err))
-		return &types.MsgDeregisterContractResponse{}, err
+		return &types.MsgUpdateCronJobResponse{}, err
 	}
-
-	// Get Game info from Game Id
-	gameInfo, found := k.GetWhitelistedContract(ctx, msg.GameId)
-	if !found {
-		return &types.MsgDeregisterContractResponse{}, errorsmod.Wrapf(sdkerrors.ErrNotFound, "no contract found for this game ID")
-	}
-
-	// Validation such that only the user who instantiated the contract can register contract
-	contractAddr, err := sdk.AccAddressFromBech32(gameInfo.ContractAddress)
-	if err != nil {
-		return &types.MsgDeregisterContractResponse{}, sdkerrors.ErrInvalidAddress
-	}
-	contractInfo := k.conOps.GetContractInfo(ctx, contractAddr)
-
 	// check if sender is authorized
 	exists := k.CheckSecurityAddress(ctx, msg.SecurityAddress)
-	if !exists && contractInfo.Admin != msg.SecurityAddress {
-		return &types.MsgDeregisterContractResponse{}, sdkerrors.ErrUnauthorized
+	if !exists {
+		return &types.MsgUpdateCronJobResponse{}, sdkerrors.ErrUnauthorized
 	}
+	// Get the cron job
+	cronJob, found := k.GetCronJob(ctx, msg.Id)
+	if !found {
+		return &types.MsgUpdateCronJobResponse{}, errorsmod.Wrapf(sdkerrors.ErrNotFound, "cron job not found")
+	}
+	for _, cron := range cronJob.MsgContractCron {
+		if cron.ContractAddress == msg.ContractAddress {
+			return &types.MsgUpdateCronJobResponse{}, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "contract address already exists")
+		}
+	}
+	cronJob.MsgContractCron = append(cronJob.MsgContractCron, types.MsgContractCron{
+		ContractAddress: msg.ContractAddress,
+		JsonMsg:         msg.JsonMsg,
+	})
+	k.SetCronJob(ctx, cronJob)
+	return &types.MsgUpdateCronJobResponse{}, nil
+}
 
-	k.DeleteContract(ctx, msg.GameId)
-
-	return &types.MsgDeregisterContractResponse{}, nil
+func (k msgServer) DeleteCronJob(goCtx context.Context, msg *types.MsgDeleteCronJob) (*types.MsgDeleteCronJobResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	params := k.GetParams(ctx)
+	if !params.EnableCron {
+		return &types.MsgDeleteCronJobResponse{}, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "Cron is disabled")
+	}
+	if err := msg.ValidateBasic(); err != nil {
+		ctx.Logger().Error(fmt.Sprintf("request invalid: %s", err))
+		return &types.MsgDeleteCronJobResponse{}, err
+	}
+	// check if sender is authorized
+	exists := k.CheckSecurityAddress(ctx, msg.SecurityAddress)
+	if !exists {
+		return &types.MsgDeleteCronJobResponse{}, sdkerrors.ErrUnauthorized
+	}
+	// Get the cron job
+	cronJob, found := k.GetCronJob(ctx, msg.Id)
+	if !found {
+		return &types.MsgDeleteCronJobResponse{}, errorsmod.Wrapf(sdkerrors.ErrNotFound, "cron job not found")
+	}
+	// check if contract address exists in the cron job
+	var foundContract bool
+	for i, cron := range cronJob.MsgContractCron {
+		if cron.ContractAddress == msg.ContractAddress {
+			cronJob.MsgContractCron = append(cronJob.MsgContractCron[:i], cronJob.MsgContractCron[i+1:]...)
+			foundContract = true
+			break
+		}
+	}
+	if !foundContract {
+		return &types.MsgDeleteCronJobResponse{}, errorsmod.Wrapf(sdkerrors.ErrNotFound, "contract address not found")
+	}
+	k.SetCronJob(ctx, cronJob)
+	return &types.MsgDeleteCronJobResponse{}, nil
 }

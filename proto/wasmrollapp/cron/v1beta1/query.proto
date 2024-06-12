@@ -15,9 +15,13 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/wasmrollapp/cron/v1beta1/params";
   }
-  // WhitelistedContracts queries the whitelisted contracts of the module.
-  rpc QueryWhitelistedContracts(QueryWhitelistedContractsRequest) returns (QueryWhitelistedContractsResponse) {
-    option (google.api.http).get = "/wasmrollapp/cron/v1beta1/whitelisted_contracts";
+  // Cron queries a cron by id.
+  rpc Cron(QueryCronRequest) returns (QueryCronResponse) {
+    option (google.api.http).get = "/wasmrollapp/cron/v1beta1/crons/{id}";
+  }
+  // Crons queries all the crons.
+  rpc Crons(QueryCronsRequest) returns (QueryCronsResponse) {
+    option (google.api.http).get = "/wasmrollapp/cron/v1beta1/crons";
   }
 }
 
@@ -30,16 +34,29 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
-// QueryWhitelistedContractsRequest is request type for the Query/WhitelistedContracts RPC method.
-message QueryWhitelistedContractsRequest{
-  cosmos.base.query.v1beta1.PageRequest pagination = 1
-  [(gogoproto.moretags) = "yaml:\"pagination\""];
+// QueryCronRequest is request type for the Query/Cron RPC method.
+message QueryCronRequest {
+  // id defines the id of the cron to query.
+  uint64 id = 1;
 }
 
-// QueryWhitelistedContractsResponse is response type for the Query/WhitelistedContracts RPC method.
-message QueryWhitelistedContractsResponse {
-  repeated WhitelistedContract whilisted_contracts = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2
-  [(gogoproto.moretags) = "yaml:\"pagination\""];
+// QueryCronResponse is response type for the Query/Cron RPC method.
+message QueryCronResponse {
+  // cron defines the cron of the requested id.
+  CronJob cron_job = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryCronsRequest is request type for the Query/Crons RPC method.
+message QueryCronsRequest {
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryCronsResponse is response type for the Query/Crons RPC method.
+message QueryCronsResponse {
+  // crons defines all the crons.
+  repeated CronJob cron_jobs = 1 [(gogoproto.nullable) = false];
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

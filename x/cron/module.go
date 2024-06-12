@@ -19,7 +19,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/client/cli"
-	"github.com/dymensionxyz/rollapp-wasm/x/cron/expected"
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/keeper"
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 )
@@ -99,13 +98,13 @@ type AppModule struct {
 	AppModuleBasic
 
 	keeper keeper.Keeper
-	conOps expected.ContractOpsKeeper
+	conOps types.ContractOpsKeeper
 }
 
 func NewAppModule(
 	cdc codec.Codec,
 	keeper keeper.Keeper,
-	conOps expected.ContractOpsKeeper,
+	conOps types.ContractOpsKeeper,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),

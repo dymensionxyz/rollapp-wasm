@@ -2,14 +2,12 @@ package cli
 
 import (
 	"fmt"
-	"strconv"
-
-	"github.com/spf13/cobra"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
+	"github.com/spf13/cobra"
+	"strconv"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -22,35 +20,29 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(CmdRegisterContract(),
-		CmdDeRegisterContract())
-
-	// this line is used by starport scaffolding # 1
+	cmd.AddCommand(CmdRegisterCron(),
+		CmdUpdateCronJob(),
+		CmdDeleteCronJob())
 
 	return cmd
 }
 
-func CmdRegisterContract() *cobra.Command {
+func CmdRegisterCron() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "register-contract [game name] [contract address] [game type]",
-		Short: "Register game contract",
-		Args:  cobra.ExactArgs(3),
+		Use:   "register-cron [name] [description] [contract_address] [json_msg]",
+		Short: "Register New Cron",
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
-			gameType, err := strconv.ParseUint(args[2], 10, 64)
-			if err != nil {
-				return fmt.Errorf("game-type '%s' not a valid uint", args[0])
-			}
-
-			msg := types.NewMsgRegisterContract(
+			msg := types.NewMsgRegisterCron(
 				clientCtx.GetFromAddress().String(),
 				args[0],
 				args[1],
-				gameType,
+				args[2],
+				args[3],
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -58,31 +50,29 @@ func CmdRegisterContract() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-
 	flags.AddTxFlagsToCmd(cmd)
-
 	return cmd
 }
 
-func CmdDeRegisterContract() *cobra.Command {
+func CmdUpdateCronJob() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "de-register-contract [game id]",
-		Short: "De Register game contract",
-		Args:  cobra.ExactArgs(1),
+		Use:   "update-cron-job [id] [contract_address] [json_msg]",
+		Short: "Update cron job",
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
-			gameID, err := strconv.ParseUint(args[0], 10, 64)
+			cronID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return fmt.Errorf("game-id '%s' not a valid uint", args[0])
+				return fmt.Errorf("cron-id '%s' not a valid uint", args[0])
 			}
-
-			msg := types.NewMsgDeregisterContract(
+			msg := types.NewMsgUpdateCronJob(
 				clientCtx.GetFromAddress().String(),
-				gameID,
+				cronID,
+				args[1],
+				args[2],
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -90,8 +80,35 @@ func CmdDeRegisterContract() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-
 	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
 
+func CmdDeleteCronJob() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "delete-cron-job [id] [contract_address]",
+		Short: "Delete cron job of a contract",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			cronID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("cron-id '%s' not a valid uint", args[0])
+			}
+			msg := types.NewMsgDeleteCronJob(
+				clientCtx.GetFromAddress().String(),
+				cronID,
+				args[1],
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

@@ -24,7 +24,11 @@ The `x/cron` module provides functionality for scheduling and executing tasks, i
 ## Flow
 
 ### Step 1: Upload the contract
-  #### ex: `wasmrollappd tx wasm store "$DIR/../../x/wasm/keeper/testdata/coinflip.wasm`
-### Step 2: Register the contract according to the game type
-  #### ex: `wasmrollappd tx cron register-contract coin-flip rol14hj2tavq8f.... 1`
+
+#### ex., `wasmrollappd tx wasm store "$DIR/../../x/wasm/keeper/testdata/coinflip.wasm`
+
+### Step 2: Register the cron job
+
+#### ex., `wasmrollappd tx cron register-cron cronjob1 "the is the 1st cron job" rol14hj2tavq8f.... {"msg_cron":{}}`
+
 ### result : cronjob for the specific contract is activated

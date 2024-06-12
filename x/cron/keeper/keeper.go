@@ -1,18 +1,15 @@
 package keeper
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	"encoding/hex"
-	"golang.org/x/exp/slices"
-
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-
-	"github.com/dymensionxyz/rollapp-wasm/x/cron/expected"
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
+	"golang.org/x/exp/slices"
 )
 
 type (
@@ -21,7 +18,7 @@ type (
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
 		paramstore paramtypes.Subspace
-		conOps     expected.ContractOpsKeeper
+		conOps     types.ContractOpsKeeper
 	}
 )
 
@@ -30,15 +27,13 @@ func NewKeeper(
 	storeKey,
 	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
-	conOps expected.ContractOpsKeeper,
+	conOps types.ContractOpsKeeper,
 
 ) Keeper {
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
 	}
-
 	return Keeper{
-
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,
@@ -49,16 +44,14 @@ func NewKeeper(
 
 //nolint:staticcheck
 func (k Keeper) SudoContractCall(ctx sdk.Context, contractAddress string, p []byte) error {
-
 	contractAddr, err := sdk.AccAddressFromBech32(contractAddress)
 	if err != nil {
-		return sdkerrors.Wrapf(err, "contract")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, contractAddress)
 	}
 	data, err := k.conOps.Sudo(ctx, contractAddr, p)
 	if err != nil {
 		return err
 	}
-
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeContractSudoMsg,
 		sdk.NewAttribute(types.AttributeKeyResultDataHex, hex.EncodeToString(data)),
@@ -73,29 +66,4 @@ func (k Keeper) CheckSecurityAddress(ctx sdk.Context, from string) bool {
 
 func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
-}
-
-func (k Keeper) SinglePlayer(ctx sdk.Context, contractAddress string, resolveSinglePlayer []byte, gameName string) {
-	err := k.SudoContractCall(ctx, contractAddress, resolveSinglePlayer)
-	if err != nil {
-		ctx.Logger().Error("Game %s contract call error for single-player", gameName)
-	} else {
-		ctx.Logger().Info("Game %s contract call for single-player success", gameName)
-	}
-}
-
-func (k Keeper) MultiPlayer(ctx sdk.Context, contractAddress string, setupMultiPlayer []byte, resolveMultiPlayer []byte, gameName string) {
-	err := k.SudoContractCall(ctx, contractAddress, setupMultiPlayer)
-	if err != nil {
-		ctx.Logger().Error("Game %s contract call error for setup multi-player", gameName)
-	} else {
-		ctx.Logger().Info("Game %s contract call for setup multi-player success", gameName)
-	}
-
-	err = k.SudoContractCall(ctx, contractAddress, resolveMultiPlayer)
-	if err != nil {
-		ctx.Logger().Error("Game %s contract call error for resolve multi-player", gameName)
-	} else {
-		ctx.Logger().Info("Game %s contract call for resolve multi-player success", gameName)
-	}
 }

@@ -6,88 +6,70 @@ import (
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 )
 
-func (k Keeper) SetGameID(ctx sdk.Context, id uint64) {
+func (k Keeper) SetCronID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.GameIDKey
+		key   = types.CronIDKey
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
 			},
 		)
 	)
-
 	store.Set(key, value)
 }
 
-func (k Keeper) GetGameID(ctx sdk.Context) uint64 {
+func (k Keeper) GetCronID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.GameIDKey
+		key   = types.CronIDKey
 		value = store.Get(key)
 	)
-
 	if value == nil {
 		return 0
 	}
-
 	var id protobuftypes.UInt64Value
 	k.cdc.MustUnmarshal(value, &id)
-
 	return id.GetValue()
 }
 
-func (k Keeper) SetContract(ctx sdk.Context, msg types.WhitelistedContract) {
+func (k Keeper) SetCronJob(ctx sdk.Context, msg types.CronJob) {
 	var (
 		store = k.Store(ctx)
-		key   = types.ContractKey(msg.GameId)
+		key   = types.CronKey(msg.Id)
 		value = k.cdc.MustMarshal(&msg)
 	)
-
 	store.Set(key, value)
 }
 
-func (k Keeper) GetWhitelistedContract(ctx sdk.Context, gameID uint64) (contract types.WhitelistedContract, found bool) {
+func (k Keeper) GetCronJob(ctx sdk.Context, cronID uint64) (cron types.CronJob, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.ContractKey(gameID)
+		key   = types.CronKey(cronID)
 		value = store.Get(key)
 	)
-
 	if value == nil {
-		return contract, false
+		return cron, false
 	}
-
-	k.cdc.MustUnmarshal(value, &contract)
-	return contract, true
+	k.cdc.MustUnmarshal(value, &cron)
+	return cron, true
 }
 
-func (k Keeper) DeleteContract(ctx sdk.Context, gameID uint64) {
+func (k Keeper) GetCronJobs(ctx sdk.Context) (crons []types.CronJob) {
 	var (
 		store = k.Store(ctx)
-		key   = types.ContractKey(gameID)
+		iter  = sdk.KVStorePrefixIterator(store, types.CronJobKeyPrefix)
 	)
-
-	store.Delete(key)
-}
-
-func (k Keeper) GetWhitelistedContracts(ctx sdk.Context) (contracts []types.WhitelistedContract) {
-	var (
-		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.SetContractKeyPrefix)
-	)
-
 	defer func(iter sdk.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
 		}
 	}(iter)
-
 	for ; iter.Valid(); iter.Next() {
-		var contract types.WhitelistedContract
-		k.cdc.MustUnmarshal(iter.Value(), &contract)
-		contracts = append(contracts, contract)
+		var cron types.CronJob
+		k.cdc.MustUnmarshal(iter.Value(), &cron)
+		crons = append(crons, cron)
 	}
-	return contracts
+	return crons
 }

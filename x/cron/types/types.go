@@ -2,51 +2,44 @@ package types
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	"encoding/json"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	errors "github.com/cosmos/cosmos-sdk/types/errors"
-	"golang.org/x/exp/slices"
 )
 
-var (
-	ResolveSinglePlayer = []byte(`{"resolve_bet":{}}`)
-	SetupMultiPlayer    = []byte(`{"setup_multiplayer":{}}`)
-	ResolveMultiPlayer  = []byte(`{"resolve_multiplayer":{}}`)
-)
-
-func NewWhitelistContract(gameId uint64, securityAddress, contractAdmin sdk.AccAddress, gameName string, contractAddress sdk.AccAddress, gameType uint64) WhitelistedContract {
-	return WhitelistedContract{
-		GameId:          gameId,
-		SecurityAddress: securityAddress.String(),
-		ContractAdmin:   contractAdmin.String(),
-		GameName:        gameName,
-		ContractAddress: contractAddress.String(),
-		GameType:        gameType,
+func NewWhitelistContract(cronId uint64, name, description string, msgs []MsgContractCron) CronJob {
+	return CronJob{
+		Id:              cronId,
+		Name:            name,
+		Description:     description,
+		MsgContractCron: msgs,
 	}
 }
 
-func (m WhitelistedContract) Validate() error {
-	if m.GameId == 0 {
-		return errorsmod.Wrap(errors.ErrInvalidRequest, "game id must not be 0")
+func (m CronJob) Validate() error {
+	if m.Id == 0 {
+		return errorsmod.Wrap(errors.ErrInvalidRequest, "id must not be 0")
 	}
-	// check if the security address is valid
-	if _, err := sdk.AccAddressFromBech32(m.SecurityAddress); err != nil {
-		return errorsmod.Wrapf(errors.ErrInvalidAddress, "invalid security address: %v", err)
+	if m.Name == "" {
+		return errorsmod.Wrap(errors.ErrInvalidRequest, "name must not be empty")
 	}
-	// check if the contract admin is valid
-	if _, err := sdk.AccAddressFromBech32(m.ContractAdmin); err != nil {
-		return errorsmod.Wrapf(errors.ErrInvalidAddress, "invalid contract admin: %v", err)
+	if m.Description == "" {
+		return errorsmod.Wrap(errors.ErrInvalidRequest, "description must not be empty")
 	}
-	if m.GameName == "" {
-		return errorsmod.Wrap(errors.ErrInvalidRequest, "game name must not be empty")
+	if len(m.Name) > 20 {
+		return errorsmod.Wrap(errors.ErrInvalidRequest, "name must not exceed 20 characters")
 	}
-	// check if the contract address is valid
-	if _, err := sdk.AccAddressFromBech32(m.ContractAddress); err != nil {
-		return errorsmod.Wrapf(errors.ErrInvalidAddress, "invalid ContractAddress: %v", err)
+	if len(m.Description) > 1000 {
+		return errorsmod.Wrap(errors.ErrInvalidRequest, "description must not exceed 1000 characters")
 	}
-	// check if game type does not contain 1,2,3
-	if !slices.Contains([]uint64{1, 2, 3}, m.GameType) {
-		return errorsmod.Wrapf(errors.ErrInvalidRequest, "invalid game type, should be 1, 2 or 3")
+	// loop through the contract cron messages
+	for _, msg := range m.MsgContractCron {
+		if _, err := sdk.AccAddressFromBech32(msg.ContractAddress); err != nil {
+			return errorsmod.Wrapf(errors.ErrInvalidAddress, "invalid contract address: %v", err)
+		}
+		if !json.Valid([]byte(msg.JsonMsg)) {
+			return errorsmod.Wrap(errors.ErrInvalidRequest, "json msg is invalid")
+		}
 	}
-
 	return nil
 }
