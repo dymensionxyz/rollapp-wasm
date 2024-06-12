@@ -13,7 +13,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			if err != nil {
 				ctx.Logger().Error("Cronjob failed for: ", cron.Name, " contract: ", job.ContractAddress)
 			} else {
-				ctx.Logger().Error("Cronjob success for: ", cron.Name, " contract: ", job.ContractAddress)
+				ctx.Logger().Info("Cronjob success for: ", cron.Name, " contract: ", job.ContractAddress)
 			}
 		}
 	}
