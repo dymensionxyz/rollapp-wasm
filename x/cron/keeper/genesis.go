@@ -16,7 +16,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) {
 	)
 	for _, item := range genState.CronJobs {
 		k.SetCronJob(ctx, item)
-		// Set the cronID to the cronID in the whitelisted contract
+		// Set the last cron ID
 		cronID = item.Id
 	}
 	k.SetCronID(ctx, cronID)

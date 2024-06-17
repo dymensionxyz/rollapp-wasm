@@ -16,14 +16,11 @@ const (
 
 	// QuerierRoute defines the module's query routing key
 	QuerierRoute = ModuleName
-
-	// MemStoreKey defines the in-memory store key
-	MemStoreKey = "mem_cron"
 )
 
 var (
 	CronJobKeyPrefix = []byte{0x11}
-	CronIDKey        = []byte{0x12}
+	LastCronIDKey    = []byte{0x12}
 )
 
 func CronKey(cronID uint64) []byte {
