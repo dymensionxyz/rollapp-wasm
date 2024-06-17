@@ -117,8 +117,8 @@ func CmdDeleteCronJob() *cobra.Command {
 
 func CmdToggleCronJob() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pause-cron-job [id]",
-		Short: "Pause cron job",
+		Use:   "toggle-cron-job [id]",
+		Short: "Toggle cron job",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx, err := client.GetClientTxContext(cmd)

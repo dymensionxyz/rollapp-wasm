@@ -48,7 +48,7 @@ In the above tx -
 - `contract address` - CosmWasm contract address.
 - `json_msg` - sudo msg of the contract in json format
 
-> Note : only the security address and contract admin are authorized can update the cron job
+> Note : only the security address are authorized can update the cron job
 
 ### Update cron job
 
@@ -67,4 +67,22 @@ In the above tx -
 - `id` - id of the cron job
 - `contract address` - CosmWasm contract address.
 
-> Note : only the security address and contract admin are authorized can delete the cron job
+> Note : only the security address are authorized can delete the cron job
+
+### Toggle cron job
+
+```console
+foo@bar:~$ wasmrollappd tx cron toggle-cron-job [id]
+```
+
+e.g
+
+```console
+foo@bar:~$ wasmrollappd tx cron toggle-cron-job 1 100000000awasm --from cooluser --chain-id test-1
+```
+
+In the above tx -
+
+- `id` - id of the cron job
+
+> Note : only the security address are authorized can toggle the cron job

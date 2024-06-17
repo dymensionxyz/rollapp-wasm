@@ -59,7 +59,7 @@ message MsgDeleteCronJobResponse {}
 
 // MsgToggleCronJob defines the Msg/ToggleCronJob request type.
 message MsgToggleCronJob {
-  // security_address is the address authorised to pause the cron job
+  // security_address is the address authorised to toggle the cron job
   string security_address = 1;
   // id is the unique identifier for the cron job
   uint64 id = 2;

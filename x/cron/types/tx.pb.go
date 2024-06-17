@@ -359,7 +359,7 @@ var xxx_messageInfo_MsgDeleteCronJobResponse proto.InternalMessageInfo
 
 // MsgToggleCronJob defines the Msg/ToggleCronJob request type.
 type MsgToggleCronJob struct {
-	// security_address is the address authorised to pause the cron job
+	// security_address is the address authorised to toggle the cron job
 	SecurityAddress string `protobuf:"bytes,1,opt,name=security_address,json=securityAddress,proto3" json:"security_address,omitempty"`
 	// id is the unique identifier for the cron job
 	Id uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
