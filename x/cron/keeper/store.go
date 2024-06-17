@@ -9,7 +9,7 @@ import (
 func (k Keeper) SetCronID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.CronIDKey
+		key   = types.LastCronIDKey
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -22,7 +22,7 @@ func (k Keeper) SetCronID(ctx sdk.Context, id uint64) {
 func (k Keeper) GetCronID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.CronIDKey
+		key   = types.LastCronIDKey
 		value = store.Get(key)
 	)
 	if value == nil {

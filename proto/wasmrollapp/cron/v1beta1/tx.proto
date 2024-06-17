@@ -8,6 +8,7 @@ service Msg {
     rpc RegisterCron(MsgRegisterCron) returns(MsgRegisterCronResponse);
     rpc UpdateCronJob(MsgUpdateCronJob) returns(MsgUpdateCronJobResponse);
     rpc DeleteCronJob(MsgDeleteCronJob) returns(MsgDeleteCronJobResponse);
+    rpc ToggleCronJob(MsgToggleCronJob) returns(MsgToggleCronJobResponse);
 }
 
 // MsgRegisterCron defines the Msg/RegisterCron request type.
@@ -55,3 +56,14 @@ message MsgDeleteCronJob {
 
 // MsgDeleteCronJobResponse defines the Msg/DeleteCronJob response type.
 message MsgDeleteCronJobResponse {}
+
+// MsgToggleCronJob defines the Msg/ToggleCronJob request type.
+message MsgToggleCronJob {
+  // security_address is the address authorised to toggle the cron job
+  string security_address = 1;
+  // id is the unique identifier for the cron job
+  uint64 id = 2;
+}
+
+// MsgToggleCronJobResponse defines the Msg/ToggleCronJob response type.
+message MsgToggleCronJobResponse {}

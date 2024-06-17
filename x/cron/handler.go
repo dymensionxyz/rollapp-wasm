@@ -24,6 +24,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgDeleteCronJob:
 			res, err := server.DeleteCronJob(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgToggleCronJob:
+			res, err := server.ToggleCronJob(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)
 			return nil, errorsmod.Wrap(sdkerrors.ErrUnknownRequest, errMsg)

@@ -2,12 +2,13 @@ package cli
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/dymensionxyz/rollapp-wasm/x/cron/types"
 	"github.com/spf13/cobra"
-	"strconv"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -22,7 +23,8 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(CmdRegisterCron(),
 		CmdUpdateCronJob(),
-		CmdDeleteCronJob())
+		CmdDeleteCronJob(),
+		CmdToggleCronJob())
 
 	return cmd
 }
@@ -102,6 +104,34 @@ func CmdDeleteCronJob() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				cronID,
 				args[1],
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func CmdToggleCronJob() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "toggle-cron-job [id]",
+		Short: "Toggle cron job",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			cronID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("cron-id '%s' not a valid uint", args[0])
+			}
+			msg := types.NewMsgToggleCronJob(
+				clientCtx.GetFromAddress().String(),
+				cronID,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

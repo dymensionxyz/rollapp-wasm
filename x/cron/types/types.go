@@ -7,7 +7,7 @@ import (
 	errors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func NewWhitelistContract(cronId uint64, name, description string, msgs []MsgContractCron) CronJob {
+func NewCronJob(cronId uint64, name, description string, msgs []MsgContractCron) CronJob {
 	return CronJob{
 		Id:              cronId,
 		Name:            name,

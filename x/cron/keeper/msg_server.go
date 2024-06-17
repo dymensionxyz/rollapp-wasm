@@ -23,11 +23,6 @@ var _ types.MsgServer = msgServer{}
 
 func (k msgServer) RegisterCron(goCtx context.Context, msg *types.MsgRegisterCron) (*types.MsgRegisterCronResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	// check if the cron is globally enabled
-	params := k.GetParams(ctx)
-	if !params.EnableCron {
-		return &types.MsgRegisterCronResponse{}, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "Cron is disabled")
-	}
 	if err := msg.ValidateBasic(); err != nil {
 		ctx.Logger().Error(fmt.Sprintf("request invalid: %s", err))
 		return &types.MsgRegisterCronResponse{}, err
@@ -57,6 +52,7 @@ func (k msgServer) RegisterCron(goCtx context.Context, msg *types.MsgRegisterCro
 		Name:            msg.Name,
 		Description:     msg.Description,
 		MsgContractCron: []types.MsgContractCron{msgContractCron},
+		EnableCron:      true,
 	}
 	k.SetCronJob(ctx, cron)
 	k.SetCronID(ctx, cronId+1)
@@ -65,10 +61,6 @@ func (k msgServer) RegisterCron(goCtx context.Context, msg *types.MsgRegisterCro
 
 func (k msgServer) UpdateCronJob(goCtx context.Context, msg *types.MsgUpdateCronJob) (*types.MsgUpdateCronJobResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	params := k.GetParams(ctx)
-	if !params.EnableCron {
-		return &types.MsgUpdateCronJobResponse{}, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "Cron is disabled")
-	}
 	if err := msg.ValidateBasic(); err != nil {
 		ctx.Logger().Error(fmt.Sprintf("request invalid: %s", err))
 		return &types.MsgUpdateCronJobResponse{}, err
@@ -98,10 +90,6 @@ func (k msgServer) UpdateCronJob(goCtx context.Context, msg *types.MsgUpdateCron
 
 func (k msgServer) DeleteCronJob(goCtx context.Context, msg *types.MsgDeleteCronJob) (*types.MsgDeleteCronJobResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	params := k.GetParams(ctx)
-	if !params.EnableCron {
-		return &types.MsgDeleteCronJobResponse{}, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "Cron is disabled")
-	}
 	if err := msg.ValidateBasic(); err != nil {
 		ctx.Logger().Error(fmt.Sprintf("request invalid: %s", err))
 		return &types.MsgDeleteCronJobResponse{}, err
@@ -130,4 +118,25 @@ func (k msgServer) DeleteCronJob(goCtx context.Context, msg *types.MsgDeleteCron
 	}
 	k.SetCronJob(ctx, cronJob)
 	return &types.MsgDeleteCronJobResponse{}, nil
+}
+
+func (k msgServer) ToggleCronJob(goCtx context.Context, msg *types.MsgToggleCronJob) (*types.MsgToggleCronJobResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := msg.ValidateBasic(); err != nil {
+		ctx.Logger().Error(fmt.Sprintf("request invalid: %s", err))
+		return &types.MsgToggleCronJobResponse{}, err
+	}
+	// check if sender is authorized
+	exists := k.CheckSecurityAddress(ctx, msg.SecurityAddress)
+	if !exists {
+		return &types.MsgToggleCronJobResponse{}, sdkerrors.ErrUnauthorized
+	}
+	// Get the cron job
+	cronJob, found := k.GetCronJob(ctx, msg.Id)
+	if !found {
+		return &types.MsgToggleCronJobResponse{}, errorsmod.Wrapf(sdkerrors.ErrNotFound, "cron job not found")
+	}
+	cronJob.EnableCron = !cronJob.EnableCron
+	k.SetCronJob(ctx, cronJob)
+	return &types.MsgToggleCronJobResponse{}, nil
 }

@@ -496,7 +496,6 @@ func NewRollapp(
 	app.CronKeeper = cronkeeper.NewKeeper(
 		appCodec,
 		app.keys[crontypes.StoreKey],
-		app.keys[crontypes.MemStoreKey],
 		app.GetSubspace(crontypes.ModuleName),
 		&app.WasmKeeper,
 	)

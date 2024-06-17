@@ -13,6 +13,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgRegisterCron{}, "wasmrollapp/cron/MsgRegisterCron", nil)
 	cdc.RegisterConcrete(&MsgUpdateCronJob{}, "wasmrollapp/cron/MsgUpdateCronJob", nil)
 	cdc.RegisterConcrete(&MsgDeleteCronJob{}, "wasmrollapp/cron/MsgDeleteCronJob", nil)
+	cdc.RegisterConcrete(&MsgToggleCronJob{}, "wasmrollapp/cron/MsgToggleCronJob", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -21,6 +22,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgRegisterCron{},
 		&MsgUpdateCronJob{},
 		&MsgDeleteCronJob{},
+		&MsgToggleCronJob{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }

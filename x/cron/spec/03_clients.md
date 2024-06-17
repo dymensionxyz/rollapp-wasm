@@ -18,8 +18,9 @@ The CLI has been updated with new queries and transactions for the `x/cron` modu
 
 ### Transactions
 
-| Command                | Subcommand        | Arguments                                          | Description                          |
-| :--------------------- | :---------------- | :------------------------------------------------- | :----------------------------------- |
-| `wasmrollappd tx cron` | `register-cron`   | [name] [description] [contract_address] [json_msg] | Register the cron job                |
-| `wasmrollappd tx cron` | `update-cron-job` | [id] [contract_address] [json_msg]                 | update the cron job                  |
-| `wasmrollappd tx cron` | `delete-cron-job` | [id] [contract_address]                            | delete the cron job for the contract |
+| Command                | Subcommand        | Arguments                                          | Description                               |
+| :--------------------- | :---------------- | :------------------------------------------------- | :---------------------------------------- |
+| `wasmrollappd tx cron` | `register-cron`   | [name] [description] [contract_address] [json_msg] | Register the cron job                     |
+| `wasmrollappd tx cron` | `update-cron-job` | [id] [contract_address] [json_msg]                 | update the cron job                       |
+| `wasmrollappd tx cron` | `delete-cron-job` | [id] [contract_address]                            | delete the cron job for the contract      |
+| `wasmrollappd tx cron` | `toggle-cron-job` | [id]                                               | Toggle the cron job for the given cron ID |

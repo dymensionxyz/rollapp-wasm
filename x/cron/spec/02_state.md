@@ -23,6 +23,8 @@ message CronJob {
     string description = 3;
     // Msgs that will be executed every period amount of time
     repeated MsgContractCron msg_contract_cron = 4 [(gogoproto.nullable) = false];
+    // set cron enabled or not
+    bool enable_cron = 5;
   }
 ```
 
@@ -61,9 +63,6 @@ message Params {
     (gogoproto.jsontag) = "security_address,omitempty",
     (gogoproto.moretags) = "yaml:\"security_address\""
   ];
-
-  // set module enabled or not
-  bool enable_cron = 2;
 }
 ```
 
