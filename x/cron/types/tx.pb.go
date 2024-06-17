@@ -357,6 +357,98 @@ func (m *MsgDeleteCronJobResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgDeleteCronJobResponse proto.InternalMessageInfo
 
+// MsgToggleCronJob defines the Msg/ToggleCronJob request type.
+type MsgToggleCronJob struct {
+	// security_address is the address authorised to pause the cron job
+	SecurityAddress string `protobuf:"bytes,1,opt,name=security_address,json=securityAddress,proto3" json:"security_address,omitempty"`
+	// id is the unique identifier for the cron job
+	Id uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+}
+
+func (m *MsgToggleCronJob) Reset()         { *m = MsgToggleCronJob{} }
+func (m *MsgToggleCronJob) String() string { return proto.CompactTextString(m) }
+func (*MsgToggleCronJob) ProtoMessage()    {}
+func (*MsgToggleCronJob) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7921049427efd58c, []int{6}
+}
+func (m *MsgToggleCronJob) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgToggleCronJob) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgToggleCronJob.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgToggleCronJob) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgToggleCronJob.Merge(m, src)
+}
+func (m *MsgToggleCronJob) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgToggleCronJob) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgToggleCronJob.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgToggleCronJob proto.InternalMessageInfo
+
+func (m *MsgToggleCronJob) GetSecurityAddress() string {
+	if m != nil {
+		return m.SecurityAddress
+	}
+	return ""
+}
+
+func (m *MsgToggleCronJob) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+// MsgToggleCronJobResponse defines the Msg/ToggleCronJob response type.
+type MsgToggleCronJobResponse struct {
+}
+
+func (m *MsgToggleCronJobResponse) Reset()         { *m = MsgToggleCronJobResponse{} }
+func (m *MsgToggleCronJobResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgToggleCronJobResponse) ProtoMessage()    {}
+func (*MsgToggleCronJobResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7921049427efd58c, []int{7}
+}
+func (m *MsgToggleCronJobResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgToggleCronJobResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgToggleCronJobResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgToggleCronJobResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgToggleCronJobResponse.Merge(m, src)
+}
+func (m *MsgToggleCronJobResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgToggleCronJobResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgToggleCronJobResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgToggleCronJobResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*MsgRegisterCron)(nil), "wasmrollapp.cron.v1beta1.MsgRegisterCron")
 	proto.RegisterType((*MsgRegisterCronResponse)(nil), "wasmrollapp.cron.v1beta1.MsgRegisterCronResponse")
@@ -364,37 +456,41 @@ func init() {
 	proto.RegisterType((*MsgUpdateCronJobResponse)(nil), "wasmrollapp.cron.v1beta1.MsgUpdateCronJobResponse")
 	proto.RegisterType((*MsgDeleteCronJob)(nil), "wasmrollapp.cron.v1beta1.MsgDeleteCronJob")
 	proto.RegisterType((*MsgDeleteCronJobResponse)(nil), "wasmrollapp.cron.v1beta1.MsgDeleteCronJobResponse")
+	proto.RegisterType((*MsgToggleCronJob)(nil), "wasmrollapp.cron.v1beta1.MsgToggleCronJob")
+	proto.RegisterType((*MsgToggleCronJobResponse)(nil), "wasmrollapp.cron.v1beta1.MsgToggleCronJobResponse")
 }
 
 func init() { proto.RegisterFile("wasmrollapp/cron/v1beta1/tx.proto", fileDescriptor_7921049427efd58c) }
 
 var fileDescriptor_7921049427efd58c = []byte{
-	// 398 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x93, 0xcb, 0x4e, 0xbb, 0x40,
-	0x14, 0x87, 0x0b, 0xe5, 0x7f, 0x71, 0xbc, 0xb4, 0x61, 0x23, 0xed, 0x82, 0xd4, 0xae, 0xd4, 0x44,
-	0x08, 0xf5, 0x09, 0xbc, 0xac, 0x34, 0x6c, 0x48, 0xdc, 0xb8, 0x69, 0xb8, 0x4c, 0x70, 0x0c, 0xcc,
-	0x90, 0x39, 0x53, 0x05, 0x9f, 0xc2, 0xc4, 0x97, 0xf1, 0x11, 0x5c, 0x76, 0x63, 0xe2, 0xd2, 0xb4,
-	0x2f, 0x62, 0xa0, 0xa5, 0x29, 0x4d, 0x6d, 0xeb, 0xc6, 0x1d, 0x9c, 0xf3, 0xcb, 0x7c, 0xdf, 0x5c,
-	0x0e, 0x3a, 0x78, 0x74, 0x21, 0xe6, 0x2c, 0x8a, 0xdc, 0x24, 0x31, 0x7d, 0xce, 0xa8, 0xf9, 0x60,
-	0x79, 0x58, 0xb8, 0x96, 0x29, 0x52, 0x23, 0xe1, 0x4c, 0x30, 0x55, 0x9b, 0x8b, 0x18, 0x79, 0xc4,
-	0x98, 0x46, 0xba, 0xaf, 0x12, 0x6a, 0xd8, 0x10, 0x3a, 0x38, 0x24, 0x20, 0x30, 0xbf, 0xe0, 0x8c,
-	0xaa, 0x47, 0xa8, 0x09, 0xd8, 0x1f, 0x70, 0x22, 0xb2, 0xbe, 0x1b, 0x04, 0x1c, 0x03, 0x68, 0x52,
-	0x47, 0x3a, 0xdc, 0x72, 0x1a, 0x65, 0xfd, 0x6c, 0x52, 0x56, 0x55, 0xa4, 0x50, 0x37, 0xc6, 0x9a,
-	0x5c, 0xb4, 0x8b, 0x6f, 0xb5, 0x83, 0xb6, 0x03, 0x0c, 0x3e, 0x27, 0x89, 0x20, 0x8c, 0x6a, 0xf5,
-	0xa2, 0x35, 0x5f, 0xca, 0x01, 0x3e, 0xa3, 0x82, 0xbb, 0xbe, 0x98, 0x01, 0x94, 0x09, 0xa0, 0xac,
-	0x97, 0x80, 0x16, 0xfa, 0x7f, 0x0f, 0x8c, 0xf6, 0x63, 0x08, 0xb5, 0x3f, 0x45, 0xe4, 0x5f, 0xfe,
-	0x6f, 0x43, 0xd8, 0x6d, 0xa1, 0xfd, 0x05, 0x73, 0x07, 0x43, 0xc2, 0x28, 0xe0, 0xee, 0x8b, 0x84,
-	0x9a, 0x36, 0x84, 0x37, 0x49, 0xe0, 0x0a, 0x9c, 0x77, 0xae, 0x98, 0xf7, 0x93, 0x6d, 0xed, 0x21,
-	0x99, 0x04, 0xc5, 0xa6, 0x14, 0x47, 0x26, 0xc1, 0x52, 0xe1, 0xfa, 0x7a, 0x61, 0xa5, 0x2a, 0xdc,
-	0x46, 0xda, 0xa2, 0xd4, 0xcc, 0x38, 0x2d, 0x84, 0x2f, 0x71, 0x84, 0x7f, 0x59, 0x78, 0x6a, 0x55,
-	0x21, 0x97, 0x56, 0xbd, 0x77, 0x19, 0xd5, 0x6d, 0x08, 0xd5, 0x08, 0xed, 0x54, 0x5f, 0x88, 0xf1,
-	0xdd, 0x83, 0x32, 0x16, 0xae, 0xa4, 0x6d, 0x6d, 0x1c, 0x2d, 0xa9, 0x2a, 0x43, 0xbb, 0xd5, 0x9b,
-	0x3b, 0x5e, 0xb9, 0x46, 0x25, 0xdb, 0xee, 0x6d, 0x9e, 0x9d, 0x07, 0x56, 0x4f, 0x7e, 0x35, 0xb0,
-	0x92, 0x5d, 0x03, 0x5c, 0x7a, 0xae, 0xe7, 0xd7, 0x6f, 0x23, 0x5d, 0x1a, 0x8e, 0x74, 0xe9, 0x73,
-	0xa4, 0x4b, 0xcf, 0x63, 0xbd, 0x36, 0x1c, 0xeb, 0xb5, 0x8f, 0xb1, 0x5e, 0xbb, 0xb5, 0x42, 0x22,
-	0xee, 0x06, 0x9e, 0xe1, 0xb3, 0xd8, 0x0c, 0xb2, 0x18, 0x53, 0x20, 0x8c, 0xa6, 0xd9, 0x93, 0x39,
-	0x05, 0x9c, 0xe4, 0x30, 0x33, 0x9d, 0xcc, 0xb9, 0xc8, 0x12, 0x0c, 0xde, 0xdf, 0x62, 0xc6, 0x4f,
-	0xbf, 0x02, 0x00, 0x00, 0xff, 0xff, 0xb6, 0x7f, 0x74, 0xea, 0x08, 0x04, 0x00, 0x00,
+	// 428 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x94, 0xcb, 0x8e, 0xd3, 0x30,
+	0x14, 0x86, 0x9b, 0x26, 0xdc, 0xcc, 0xa5, 0x55, 0x36, 0xa4, 0x5d, 0x44, 0xa5, 0x2b, 0x40, 0x22,
+	0x51, 0xca, 0x13, 0x70, 0x59, 0x81, 0xb2, 0x89, 0x60, 0xc3, 0xa6, 0xca, 0xc5, 0x32, 0x46, 0x89,
+	0x1d, 0xf9, 0xb8, 0x90, 0xf0, 0x14, 0x48, 0xbc, 0x0c, 0x4f, 0x80, 0x58, 0x76, 0xc9, 0x72, 0xd4,
+	0xbe, 0xc8, 0x28, 0x6e, 0x52, 0xd5, 0x55, 0xa7, 0xed, 0x48, 0xa3, 0xd9, 0x25, 0xe7, 0xfc, 0xf2,
+	0xf7, 0x59, 0xe7, 0xc8, 0xe8, 0xd9, 0x8f, 0x18, 0x0a, 0xc1, 0xf3, 0x3c, 0x2e, 0x4b, 0x3f, 0x15,
+	0x9c, 0xf9, 0xdf, 0x83, 0x04, 0xcb, 0x38, 0xf0, 0x65, 0xe5, 0x95, 0x82, 0x4b, 0x6e, 0x3b, 0x3b,
+	0x11, 0xaf, 0x89, 0x78, 0x6d, 0x64, 0xfa, 0xc7, 0x40, 0x83, 0x10, 0x48, 0x84, 0x09, 0x05, 0x89,
+	0xc5, 0x3b, 0xc1, 0x99, 0xfd, 0x02, 0x0d, 0x01, 0xa7, 0x0b, 0x41, 0x65, 0x3d, 0x8f, 0xb3, 0x4c,
+	0x60, 0x00, 0xc7, 0x98, 0x18, 0xcf, 0x1f, 0x44, 0x83, 0xae, 0xfe, 0x66, 0x53, 0xb6, 0x6d, 0x64,
+	0xb1, 0xb8, 0xc0, 0x4e, 0x5f, 0xb5, 0xd5, 0xb7, 0x3d, 0x41, 0x0f, 0x33, 0x0c, 0xa9, 0xa0, 0xa5,
+	0xa4, 0x9c, 0x39, 0xa6, 0x6a, 0xed, 0x96, 0x1a, 0x40, 0xca, 0x99, 0x14, 0x71, 0x2a, 0xb7, 0x00,
+	0x6b, 0x03, 0xe8, 0xea, 0x1d, 0x60, 0x84, 0xee, 0x7f, 0x03, 0xce, 0xe6, 0x05, 0x10, 0xe7, 0x8e,
+	0x8a, 0xdc, 0x6b, 0xfe, 0x43, 0x20, 0xd3, 0x11, 0x7a, 0xba, 0x67, 0x1e, 0x61, 0x28, 0x39, 0x03,
+	0x3c, 0xfd, 0x6d, 0xa0, 0x61, 0x08, 0xe4, 0x73, 0x99, 0xc5, 0x12, 0x37, 0x9d, 0x0f, 0x3c, 0xb9,
+	0xce, 0xb5, 0x9e, 0xa0, 0x3e, 0xcd, 0xd4, 0xa5, 0xac, 0xa8, 0x4f, 0xb3, 0x83, 0xc2, 0xe6, 0x69,
+	0x61, 0x4b, 0x17, 0x1e, 0x23, 0x67, 0x5f, 0x6a, 0x6b, 0x5c, 0x29, 0xe1, 0xf7, 0x38, 0xc7, 0xb7,
+	0x2c, 0xdc, 0x5a, 0x69, 0xe4, 0xad, 0x55, 0xa8, 0xac, 0x3e, 0x71, 0x42, 0xf2, 0x1b, 0xb0, 0x6a,
+	0x51, 0xda, 0x71, 0x1d, 0x6a, 0xf6, 0xd7, 0x44, 0x66, 0x08, 0xc4, 0xce, 0xd1, 0x23, 0x7d, 0x19,
+	0xbd, 0xab, 0x76, 0xd7, 0xdb, 0x9b, 0xfe, 0x38, 0x38, 0x3b, 0xda, 0x51, 0x6d, 0x8e, 0x1e, 0xeb,
+	0x4b, 0xf2, 0xf2, 0xe8, 0x19, 0x5a, 0x76, 0x3c, 0x3b, 0x3f, 0xbb, 0x0b, 0xd4, 0x87, 0x7c, 0x1c,
+	0xa8, 0x65, 0x4f, 0x00, 0x0f, 0x8e, 0xb0, 0x01, 0xea, 0xf3, 0x3b, 0x0e, 0xd4, 0xb2, 0x27, 0x80,
+	0x07, 0x07, 0xf9, 0xf6, 0xe3, 0xbf, 0x95, 0x6b, 0x2c, 0x57, 0xae, 0x71, 0xb1, 0x72, 0x8d, 0x5f,
+	0x6b, 0xb7, 0xb7, 0x5c, 0xbb, 0xbd, 0xff, 0x6b, 0xb7, 0xf7, 0x25, 0x20, 0x54, 0x7e, 0x5d, 0x24,
+	0x5e, 0xca, 0x0b, 0x3f, 0xab, 0x0b, 0xcc, 0x80, 0x72, 0x56, 0xd5, 0x3f, 0xfd, 0x16, 0xf0, 0xaa,
+	0x81, 0xf9, 0xd5, 0xe6, 0x0d, 0x93, 0x75, 0x89, 0x21, 0xb9, 0xab, 0xde, 0xaf, 0xd7, 0x97, 0x01,
+	0x00, 0x00, 0xff, 0xff, 0x08, 0x9f, 0x73, 0x04, 0xe4, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -412,6 +508,7 @@ type MsgClient interface {
 	RegisterCron(ctx context.Context, in *MsgRegisterCron, opts ...grpc.CallOption) (*MsgRegisterCronResponse, error)
 	UpdateCronJob(ctx context.Context, in *MsgUpdateCronJob, opts ...grpc.CallOption) (*MsgUpdateCronJobResponse, error)
 	DeleteCronJob(ctx context.Context, in *MsgDeleteCronJob, opts ...grpc.CallOption) (*MsgDeleteCronJobResponse, error)
+	ToggleCronJob(ctx context.Context, in *MsgToggleCronJob, opts ...grpc.CallOption) (*MsgToggleCronJobResponse, error)
 }
 
 type msgClient struct {
@@ -449,11 +546,21 @@ func (c *msgClient) DeleteCronJob(ctx context.Context, in *MsgDeleteCronJob, opt
 	return out, nil
 }
 
+func (c *msgClient) ToggleCronJob(ctx context.Context, in *MsgToggleCronJob, opts ...grpc.CallOption) (*MsgToggleCronJobResponse, error) {
+	out := new(MsgToggleCronJobResponse)
+	err := c.cc.Invoke(ctx, "/wasmrollapp.cron.v1beta1.Msg/ToggleCronJob", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	RegisterCron(context.Context, *MsgRegisterCron) (*MsgRegisterCronResponse, error)
 	UpdateCronJob(context.Context, *MsgUpdateCronJob) (*MsgUpdateCronJobResponse, error)
 	DeleteCronJob(context.Context, *MsgDeleteCronJob) (*MsgDeleteCronJobResponse, error)
+	ToggleCronJob(context.Context, *MsgToggleCronJob) (*MsgToggleCronJobResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -468,6 +575,9 @@ func (*UnimplementedMsgServer) UpdateCronJob(ctx context.Context, req *MsgUpdate
 }
 func (*UnimplementedMsgServer) DeleteCronJob(ctx context.Context, req *MsgDeleteCronJob) (*MsgDeleteCronJobResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCronJob not implemented")
+}
+func (*UnimplementedMsgServer) ToggleCronJob(ctx context.Context, req *MsgToggleCronJob) (*MsgToggleCronJobResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ToggleCronJob not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -528,6 +638,24 @@ func _Msg_DeleteCronJob_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_ToggleCronJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgToggleCronJob)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ToggleCronJob(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/wasmrollapp.cron.v1beta1.Msg/ToggleCronJob",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ToggleCronJob(ctx, req.(*MsgToggleCronJob))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "wasmrollapp.cron.v1beta1.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -543,6 +671,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteCronJob",
 			Handler:    _Msg_DeleteCronJob_Handler,
+		},
+		{
+			MethodName: "ToggleCronJob",
+			Handler:    _Msg_ToggleCronJob_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -767,6 +899,64 @@ func (m *MsgDeleteCronJobResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgToggleCronJob) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgToggleCronJob) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgToggleCronJob) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Id != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.SecurityAddress) > 0 {
+		i -= len(m.SecurityAddress)
+		copy(dAtA[i:], m.SecurityAddress)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.SecurityAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgToggleCronJobResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgToggleCronJobResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgToggleCronJobResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -870,6 +1060,31 @@ func (m *MsgDeleteCronJob) Size() (n int) {
 }
 
 func (m *MsgDeleteCronJobResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgToggleCronJob) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SecurityAddress)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.Id != 0 {
+		n += 1 + sovTx(uint64(m.Id))
+	}
+	return n
+}
+
+func (m *MsgToggleCronJobResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1519,6 +1734,157 @@ func (m *MsgDeleteCronJobResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgDeleteCronJobResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgToggleCronJob) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgToggleCronJob: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgToggleCronJob: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SecurityAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SecurityAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgToggleCronJobResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgToggleCronJobResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgToggleCronJobResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

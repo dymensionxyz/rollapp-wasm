@@ -119,3 +119,24 @@ func (k msgServer) DeleteCronJob(goCtx context.Context, msg *types.MsgDeleteCron
 	k.SetCronJob(ctx, cronJob)
 	return &types.MsgDeleteCronJobResponse{}, nil
 }
+
+func (k msgServer) ToggleCronJob(goCtx context.Context, msg *types.MsgToggleCronJob) (*types.MsgToggleCronJobResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := msg.ValidateBasic(); err != nil {
+		ctx.Logger().Error(fmt.Sprintf("request invalid: %s", err))
+		return &types.MsgToggleCronJobResponse{}, err
+	}
+	// check if sender is authorized
+	exists := k.CheckSecurityAddress(ctx, msg.SecurityAddress)
+	if !exists {
+		return &types.MsgToggleCronJobResponse{}, sdkerrors.ErrUnauthorized
+	}
+	// Get the cron job
+	cronJob, found := k.GetCronJob(ctx, msg.Id)
+	if !found {
+		return &types.MsgToggleCronJobResponse{}, errorsmod.Wrapf(sdkerrors.ErrNotFound, "cron job not found")
+	}
+	cronJob.EnableCron = !cronJob.EnableCron
+	k.SetCronJob(ctx, cronJob)
+	return &types.MsgToggleCronJobResponse{}, nil
+}
