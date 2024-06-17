@@ -7,24 +7,16 @@ import (
 )
 
 func (k Keeper) SetCronID(ctx sdk.Context, id uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.LastCronIDKey
-		value = k.cdc.MustMarshal(
-			&protobuftypes.UInt64Value{
-				Value: id,
-			},
-		)
-	)
+	store := k.Store(ctx)
+	key := types.LastCronIDKey
+	value := k.cdc.MustMarshal(&protobuftypes.UInt64Value{Value: id})
 	store.Set(key, value)
 }
 
 func (k Keeper) GetCronID(ctx sdk.Context) uint64 {
-	var (
-		store = k.Store(ctx)
-		key   = types.LastCronIDKey
-		value = store.Get(key)
-	)
+	store := k.Store(ctx)
+	key := types.LastCronIDKey
+	value := store.Get(key)
 	if value == nil {
 		return 0
 	}
@@ -34,20 +26,16 @@ func (k Keeper) GetCronID(ctx sdk.Context) uint64 {
 }
 
 func (k Keeper) SetCronJob(ctx sdk.Context, msg types.CronJob) {
-	var (
-		store = k.Store(ctx)
-		key   = types.CronKey(msg.Id)
-		value = k.cdc.MustMarshal(&msg)
-	)
+	store := k.Store(ctx)
+	key := types.CronKey(msg.Id)
+	value := k.cdc.MustMarshal(&msg)
 	store.Set(key, value)
 }
 
 func (k Keeper) GetCronJob(ctx sdk.Context, cronID uint64) (cron types.CronJob, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.CronKey(cronID)
-		value = store.Get(key)
-	)
+	store := k.Store(ctx)
+	key := types.CronKey(cronID)
+	value := store.Get(key)
 	if value == nil {
 		return cron, false
 	}
@@ -56,10 +44,8 @@ func (k Keeper) GetCronJob(ctx sdk.Context, cronID uint64) (cron types.CronJob, 
 }
 
 func (k Keeper) GetCronJobs(ctx sdk.Context) (crons []types.CronJob) {
-	var (
-		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.CronJobKeyPrefix)
-	)
+	store := k.Store(ctx)
+	iter := sdk.KVStorePrefixIterator(store, types.CronJobKeyPrefix)
 	defer func(iter sdk.Iterator) {
 		err := iter.Close()
 		if err != nil {
