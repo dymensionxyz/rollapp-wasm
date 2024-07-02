@@ -87,10 +87,6 @@ import (
 	epochskeeper "github.com/dymensionxyz/dymension-rdk/x/epochs/keeper"
 	epochstypes "github.com/dymensionxyz/dymension-rdk/x/epochs/types"
 
-	"github.com/dymensionxyz/dymension-rdk/x/denommetadata"
-	denommetadatamodulekeeper "github.com/dymensionxyz/dymension-rdk/x/denommetadata/keeper"
-	denommetadatamoduletypes "github.com/dymensionxyz/dymension-rdk/x/denommetadata/types"
-
 	hubgenesis "github.com/dymensionxyz/dymension-rdk/x/hub-genesis"
 	hubgenkeeper "github.com/dymensionxyz/dymension-rdk/x/hub-genesis/keeper"
 	hubgentypes "github.com/dymensionxyz/dymension-rdk/x/hub-genesis/types"
@@ -126,6 +122,12 @@ import (
 
 	distr "github.com/dymensionxyz/dymension-rdk/x/dist"
 	distrkeeper "github.com/dymensionxyz/dymension-rdk/x/dist/keeper"
+
+	"github.com/dymensionxyz/dymension-rdk/x/denommetadata"
+	denommetadatamoduletypes "github.com/dymensionxyz/dymension-rdk/x/denommetadata/types"
+	"github.com/dymensionxyz/dymension-rdk/x/hub"
+	hubkeeper "github.com/dymensionxyz/dymension-rdk/x/hub/keeper"
+	hubtypes "github.com/dymensionxyz/dymension-rdk/x/hub/types"
 )
 
 const (
@@ -144,7 +146,7 @@ var (
 		epochstypes.StoreKey, hubgentypes.StoreKey,
 		ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		wasmtypes.StoreKey,
-		denommetadatamoduletypes.StoreKey,
+		hubtypes.StoreKey,
 	}
 )
 
@@ -189,22 +191,21 @@ var (
 		vesting.AppModuleBasic{},
 		hubgenesis.AppModuleBasic{},
 		wasm.AppModuleBasic{},
-		denommetadata.AppModuleBasic{},
+		hub.AppModuleBasic{},
 	)
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		authtypes.FeeCollectorName:          nil,
-		authz.ModuleName:                    nil,
-		distrtypes.ModuleName:               nil,
-		minttypes.ModuleName:                {authtypes.Minter},
-		stakingtypes.BondedPoolName:         {authtypes.Burner, authtypes.Staking},
-		stakingtypes.NotBondedPoolName:      {authtypes.Burner, authtypes.Staking},
-		govtypes.ModuleName:                 {authtypes.Burner},
-		ibctransfertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
-		wasmtypes.ModuleName:                {authtypes.Burner},
-		hubgentypes.ModuleName:              {authtypes.Burner},
-		denommetadatamoduletypes.ModuleName: nil,
+		authtypes.FeeCollectorName:     nil,
+		authz.ModuleName:               nil,
+		distrtypes.ModuleName:          nil,
+		minttypes.ModuleName:           {authtypes.Minter},
+		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+		govtypes.ModuleName:            {authtypes.Burner},
+		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+		wasmtypes.ModuleName:           {authtypes.Burner},
+		hubgentypes.ModuleName:         {authtypes.Burner},
 	}
 )
 
@@ -263,7 +264,7 @@ type App struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 	ScopedWasmKeeper     capabilitykeeper.ScopedKeeper
 
-	DenomMetadataKeeper denommetadatamodulekeeper.Keeper
+	HubKeeper hubkeeper.Keeper
 
 	// mm is the module manager
 	mm *module.Manager
@@ -451,38 +452,46 @@ func NewRollapp(
 		),
 	)
 
-	denomMetadataHooks := denommetadatamoduletypes.NewMultiDenommetadataHooks()
-
-	// Create Transfer Keepers
-	app.TransferKeeper = ibctransferkeeper.NewKeeper(
+	app.HubKeeper = hubkeeper.NewKeeper(
 		appCodec,
-		keys[ibctransfertypes.StoreKey],
-		app.GetSubspace(ibctransfertypes.ModuleName),
-		app.IBCKeeper.ChannelKeeper,
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		app.AccountKeeper,
-		app.BankKeeper,
-		scopedTransferKeeper,
-	)
-	transferIBCModule := ibctransfer.NewIBCModule(app.TransferKeeper)
-
-	app.DenomMetadataKeeper = denommetadatamodulekeeper.NewKeeper(
-		appCodec,
-		keys[denommetadatamoduletypes.StoreKey],
-		app.BankKeeper,
-		app.TransferKeeper,
-		denomMetadataHooks,
-		app.GetSubspace(denommetadatamoduletypes.ModuleName),
+		keys[hubtypes.StoreKey],
 	)
 
 	app.HubGenesisKeeper = hubgenkeeper.NewKeeper(
 		appCodec,
 		keys[hubgentypes.StoreKey],
 		app.GetSubspace(hubgentypes.ModuleName),
-		app.IBCKeeper.ChannelKeeper,
-		app.BankKeeper,
 		app.AccountKeeper,
+	)
+
+	denomMetadataMiddleware := denommetadata.NewICS4Wrapper(
+		app.IBCKeeper.ChannelKeeper,
+		app.HubKeeper,
+		app.BankKeeper,
+		app.HubGenesisKeeper.GetState,
+	)
+
+	// Create Transfer Keepers
+	app.TransferKeeper = ibctransferkeeper.NewKeeper(
+		appCodec,
+		keys[ibctransfertypes.StoreKey],
+		app.GetSubspace(ibctransfertypes.ModuleName),
+		denomMetadataMiddleware,
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		scopedTransferKeeper,
+	)
+
+	var transferIBCModule ibcporttypes.IBCModule
+	transferIBCModule = ibctransfer.NewIBCModule(app.TransferKeeper)
+	transferIBCModule = denommetadata.NewIBCModule(
+		transferIBCModule,
+		app.BankKeeper,
+		app.TransferKeeper,
+		app.HubKeeper,
+		denommetadatamoduletypes.NewMultiDenommetadataHooks(),
 	)
 
 	wasmDir := filepath.Join(homePath, "wasm")
@@ -554,8 +563,8 @@ func NewRollapp(
 		ibc.NewAppModule(app.IBCKeeper),
 		ibctransfer.NewAppModule(app.TransferKeeper),
 		upgrade.NewAppModule(app.UpgradeKeeper),
-		hubgenesis.NewAppModule(appCodec, app.HubGenesisKeeper, app.AccountKeeper),
-		denommetadata.NewAppModule(app.DenomMetadataKeeper, app.BankKeeper),
+		hubgenesis.NewAppModule(appCodec, app.HubGenesisKeeper),
+		hub.NewAppModule(appCodec, app.HubKeeper),
 	}
 
 	app.mm = module.NewManager(modules...)
@@ -584,7 +593,7 @@ func NewRollapp(
 		epochstypes.ModuleName,
 		paramstypes.ModuleName,
 		hubgentypes.ModuleName,
-		denommetadatamoduletypes.ModuleName,
+		hubtypes.ModuleName,
 		wasm.ModuleName,
 	}
 	app.mm.SetOrderBeginBlockers(beginBlockersList...)
@@ -608,7 +617,7 @@ func NewRollapp(
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		hubgentypes.ModuleName,
-		denommetadatamoduletypes.ModuleName,
+		hubtypes.ModuleName,
 		wasm.ModuleName,
 	}
 	app.mm.SetOrderEndBlockers(endBlockersList...)
@@ -638,7 +647,7 @@ func NewRollapp(
 		ibctransfertypes.ModuleName,
 		feegrant.ModuleName,
 		hubgentypes.ModuleName,
-		denommetadatamoduletypes.ModuleName,
+		hubtypes.ModuleName,
 		wasm.ModuleName,
 	}
 	app.mm.SetOrderInitGenesis(initGenesisList...)
@@ -913,7 +922,7 @@ func (app *App) GetStakingKeeper() ibctestingtypes.StakingKeeper {
 	return app.StakingKeeper
 }
 
-// GetStakingKeeper implements the TestingApp interface.
+// GetStakingKeeperSDK implements the TestingApp interface.
 func (app *App) GetStakingKeeperSDK() stakingkeeper.Keeper {
 	return app.StakingKeeper
 }
@@ -969,7 +978,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(hubgentypes.ModuleName)
-	paramsKeeper.Subspace(denommetadatamoduletypes.ModuleName)
 
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	return paramsKeeper
