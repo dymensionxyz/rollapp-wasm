@@ -485,8 +485,6 @@ func NewRollapp(
 		appCodec,
 		keys[hubgentypes.StoreKey],
 		app.GetSubspace(hubgentypes.ModuleName),
-		app.IBCKeeper.ChannelKeeper,
-		app.BankKeeper,
 		app.AccountKeeper,
 	)
 
