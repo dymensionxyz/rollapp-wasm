@@ -16,10 +16,11 @@ import (
 	berpctypes "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/types"
 	"github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc"
 	wasmberpcbackend "github.com/bcdevtools/wasm-block-explorer-rpc-cosmos/integrate_be_rpc/backend/wasm"
-	rawberpcbackend "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/backend"
-	rawbeapi "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/namespaces/raw"
 	"github.com/ethereum/go-ethereum/rpc"
 	rpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
+
+	rawberpcbackend "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/backend"
+	rawbeapi "github.com/dymensionxyz/rollapp-wasm/ra_wasm_be_rpc/namespaces/raw"
 
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/node"
@@ -371,7 +372,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 			grpcAddress := fmt.Sprintf("127.0.0.1:%s", port)
 
 			// If grpc is enabled, configure grpc client for grpc gateway.
-			grpcClient, err := grpc.Dial(
+			grpcClient, err := grpc.NewClient(
 				grpcAddress,
 				grpc.WithTransportCredentials(insecure.NewCredentials()),
 				grpc.WithDefaultCallOptions(
