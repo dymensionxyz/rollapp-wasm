@@ -9,13 +9,11 @@ import (
 	e2eTesting "github.com/dymensionxyz/rollapp-wasm/e2e/testing"
 	"github.com/dymensionxyz/rollapp-wasm/pkg/testutils"
 	"github.com/dymensionxyz/rollapp-wasm/x/callback/types"
-	// rewardsTypes "github.com/dymensionxyz/rollapp-wasm/x/rewards/types"
 )
 
 func (s *KeeperTestSuite) TestSaveCallback() {
 	// Setting up chain and contract in mock wasm keeper
 	ctx, keeper := s.chain.GetContext().WithBlockHeight(100), s.chain.GetApp().CallbackKeeper
-	rewardsKeeper := s.chain.GetApp().RewardsKeeper
 	contractViewer := testutils.NewMockContractViewer()
 	keeper.SetWasmKeeper(contractViewer)
 	validCoin := sdk.NewInt64Coin("stake", 10)
@@ -36,24 +34,9 @@ func (s *KeeperTestSuite) TestSaveCallback() {
 		contractAdminAcc.Address.String(),
 	)
 
-	// Setting up contract metadata in rewards keeper
-	var metaCurrent rewardsTypes.ContractMetadata
-	metaCurrent.ContractAddress = contractAddr.String()
-	metaCurrent.OwnerAddress = contractOwnerAcc.Address.String()
-	metaCurrent.RewardsAddress = contractOwnerAcc.Address.String()
-	rewardsKeeper.SetContractInfoViewer(contractViewer)
-	err := rewardsKeeper.SetContractMetadata(ctx, contractAdminAcc.Address, contractAddr, metaCurrent)
-	s.Require().NoError(err)
-
 	// Setting callback module as contract owner
 	blockedModuleAddr := s.chain.GetApp().AccountKeeper.GetModuleAccount(ctx, types.ModuleName).GetAddress()
 	s.Require().True(s.chain.GetApp().BankKeeper.BlockedAddr(blockedModuleAddr))
-	var metaCurrent2 rewardsTypes.ContractMetadata
-	metaCurrent2.ContractAddress = contractAddr2.String()
-	metaCurrent2.OwnerAddress = blockedModuleAddr.String()
-	metaCurrent2.RewardsAddress = contractAddr2.String()
-	err = rewardsKeeper.SetContractMetadata(ctx, contractAdminAcc.Address, contractAddr2, metaCurrent2)
-	s.Require().NoError(err)
 
 	params, err := keeper.GetParams(ctx)
 	s.Require().NoError(err)
@@ -301,7 +284,6 @@ func (s *KeeperTestSuite) TestSaveCallback() {
 
 func (s *KeeperTestSuite) TestDeleteCallback() {
 	ctx, keeper := s.chain.GetContext().WithBlockHeight(100), s.chain.GetApp().CallbackKeeper
-	rewardsKeeper := s.chain.GetApp().RewardsKeeper
 	contractViewer := testutils.NewMockContractViewer()
 	keeper.SetWasmKeeper(contractViewer)
 	validCoin := sdk.NewInt64Coin("stake", 10)
@@ -316,14 +298,6 @@ func (s *KeeperTestSuite) TestDeleteCallback() {
 		contractAdminAcc.Address.String(),
 	)
 
-	var metaCurrent rewardsTypes.ContractMetadata
-	metaCurrent.ContractAddress = contractAddr.String()
-	metaCurrent.OwnerAddress = contractOwnerAcc.Address.String()
-	metaCurrent.RewardsAddress = contractOwnerAcc.Address.String()
-	rewardsKeeper.SetContractInfoViewer(contractViewer)
-	err := rewardsKeeper.SetContractMetadata(ctx, contractAdminAcc.Address, contractAddr, metaCurrent)
-	s.Require().NoError(err)
-
 	// Same contract requesting callback at same height with diff job id
 	callback := types.Callback{
 		ContractAddress: contractAddr.String(),
@@ -337,7 +311,7 @@ func (s *KeeperTestSuite) TestDeleteCallback() {
 			SurplusFees:           &validCoin,
 		},
 	}
-	err = keeper.SaveCallback(ctx, callback)
+	err := keeper.SaveCallback(ctx, callback)
 	s.Require().NoError(err)
 	callback.JobId = 2
 	err = keeper.SaveCallback(ctx, callback)

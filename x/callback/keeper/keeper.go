@@ -17,7 +17,6 @@ type Keeper struct {
 	cdc           codec.Codec
 	storeKey      storetypes.StoreKey
 	wasmKeeper    types.WasmKeeperExpected
-	rewardsKeeper types.RewardsKeeperExpected
 	bankKeeper    types.BankKeeperExpected
 
 	Schema collections.Schema
@@ -29,13 +28,12 @@ type Keeper struct {
 }
 
 // NewKeeper creates a new Keeper instance.
-func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey, wk types.WasmKeeperExpected, rk types.RewardsKeeperExpected, bk types.BankKeeperExpected) Keeper {
+func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey, wk types.WasmKeeperExpected, bk types.BankKeeperExpected) Keeper {
 	sb := collections.NewSchemaBuilder(collcompat.NewKVStoreService(storeKey))
 	k := Keeper{
 		cdc:           cdc,
 		storeKey:      storeKey,
 		wasmKeeper:    wk,
-		rewardsKeeper: rk,
 		bankKeeper:    bk,
 		Params: collections.NewItem(
 			sb,

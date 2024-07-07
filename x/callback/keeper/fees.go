@@ -43,15 +43,14 @@ func (k Keeper) EstimateCallbackFees(ctx sdk.Context, blockHeight int64) (sdk.Co
 	blockReservationFeesAmount := params.BlockReservationFeeMultiplier.MulInt64(int64(totalCallbacks))
 
 	// Calculates the fees based on the max gas limit of the callback and current price of gas
-	transactionFee := k.CalculateTransactionFees(ctx, params.GetCallbackGasLimit())
+	transactionFee := k.CalculateTransactionFees(ctx, params.GetCallbackGasLimit(), params.GetMinPriceOfGas())
 	futureReservationFee := sdk.NewCoin(transactionFee.Denom, futureReservationFeesAmount.RoundInt())
 	blockReservationFee := sdk.NewCoin(transactionFee.Denom, blockReservationFeesAmount.RoundInt())
 	return futureReservationFee, blockReservationFee, transactionFee, nil
 }
 
-func (k Keeper) CalculateTransactionFees(ctx sdk.Context, gasAmount uint64) sdk.Coin {
-	computationPriceOfGas := k.rewardsKeeper.ComputationalPriceOfGas(ctx)
-	transactionFeeAmount := computationPriceOfGas.Amount.MulInt64(int64(gasAmount))
-	transactionFee := sdk.NewCoin(computationPriceOfGas.Denom, transactionFeeAmount.RoundInt())
+func (k Keeper) CalculateTransactionFees(ctx sdk.Context, gasAmount uint64, minPriceOfGas sdk.DecCoin) sdk.Coin {
+	transactionFeeAmount := minPriceOfGas.Amount.MulInt64(int64(gasAmount))
+	transactionFee := sdk.NewCoin(minPriceOfGas.Denom, transactionFeeAmount.RoundInt())
 	return transactionFee
 }

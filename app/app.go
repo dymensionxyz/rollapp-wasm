@@ -504,7 +504,6 @@ func NewRollapp(
 		appCodec,
 		keys[callbackTypes.StoreKey],
 		app.WasmKeeper,
-		app.RewardsKeeper,
 		app.BankKeeper,
 	)
 
@@ -514,7 +513,6 @@ func NewRollapp(
 		tkeys[cwerrorsTypes.TStoreKey],
 		app.WasmKeeper,
 		app.BankKeeper,
-		app.RewardsKeeper,
 	)
 
 	wasmDir := filepath.Join(homePath, "wasm")

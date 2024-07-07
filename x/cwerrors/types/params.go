@@ -40,7 +40,7 @@ func (p Params) Validate() error {
 		return fmt.Errorf("ErrorStoredTime must be greater than 0. Current value: %d", p.ErrorStoredTime)
 	}
 	if !p.SubscriptionFee.IsValid() {
-		return fmt.Errorf("SubsciptionFee is not valid. Current value: %s", p.SubscriptionFee)
+		return fmt.Errorf("SubscriptionFee is not valid. Current value: %s", p.SubscriptionFee)
 	}
 	if p.SubscriptionPeriod <= 0 {
 		return fmt.Errorf("SubscriptionPeriod must be greater than 0. Current value: %d", p.SubscriptionPeriod)

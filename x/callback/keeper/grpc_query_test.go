@@ -129,7 +129,7 @@ func (s *KeeperTestSuite) TestEstimateCallbackFees() {
 		BlockReservationFeeMultiplier:  sdk.MustNewDecFromStr("0"),
 	})
 	s.Require().NoError(err)
-	expectedTxFeeAmount := s.chain.GetApp().RewardsKeeper.ComputationalPriceOfGas(ctx).Amount
+	expectedTxFeeAmount := params.GetMinPriceOfGas().Amount
 	expectedTxFeeCoin := sdk.NewInt64Coin("stake", expectedTxFeeAmount.RoundInt().Int64())
 
 	testCases := []struct {

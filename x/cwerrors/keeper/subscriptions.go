@@ -90,6 +90,5 @@ func isAuthorizedToSubscribe(ctx sdk.Context, k Keeper, contractAddress sdk.AccA
 		return true
 	}
 
-	contractMetadata := k.rewardsKeeper.GetContractMetadata(ctx, contractAddress)
-	return contractMetadata != nil && strings.EqualFold(sender, contractMetadata.OwnerAddress) // Owner of the contract can set subscriptions
+	return false
 }

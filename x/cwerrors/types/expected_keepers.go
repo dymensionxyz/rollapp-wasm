@@ -3,8 +3,6 @@ package types
 import (
 	wasmdtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	// rewardstypes "github.com/dymensionxyz/rollapp-wasm/x/rewards/types"
 )
 
 // WasmKeeperExpected is a subset of the expected wasm keeper
@@ -23,8 +21,3 @@ type BankKeeperExpected interface {
 	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
 }
 
-// RewardsKeeperExpected is a subset of the expected rewards keeper
-type RewardsKeeperExpected interface {
-	// GetContractMetadata returns the contract metadata
-	GetContractMetadata(ctx sdk.Context, contractAddr sdk.AccAddress) *rewardstypes.ContractMetadata
-}
