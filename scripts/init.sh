@@ -1,22 +1,12 @@
 #!/bin/bash
-tmp=$(mktemp)
-
 EXECUTABLE="rollappd"
-ROLLAPP_CHAIN_DIR="$HOME/.rollapp"
-
-set_denom() {
-  denom=$1
-  jq --arg denom $denom '.app_state.mint.params.mint_denom = $denom' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
-  jq --arg denom $denom '.app_state.staking.params.bond_denom = $denom' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
-  jq --arg denom $denom '.app_state.gov.deposit_params.min_deposit[0].denom = $denom' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
-}
+ROLLAPP_HOME_DIR="$HOME/.rollapp"
 
 # ---------------------------- initial parameters ---------------------------- #
 # Assuming 1,000,000 tokens
 #half is staked
-TOKEN_AMOUNT="1000000000000000000000000$DENOM"
-STAKING_AMOUNT="500000000000000000000000$DENOM"
-
+TOKEN_AMOUNT="1000000000000000000000000$BASE_DENOM"
+STAKING_AMOUNT="500000000000000000000000$BASE_DENOM"
 
 CONFIG_DIRECTORY="$ROLLAPP_HOME_DIR/config"
 GENESIS_FILE="$CONFIG_DIRECTORY/genesis.json"
