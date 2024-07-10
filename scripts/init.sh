@@ -200,7 +200,6 @@ fi
 "$EXECUTABLE" config chain-id "$ROLLAPP_CHAIN_ID"
 
 # -------------------------------- app config -------------------------------- #
-
 set_denom "$BASE_DENOM"
 update_configuration
 add_genesis_accounts

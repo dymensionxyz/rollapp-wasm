@@ -1,5 +1,4 @@
 #!/bin/bash
-
 MAX_SEQUENCERS=1
 
 # this account must be whitelisted on the hub for permissioned deployment setup

@@ -1,8 +1,11 @@
 #!/usr/bin/make -f
 
-PROJECT_NAME=rollappd
+PROJECT_NAME=rollapp-wasm
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT := $(shell git log -1 --format='%H')
+ifndef BECH32_PREFIX
+    $(error BECH32_PREFIX is not set)
+endif
 
 # don't override user values
 ifeq (,$(VERSION))
@@ -24,12 +27,11 @@ export GO111MODULE = on
 
 # process linker flags
 ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=dymension-rdk \
-		  -X github.com/cosmos/cosmos-sdk/version.AppName=rollappd \
+		  -X github.com/cosmos/cosmos-sdk/version.AppName=rollapp-wasm \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
-	      -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION)
-
-
+	      -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION) \
+		  -X github.com/dymensionxyz/rollapp-wasm/app.AccountAddressPrefix=$(BECH32_PREFIX)
 
 BUILD_FLAGS := -ldflags '$(ldflags)'
 
@@ -41,16 +43,17 @@ BUILD_FLAGS := -ldflags '$(ldflags)'
 all: install
 
 .PHONY: install
-install:
-	@echo "--> Ensure dependencies have not been modified"
-	@go mod verify
-	@echo "--> installing rollappd"
-	@go install $(BUILD_FLAGS) -v -mod=readonly ./rollappd
+install: build
+	@echo "--> installing rollapp-wasm"
+	mv build/rollapp-wasm $(GOPATH)/bin/rollapp-wasm
 
 
 .PHONY: build
-build: ## Compiles the rollapd binary
-	go build  -o build/rollappd $(BUILD_FLAGS) ./rollappd
+build: go.sum ## Compiles the rollapd binary
+	@echo "--> Ensure dependencies have not been modified"
+	@go mod verify
+	@echo "--> building rollapp-wasm"
+	go build  -o build/rollapp-wasm $(BUILD_FLAGS) ./rollappd
 
 
 .PHONY: clean

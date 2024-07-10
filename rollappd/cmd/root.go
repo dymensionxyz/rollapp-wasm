@@ -32,10 +32,11 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	etherminthd "github.com/evmos/evmos/v12/crypto/hd"
 
+	berpcconfig "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/config"
 	rdkserver "github.com/dymensionxyz/dymension-rdk/server"
 	"github.com/dymensionxyz/dymension-rdk/utils"
-	sequencercli "github.com/dymensionxyz/dymension-rdk/x/sequencers/client/cli"
 	dymintconf "github.com/dymensionxyz/dymint/config"
 	"github.com/dymensionxyz/rollapp-wasm/app"
 	"github.com/dymensionxyz/rollapp-wasm/app/params"
@@ -49,7 +50,7 @@ const rollappAscii = `
 ██   ██  ██████  ███████ ███████ ██   ██ ██      ██           ███ ███  ██   ██ ███████ ██      ██                 
 `
 
-// NewRootCmd creates a new root rollappd command. It is called once in the main function.
+// NewRootCmd creates a new root rollapp-wasm command. It is called once in the main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	encodingConfig := app.MakeEncodingConfig()
 
@@ -63,6 +64,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithHomeDir(app.DefaultNodeHome).
+		WithKeyringOptions(etherminthd.EthSecp256k1Option()).
 		WithViper("ROLLAPP")
 
 	rootCmd := &cobra.Command{
@@ -102,6 +104,9 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 			home := serverCtx.Viper.GetString(tmcli.HomeFlag)
 			chainID := client.GetClientContextFromCmd(cmd).ChainID
 			dymintconf.EnsureRoot(home, dymintconf.DefaultConfig(home, chainID))
+
+			//create Block Explorer Json-RPC toml config file
+			berpcconfig.EnsureRoot(home, berpcconfig.DefaultBeJsonRpcConfig())
 
 			return nil
 		},
@@ -154,8 +159,6 @@ func initRootCmd(
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
 		genutilcli.MigrateGenesisCmd(),
 		genutilcli.GenTxCmd(app.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
-
-		sequencercli.GenTxCmd(),
 
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		AddGenesisAccountCmd(app.DefaultNodeHome),
