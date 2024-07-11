@@ -24,7 +24,7 @@ func (s *KeeperTestSuite) TestSaveCallback() {
 	contractAddr3 := contractAddresses[2]
 	contractAdminAcc := s.chain.GetAccount(0)
 	notContractAdminAcc := s.chain.GetAccount(1)
-	contractOwnerAcc := s.chain.GetAccount(2)
+	// contractOwnerAcc := s.chain.GetAccount(2)
 	contractViewer.AddContractAdmin(
 		contractAddr.String(),
 		contractAdminAcc.Address.String(),
@@ -182,22 +182,22 @@ func (s *KeeperTestSuite) TestSaveCallback() {
 			},
 			expectError: false,
 		},
-		{
-			testCase: "OK: save callback - sender is contract metadata owner",
-			callback: types.Callback{
-				ContractAddress: contractAddr.String(),
-				JobId:           2,
-				CallbackHeight:  101,
-				ReservedBy:      contractOwnerAcc.Address.String(),
-				FeeSplit: &types.CallbackFeesFeeSplit{
-					TransactionFees:       &validCoin,
-					BlockReservationFees:  &validCoin,
-					FutureReservationFees: &validCoin,
-					SurplusFees:           &validCoin,
-				},
-			},
-			expectError: false,
-		},
+		// {
+		// 	testCase: "OK: save callback - sender is contract metadata owner",
+		// 	callback: types.Callback{
+		// 		ContractAddress: contractAddr.String(),
+		// 		JobId:           2,
+		// 		CallbackHeight:  101,
+		// 		ReservedBy:      contractOwnerAcc.Address.String(),
+		// 		FeeSplit: &types.CallbackFeesFeeSplit{
+		// 			TransactionFees:       &validCoin,
+		// 			BlockReservationFees:  &validCoin,
+		// 			FutureReservationFees: &validCoin,
+		// 			SurplusFees:           &validCoin,
+		// 		},
+		// 	},
+		// 	expectError: false,
+		// },
 		{
 			testCase: "OK: save callback - sender is contract admin",
 			callback: types.Callback{
@@ -291,7 +291,7 @@ func (s *KeeperTestSuite) TestDeleteCallback() {
 	contractAddr := e2eTesting.GenContractAddresses(1)[0]
 	contractAdminAcc := s.chain.GetAccount(0)
 	notContractAdminAcc := s.chain.GetAccount(1)
-	contractOwnerAcc := s.chain.GetAccount(2)
+	// contractOwnerAcc := s.chain.GetAccount(2)
 
 	contractViewer.AddContractAdmin(
 		contractAddr.String(),
@@ -378,16 +378,16 @@ func (s *KeeperTestSuite) TestDeleteCallback() {
 			},
 			expectError: false,
 		},
-		{
-			testCase: "OK: Success delete - sender is contract owner",
-			callback: types.Callback{
-				ContractAddress: contractAddr.String(),
-				JobId:           3,
-				CallbackHeight:  101,
-				ReservedBy:      contractOwnerAcc.Address.String(),
-			},
-			expectError: false,
-		},
+		// {
+		// 	testCase: "OK: Success delete - sender is contract owner",
+		// 	callback: types.Callback{
+		// 		ContractAddress: contractAddr.String(),
+		// 		JobId:           3,
+		// 		CallbackHeight:  101,
+		// 		ReservedBy:      contractOwnerAcc.Address.String(),
+		// 	},
+		// 	expectError: false,
+		// },
 	}
 	for _, tc := range testCases {
 		s.Run(fmt.Sprintf("Case: %s", tc.testCase), func() {

@@ -1,15 +1,11 @@
 package e2eTesting
 
 import (
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	mintTypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-
-	// archway "github.com/dymensionxyz/rollapp-wasm/types"
-
 	"github.com/dymensionxyz/rollapp-wasm/app"
-	// rewardsTypes "github.com/dymensionxyz/rollapp-wasm/x/rewards/types"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 // chainConfig is a TestChain config which can be adjusted using options.
@@ -36,9 +32,9 @@ func defaultChainConfig() chainConfig {
 	return chainConfig{
 		ValidatorsNum:    1,
 		GenAccountsNum:   5,
-		GenBalanceAmount: archway.DefaultPowerReduction.MulRaw(100).String(),
-		BondAmount:       archway.DefaultPowerReduction.MulRaw(1).String(),
-		DefaultFeeAmt:    archway.DefaultPowerReduction.QuoRaw(10).String(), // 0.1
+		GenBalanceAmount: sdk.DefaultPowerReduction.MulRaw(100).String(),
+		BondAmount:       sdk.DefaultPowerReduction.MulRaw(1).String(),
+		DefaultFeeAmt:    sdk.DefaultPowerReduction.QuoRaw(10).String(), // 0.1
 		DummyTestAddr:    false,
 	}
 }
@@ -94,42 +90,6 @@ func WithLogger() TestChainConfigOption {
 func WithBlockGasLimit(gasLimit int64) TestChainConsensusParamsOption {
 	return func(params *tmproto.ConsensusParams) {
 		params.Block.MaxGas = gasLimit
-	}
-}
-
-// WithInflationRewardsRatio sets x/rewards inflation rewards ratio parameter.
-func WithInflationRewardsRatio(ratio sdk.Dec) TestChainGenesisOption {
-	return func(cdc codec.Codec, genesis app.GenesisState) {
-		var rewardsGenesis rewardsTypes.GenesisState
-		cdc.MustUnmarshalJSON(genesis[rewardsTypes.ModuleName], &rewardsGenesis)
-
-		rewardsGenesis.Params.InflationRewardsRatio = ratio
-
-		genesis[rewardsTypes.ModuleName] = cdc.MustMarshalJSON(&rewardsGenesis)
-	}
-}
-
-// WithMaxWithdrawRecords sets x/rewards MaxWithdrawRecords param.
-func WithMaxWithdrawRecords(num uint64) TestChainGenesisOption {
-	return func(cdc codec.Codec, genesis app.GenesisState) {
-		var rewardsGenesis rewardsTypes.GenesisState
-		cdc.MustUnmarshalJSON(genesis[rewardsTypes.ModuleName], &rewardsGenesis)
-
-		rewardsGenesis.Params.MaxWithdrawRecords = num
-
-		genesis[rewardsTypes.ModuleName] = cdc.MustMarshalJSON(&rewardsGenesis)
-	}
-}
-
-// WithTxFeeRebatesRewardsRatio sets x/rewards tx fee rebates rewards ratio parameter.
-func WithTxFeeRebatesRewardsRatio(ratio sdk.Dec) TestChainGenesisOption {
-	return func(cdc codec.Codec, genesis app.GenesisState) {
-		var rewardsGenesis rewardsTypes.GenesisState
-		cdc.MustUnmarshalJSON(genesis[rewardsTypes.ModuleName], &rewardsGenesis)
-
-		rewardsGenesis.Params.TxFeeRebateRatio = ratio
-
-		genesis[rewardsTypes.ModuleName] = cdc.MustMarshalJSON(&rewardsGenesis)
 	}
 }
 

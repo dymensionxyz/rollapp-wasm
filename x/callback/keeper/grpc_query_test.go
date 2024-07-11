@@ -127,6 +127,7 @@ func (s *KeeperTestSuite) TestEstimateCallbackFees() {
 		MaxFutureReservationLimit:      params.MaxFutureReservationLimit,
 		FutureReservationFeeMultiplier: sdk.MustNewDecFromStr("0"),
 		BlockReservationFeeMultiplier:  sdk.MustNewDecFromStr("0"),
+		MinPriceOfGas:                  params.MinPriceOfGas,
 	})
 	s.Require().NoError(err)
 	expectedTxFeeAmount := params.GetMinPriceOfGas().Amount

@@ -12,12 +12,13 @@ func (chain *TestChain) ExecuteGovProposal(proposerAcc Account, expPass bool, pr
 
 	// Get params
 	k := chain.app.GovKeeper
-	govParams := k.GetParams(chain.GetContext())
-	depositCoin := govParams.MinDeposit
-	votingDur := govParams.VotingPeriod
+	govDepositParams := k.GetDepositParams(chain.GetContext())
+	govVotingParams := k.GetVotingParams(chain.GetContext())
+	depositCoin := govDepositParams.MinDeposit
+	votingDur := govVotingParams.VotingPeriod
 
 	// Submit proposal with min deposit to start the voting
-	msg, err := govTypes.NewMsgSubmitProposal(proposals, depositCoin, proposerAcc.Address.String(), metadata, title, summary)
+	msg, err := govTypes.NewMsgSubmitProposal(proposals, depositCoin, proposerAcc.Address.String(), metadata)
 	require.NoError(t, err)
 
 	_, res, _, err := chain.SendMsgs(proposerAcc, true, []sdk.Msg{msg})

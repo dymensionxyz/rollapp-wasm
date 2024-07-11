@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil" // nolint: staticcheck
 
-	// rewardsTypes "github.com/dymensionxyz/rollapp-wasm/x/rewards/types"
-
 	wasmdTypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -101,26 +99,26 @@ func (chain *TestChain) GetContractInfo(contractAddr sdk.AccAddress) wasmdTypes.
 	return *info
 }
 
-// GetContractMetadata returns a contract metadata.
-func (chain *TestChain) GetContractMetadata(contractAddr sdk.AccAddress) rewardsTypes.ContractMetadata {
-	t := chain.t
+// // GetContractMetadata returns a contract metadata.
+// func (chain *TestChain) GetContractMetadata(contractAddr sdk.AccAddress) rewardsTypes.ContractMetadata {
+// 	t := chain.t
 
-	metadata, err := chain.app.Keepers.RewardsKeeper.ContractMetadata.Get(chain.GetContext(), contractAddr)
-	require.NoError(t, err)
+// 	metadata, err := chain.app.Keepers.RewardsKeeper.ContractMetadata.Get(chain.GetContext(), contractAddr)
+// 	require.NoError(t, err)
 
-	return metadata
-}
+// 	return metadata
+// }
 
-// SetContractMetadata sets a contract metadata.
-func (chain *TestChain) SetContractMetadata(sender Account, contractAddr sdk.AccAddress, metadata rewardsTypes.ContractMetadata) {
-	t := chain.t
+// // SetContractMetadata sets a contract metadata.
+// func (chain *TestChain) SetContractMetadata(sender Account, contractAddr sdk.AccAddress, metadata rewardsTypes.ContractMetadata) {
+// 	t := chain.t
 
-	metadata.ContractAddress = contractAddr.String()
-	txMsg := rewardsTypes.MsgSetContractMetadata{
-		SenderAddress: sender.Address.String(),
-		Metadata:      metadata,
-	}
+// 	metadata.ContractAddress = contractAddr.String()
+// 	txMsg := rewardsTypes.MsgSetContractMetadata{
+// 		SenderAddress: sender.Address.String(),
+// 		Metadata:      metadata,
+// 	}
 
-	_, _, _, err := chain.SendMsgs(sender, true, []sdk.Msg{&txMsg})
-	require.NoError(t, err)
-}
+// 	_, _, _, err := chain.SendMsgs(sender, true, []sdk.Msg{&txMsg})
+// 	require.NoError(t, err)
+// }

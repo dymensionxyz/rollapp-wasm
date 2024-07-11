@@ -8,20 +8,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 
-	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	dbm "github.com/cometbft/cometbft-db"
-	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cometbft/cometbft/libs/log"
-	tmProto "github.com/cometbft/cometbft/proto/tendermint/types"
-	tmTypes "github.com/cometbft/cometbft/types"
+	seqtypes "github.com/dymensionxyz/dymension-rdk/x/sequencers/types"
+
+	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codecTypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptoCodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptoTypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -33,11 +30,21 @@ import (
 	"github.com/cosmos/ibc-go/v6/testing/mock"
 	"github.com/golang/protobuf/proto" //nolint:staticcheck
 	"github.com/stretchr/testify/require"
+	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/log"
+	tmProto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmTypes "github.com/tendermint/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
 
+	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/dymensionxyz/rollapp-wasm/app"
 )
 
-var TestAccountAddr = sdk.AccAddress("test")
+var (
+	TestAccountAddr = sdk.AccAddress("test")
+	ProposerPK      = simapp.CreateTestPubKeys(1)[0]
+	OperatorPK      = secp256k1.GenPrivKey().PubKey()
+)
 
 // TestChain keeps a test chain state and provides helper functions to simulate various operations.
 // Heavily inspired by the TestChain from the ibc-go repo (https://github.com/cosmos/ibc-go/blob/main/testing/chain.go).
@@ -47,7 +54,7 @@ type TestChain struct {
 	t *testing.T
 
 	cfg         chainConfig
-	app         *app.App         // main application
+	app         *app.App                // main application
 	lastHeader  tmProto.Header          // header for the last committed block
 	curHeader   tmProto.Header          // header for the current block
 	txConfig    client.TxConfig         // config to sing TXs
@@ -59,6 +66,9 @@ type TestChain struct {
 // NewTestChain creates a new TestChain with the default amount of genesis accounts and validators.
 func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 	chainid := "test-" + strconv.Itoa(chainIdx)
+
+	pk, err := cryptocodec.ToTmProtoPublicKey(ProposerPK)
+	require.NoError(t, err)
 
 	// Split options by groups (each group is applied in a different init step)
 	var chainCfgOpts []TestChainConfigOption
@@ -92,7 +102,8 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 		logger = log.TestingLogger()
 	}
 
-	archApp := app.NewArchwayApp(
+	var emptyWasmOpts []wasm.Option
+	rollApp := app.NewRollapp(
 		logger,
 		dbm.NewMemDB(),
 		nil,
@@ -100,11 +111,11 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 		app.DefaultNodeHome,
 		1,
 		encCfg,
-		app.EmptyBaseAppOptions{},
-		[]wasmkeeper.Option{},
-		baseapp.SetChainID(chainid),
+		app.GetEnabledProposals(),
+		app.EmptyAppOptions{},
+		emptyWasmOpts,
 	)
-	genState := app.NewDefaultGenesisState(archApp.AppCodec())
+	genState := app.NewDefaultGenesisState(rollApp.AppCodec())
 
 	// Generate validators
 	validators := make([]*tmTypes.Validator, 0, chainCfg.ValidatorsNum)
@@ -141,9 +152,15 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 	require.True(t, ok)
 	bondCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, bondAmt))
 
+	seqGenesis := seqtypes.GenesisState{
+		Params:                 seqtypes.DefaultParams(),
+		GenesisOperatorAddress: sdk.ValAddress(OperatorPK.Address()).String(),
+	}
+	genState[seqtypes.ModuleName] = rollApp.AppCodec().MustMarshalJSON(&seqGenesis)
+
 	// Update the x/auth genesis with gen accounts
 	authGenesis := authTypes.NewGenesisState(authTypes.DefaultParams(), genAccs)
-	genState[authTypes.ModuleName] = archApp.AppCodec().MustMarshalJSON(authGenesis)
+	genState[authTypes.ModuleName] = rollApp.AppCodec().MustMarshalJSON(authGenesis)
 
 	// Update the x/staking genesis (every gen account is a corresponding validator's delegator)
 	stakingValidators := make([]stakingTypes.Validator, 0, len(validatorSet.Validators))
@@ -174,7 +191,7 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 	}
 
 	stakingGenesis := stakingTypes.NewGenesisState(stakingTypes.DefaultParams(), stakingValidators, stakingDelegations)
-	genState[stakingTypes.ModuleName] = archApp.AppCodec().MustMarshalJSON(stakingGenesis)
+	genState[stakingTypes.ModuleName] = rollApp.AppCodec().MustMarshalJSON(stakingGenesis)
 
 	// Update x/bank genesis with total supply, gen account balances and bonding pool balance
 	totalSupply := sdk.NewCoins()
@@ -208,8 +225,8 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 		Coins:   bondedPoolCoins,
 	})
 
-	bankGenesis := bankTypes.NewGenesisState(bankTypes.DefaultGenesisState().Params, balances, totalSupply, []bankTypes.Metadata{}, []bankTypes.SendEnabled{})
-	genState[bankTypes.ModuleName] = archApp.AppCodec().MustMarshalJSON(bankGenesis)
+	bankGenesis := bankTypes.NewGenesisState(bankTypes.DefaultGenesisState().Params, balances, totalSupply, []bankTypes.Metadata{})
+	genState[bankTypes.ModuleName] = rollApp.AppCodec().MustMarshalJSON(bankGenesis)
 
 	signInfo := make([]slashingTypes.SigningInfo, len(validatorSet.Validators))
 	for i, v := range validatorSet.Validators {
@@ -220,29 +237,33 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 			},
 		}
 	}
-	genState[slashingTypes.ModuleName] = archApp.AppCodec().MustMarshalJSON(slashingTypes.NewGenesisState(slashingTypes.DefaultParams(), signInfo, nil))
+	genState[slashingTypes.ModuleName] = rollApp.AppCodec().MustMarshalJSON(slashingTypes.NewGenesisState(slashingTypes.DefaultParams(), signInfo, nil))
 
 	// Apply genesis options
 	for _, opt := range genStateOpts {
-		opt(archApp.AppCodec(), genState)
+		opt(rollApp.AppCodec(), genState)
 	}
 
 	// Apply consensus params options
 	consensusParams := app.DefaultConsensusParams
-	for _, opt := range consensusParamsOpts {
-		opt(consensusParams)
-	}
+	// for _, opt := range consensusParamsOpts {
+	// 	opt(consensusParams)
+	// }
 
 	// Init chain
 	genStateBytes, err := json.MarshalIndent(genState, "", " ")
 	require.NoError(t, err)
 
-	archApp.InitChain(
+	rollApp.InitChain(
 		abci.RequestInitChain{
+			Time:            time.Time{},
 			ChainId:         chainid,
-			Validators:      []abci.ValidatorUpdate{},
 			ConsensusParams: consensusParams,
-			AppStateBytes:   genStateBytes,
+			Validators: []abci.ValidatorUpdate{
+				{PubKey: pk, Power: 1},
+			},
+			AppStateBytes: genStateBytes,
+			InitialHeight: 0,
 		},
 	)
 
@@ -250,7 +271,7 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 	chain := TestChain{
 		t:   t,
 		cfg: chainCfg,
-		app: archApp,
+		app: rollApp,
 		curHeader: tmProto.Header{
 			ChainID: chainid,
 			Time:    time.Unix(0, 0).UTC(),
@@ -383,7 +404,7 @@ func (chain *TestChain) BeginBlock() []abci.Event {
 	res := chain.app.BeginBlock(abci.RequestBeginBlock{
 		Hash:   nil,
 		Header: chain.curHeader,
-		LastCommitInfo: abci.CommitInfo{
+		LastCommitInfo: abci.LastCommitInfo{
 			Round: 0,
 			Votes: voteInfo,
 		},

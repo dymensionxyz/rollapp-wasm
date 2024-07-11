@@ -14,7 +14,7 @@ import (
 	host "github.com/cosmos/ibc-go/v6/modules/core/24-host"
 	"github.com/cosmos/ibc-go/v6/modules/core/exported"
 
-	ibcTmTypes "github.com/cosmos/ibc-go/v6/modules/light-clients/07-tendermint"
+	ibcTmTypes "github.com/cosmos/ibc-go/v6/modules/light-clients/07-tendermint/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -292,6 +292,8 @@ func (e *IBCEndpoint) createIBCClient() {
 		dstChainLastTMHeader.GetHeight().(clientTypes.Height),
 		commitmentTypes.GetSDKSpecs(),
 		tmClientUpgradePath,
+		tmClientAllowUpdateAfterExpiry,
+		tmClientAllowUpdateAfterMisbehaviour,
 	)
 
 	srcChainSenderAcc := srcChain.GetAccount(0)
