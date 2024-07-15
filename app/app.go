@@ -503,7 +503,7 @@ func NewRollapp(
 	app.CallbackKeeper = callbackKeeper.NewKeeper(
 		appCodec,
 		keys[callbackTypes.StoreKey],
-		app.WasmKeeper,
+		&app.WasmKeeper,
 		app.BankKeeper,
 	)
 
@@ -511,7 +511,7 @@ func NewRollapp(
 		appCodec,
 		keys[cwerrorsTypes.StoreKey],
 		tkeys[cwerrorsTypes.TStoreKey],
-		app.WasmKeeper,
+		&app.WasmKeeper,
 		app.BankKeeper,
 	)
 
