@@ -10,7 +10,7 @@ The `query` commands alllows a user to query the module state
 
 Use the `-h`/`--help` flag to get a help description of a command.
 
-`archwayd q cwerrors -h`
+`rollapp-wasm q cwerrors -h`
 
 > You can add the `-o json` for the JSON output format
 
@@ -20,7 +20,7 @@ Get the current module parameters
 
 Usage:
 
-`archwayd q cwerrors params [flags]`
+`rollapp-wasm q cwerrors params [flags]`
 
 Example output:
 
@@ -28,7 +28,7 @@ Example output:
 error_stored_time: "302400"
 subscription_fee:
   amount: "0"
-  denom: aarch
+  denom: stake
 subscription_period: "302400"
 ```
 
@@ -38,11 +38,11 @@ List all the errors for the given contract
 
 Usage:
 
-`archwayd q cwerrors errors [contract-address]`
+`rollapp-wasm q cwerrors errors [contract-address]`
 
 Example:
 
-`archway q cwerrors errors archway1wug8sewp6cedgkmrmvhl3lf3tulagm9hnvy8p0rppz9yjw0g4wtqukxvuk`
+`rollapp-wasm q cwerrors errors cosmos1wug8sewp6cedgkmrmvhl3lf3tulagm9hnvy8p0rppz9yjw0g4wtqukxvuk`
 
 Example output:
 
@@ -50,7 +50,7 @@ Example output:
 errors:
 - module_name: "callback"
   error_code: 2
-  contract_address: archway1wug8sewp6cedgkmrmvhl3lf3tulagm9hnvy8p0rppz9yjw0g4wtqukxvuk
+  contract_address: cosmos1wug8sewp6cedgkmrmvhl3lf3tulagm9hnvy8p0rppz9yjw0g4wtqukxvuk
   input_payload: "{'job_id':1}"
   error_message: "Out of gas"
 ```
@@ -61,11 +61,11 @@ Lists if the given contract is subscribed to error callbacks and the block heigh
 
 Usage:
 
-`archwayd q cwerrors is-subscribed [contract-address]`
+`rollapp-wasm q cwerrors is-subscribed [contract-address]`
 
 Example:
 
-`archway q cwerrors is-subscribed archway1wug8sewp6cedgkmrmvhl3lf3tulagm9hnvy8p0rppz9yjw0g4wtqukxvuk`
+`rollapp-wasm q cwerrors is-subscribed cosmos1wug8sewp6cedgkmrmvhl3lf3tulagm9hnvy8p0rppz9yjw0g4wtqukxvuk`
 
 Example output:
 
@@ -80,7 +80,7 @@ The `tx` commands allows a user to interact with the module.
 
 Use the `-h`/`--help` flag to get a help description of a command.
 
-`archwayd tx cwerrors -h`
+`rollapp-wasm tx cwerrors -h`
 
 
 #### subscribe-to-error
@@ -89,8 +89,8 @@ Create a new subscription which will register a contract for a sudo callback on 
 
 Usage: 
 
-`archwayd tx cwerrors subscribe-to-error [contract-address] [fee-amount] [flags]`
+`rollapp-wasm tx cwerrors subscribe-to-error [contract-address] [fee-amount] [flags]`
 
 Example:
 
-`archwayd tx cwerrors subscribe-to-error archway1wug8sewp6cedgkmrmvhl3lf3tulagm9hnvy8p0rppz9yjw0g4wtqukxvuk 7000aarch --from myAccountKey`
+`rollapp-wasm tx cwerrors subscribe-to-error cosmos1wug8sewp6cedgkmrmvhl3lf3tulagm9hnvy8p0rppz9yjw0g4wtqukxvuk 7000stake --from myAccountKey`

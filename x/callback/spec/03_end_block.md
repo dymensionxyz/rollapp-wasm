@@ -12,7 +12,7 @@ Every end block we iterate over all the callbacks registered at that height. For
 
 2. Execute the callback
 
-   A new sdk context is used with a limited gas meter. The gas limit is set to the value of the module param [CallbackGasLimit](../../../proto/archway/callback/v1/callback.proto). Execute using the Sudo entrypoint and track the amount of gasUsed and errors, if any.
+   A new sdk context is used with a limited gas meter. The gas limit is set to the value of the module param [CallbackGasLimit](../../../proto/rollapp/callback/v1/callback.proto). Execute using the Sudo entrypoint and track the amount of gasUsed and errors, if any.
 
 3. Handle error
 

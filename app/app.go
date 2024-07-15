@@ -1022,6 +1022,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 
 func getAcceptedStargateQueries() wasmkeeper.AcceptedStargateQueries {
 	return wasmkeeper.AcceptedStargateQueries{
-		"/archway.cwerrors.v1.Query/Errors": &cwerrorsTypes.QueryErrorsRequest{},
+		"/rollapp.cwerrors.v1.Query/Errors": &cwerrorsTypes.QueryErrorsRequest{},
 	}
 }

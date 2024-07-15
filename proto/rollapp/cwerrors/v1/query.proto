@@ -1,11 +1,11 @@
 syntax = "proto3";
-package archway.cwerrors.v1;
+package rollapp.cwerrors.v1;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/v1beta1/coin.proto";
-import "archway/cwerrors/v1/cwerrors.proto";
-import "archway/cwerrors/v1/params.proto";
+import "rollapp/cwerrors/v1/cwerrors.proto";
+import "rollapp/cwerrors/v1/params.proto";
 
 option go_package = "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/types";
 
@@ -13,18 +13,18 @@ option go_package = "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/types";
 service Query {
   // Params queries all the module parameters.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/archway/cwerrors/v1/params";
+    option (google.api.http).get = "/rollapp/cwerrors/v1/params";
   }
 
   // Errors queries all the errors for a given contract.
   rpc Errors(QueryErrorsRequest) returns (QueryErrorsResponse) {
-    option (google.api.http).get = "/archway/cwerrors/v1/errors";
+    option (google.api.http).get = "/rollapp/cwerrors/v1/errors";
   }
 
   // IsSubscribed queries if a contract is subscribed to sudo error callbacks.
   rpc IsSubscribed(QueryIsSubscribedRequest)
       returns (QueryIsSubscribedResponse) {
-    option (google.api.http).get = "/archway/cwerrors/v1/is_subscribed";
+    option (google.api.http).get = "/rollapp/cwerrors/v1/is_subscribed";
   }
 }
 

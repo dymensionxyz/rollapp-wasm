@@ -10,7 +10,7 @@ The `query` commands alllows a user to query the module state
 
 Use the `-h`/`--help` flag to get a help description of a command.
 
-`archwayd q callback -h`
+`rollapp-wasm q callback -h`
 
 > You can add the `-o json` for the JSON output format
 
@@ -20,7 +20,7 @@ Get the current module parameters
 
 Usage:
 
-`archwayd q callback params [flags]`
+`rollapp-wasm q callback params [flags]`
 
 Example output:
 
@@ -38,18 +38,18 @@ List all the callbacks for the given height
 
 Usage:
 
-`archwayd q callback callbacks [block-height]`
+`rollapp-wasm q callback callbacks [block-height]`
 
 Example:
 
-`archway q callback callbacks 1234`
+`rollapp-wasm q callback callbacks 1234`
 
 Example output:
 
 ```yaml
 callbacks:
 - callback_height: "400"
-  contract_address: archway1wug8sewp6cedgkmrmvhl3lf3tulagm9hnvy8p0rppz9yjw0g4wtqukxvuk
+  contract_address: cosmos1wug8sewp6cedgkmrmvhl3lf3tulagm9hnvy8p0rppz9yjw0g4wtqukxvuk
   fee_split:
     block_reservation_fees:
       amount: "1"
@@ -64,7 +64,7 @@ callbacks:
       amount: "0"
       denom: stake
   job_id: "5"
-  reserved_by: archway1x394ype3x8nt9wz0j78m8c8kcezpslrcnvs6ef
+  reserved_by: cosmos1x394ype3x8nt9wz0j78m8c8kcezpslrcnvs6ef
 ```
 
 #### estimate-callback-fees
@@ -73,11 +73,11 @@ Estimate the minimum fees to be paid to register a callback based on the request
 
 Usage:
 
-`archwayd q callback estimate-callback-fees [block-height]`
+`rollapp-wasm q callback estimate-callback-fees [block-height]`
 
 Example:
 
-`archwayd q calback estimate-callback-fees 1234`
+`rollapp-wasm q calback estimate-callback-fees 1234`
 
 Example output:
 
@@ -104,7 +104,7 @@ The `tx` commands allows a user to interact with the module.
 
 Use the `-h`/`--help` flag to get a help description of a command.
 
-`archwayd tx callback -h`
+`rollapp-wasm tx callback -h`
 
 #### request-callback
 
@@ -112,11 +112,11 @@ Create a new callback for the given contract at specified height and given job i
 
 Usage: 
 
-`archwayd tx callback request-callback [contract-address] [job-id] [callback-height] [fee-amount] [flags]`
+`rollapp-wasm tx callback request-callback [contract-address] [job-id] [callback-height] [fee-amount] [flags]`
 
 Example:
 
-`archwayd tx callback request-callback archway1wug8sewp6cedgkmrmvhl3
+`rollapp-wasm tx callback request-callback cosmos1wug8sewp6cedgkmrmvhl3
 lf3tulagm9hnvy8p0rppz9yjw0g4wtqukxvuk 1 1234 7000stake --from myAccountKey`
 
 #### cancel-callback
@@ -125,8 +125,8 @@ Cancel an existing callback for the given contract at specified height and given
 
 Usage:
 
-`archwayd tx callback cancel-callback [contract-address] [job-id] [callback-height] [flags]`
+`rollapp-wasm tx callback cancel-callback [contract-address] [job-id] [callback-height] [flags]`
 
 Example:
 
-`archwayd tx callback cancel-callback archway1wug8sewp6cedgkmrmvhl3 1 1234  --from myAccountKey`
+`rollapp-wasm tx callback cancel-callback cosmos1wug8sewp6cedgkmrmvhl3 1 1234  --from myAccountKey`

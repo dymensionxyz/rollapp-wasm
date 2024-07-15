@@ -1,9 +1,9 @@
 syntax = "proto3";
-package archway.callback.v1;
+package rollapp.callback.v1;
 
 option go_package = "github.com/dymensionxyz/rollapp-wasm/x/callback/types";
 
-import "archway/callback/v1/callback.proto";
+import "rollapp/callback/v1/callback.proto";
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos_proto/cosmos.proto";

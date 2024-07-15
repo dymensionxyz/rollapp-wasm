@@ -1,5 +1,5 @@
 syntax = "proto3";
-package archway.cwerrors.v1;
+package rollapp.cwerrors.v1;
 
 import "gogoproto/gogo.proto";
 

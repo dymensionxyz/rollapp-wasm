@@ -4,7 +4,7 @@ Section describes all stored by the module objects and their storage keys
 
 ## Params
 
-[Params](../../../proto/archway/cwerrors/v1/params.proto) object is used to store the module params
+[Params](../../../proto/rollapp/cwerrors/v1/params.proto) object is used to store the module params
 
 The params value can only be updated by x/gov module via a governance upgrade proposal. [More](./02_messages.md#msgupdateparams)
 
@@ -38,7 +38,7 @@ Storage keys:
 
 ## Errors
 
-Errors is a collections of all the [SudoErrors](../../../proto/archway/cwerrors/v1/cwerrors.proto) currently stored by the module which can be queried.
+Errors is a collections of all the [SudoErrors](../../../proto/rollapp/cwerrors/v1/cwerrors.proto) currently stored by the module which can be queried.
 
 Storage keys:
 * Errors: `ErrorsKeyPrefix | errorID -> protobuf(SudoError)`

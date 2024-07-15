@@ -4,7 +4,7 @@ Section describes the processing of the module messages
 
 ## MsgSubscribeToError
 
-A contract can be subscribed to errors by using the [MsgSubscribeToError](../../../proto/archway/cwerrors/v1/tx.proto) message.
+A contract can be subscribed to errors by using the [MsgSubscribeToError](../../../proto/rollapp/cwerrors/v1/tx.proto) message.
 
 ```protobuf
 message MsgSubscribeToError {
