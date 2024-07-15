@@ -1,26 +1,26 @@
 syntax = "proto3";
-package archway.callback.v1;
+package rollapp.callback.v1;
 
 option go_package = "github.com/dymensionxyz/rollapp-wasm/x/callback/types";
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/v1beta1/coin.proto";
-import "archway/callback/v1/callback.proto";
+import "rollapp/callback/v1/callback.proto";
 
 // Query service for the callback module.
 service Query {
     // Params returns module parameters
     rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-      option (google.api.http).get = "/archway/callback/v1/params";
+      option (google.api.http).get = "/rollapp/callback/v1/params";
     }
     // EstimateCallbackFees returns the total amount of callback fees a contract needs to pay to register the callback
     rpc EstimateCallbackFees(QueryEstimateCallbackFeesRequest) returns (QueryEstimateCallbackFeesResponse) { 
-      option (google.api.http).get = "/archway/callback/v1/estimate_callback_fees";
+      option (google.api.http).get = "/rollapp/callback/v1/estimate_callback_fees";
     }
     // Callbacks returns all the callbacks registered at a given height
     rpc Callbacks(QueryCallbacksRequest) returns (QueryCallbacksResponse) { 
-      option (google.api.http).get = "/archway/callback/v1/callbacks";
+      option (google.api.http).get = "/rollapp/callback/v1/callbacks";
     }
 }
 

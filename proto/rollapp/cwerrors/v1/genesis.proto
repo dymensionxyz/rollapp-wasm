@@ -1,9 +1,9 @@
 syntax = "proto3";
-package archway.cwerrors.v1;
+package rollapp.cwerrors.v1;
 
 import "gogoproto/gogo.proto";
-import "archway/cwerrors/v1/params.proto";
-import "archway/cwerrors/v1/cwerrors.proto";
+import "rollapp/cwerrors/v1/params.proto";
+import "rollapp/cwerrors/v1/cwerrors.proto";
 
 option go_package = "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/types";
 

@@ -4,7 +4,7 @@ Section describes the processing of the module messages
 
 ## MsgRequestCallback
 
-A new callback can be registered by using the [MsgRequestCallback](../../../proto/archway/callback/v1/tx.proto#L39) message.
+A new callback can be registered by using the [MsgRequestCallback](../../../proto/rollapp/callback/v1/tx.proto#L39) message.
 
 On success:
 * A callback is queued to be executed at the given height.
@@ -23,7 +23,7 @@ This message is expected to fail if:
 
 ## MsgCancelCallback
 
-An existing callback can be cancelled by using th [MsgCancelCallback](../../../proto/archway/callback/v1/tx.proto#L58) message,
+An existing callback can be cancelled by using th [MsgCancelCallback](../../../proto/rollapp/callback/v1/tx.proto#L58) message,
 
 On success:
 * The exisiting callback is removed from the execution queue.

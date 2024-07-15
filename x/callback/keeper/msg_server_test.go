@@ -65,7 +65,7 @@ func (s *KeeperTestSuite) TestRequestCallback() {
 					JobId:           1,
 					CallbackHeight:  102,
 					Sender:          contractAddr.String(),
-					Fees:            sdk.NewInt64Coin("stake", 3500000000),
+					Fees:            sdk.NewInt64Coin("stake", 100000000),
 				}
 			},
 			expectError: true,
@@ -79,7 +79,7 @@ func (s *KeeperTestSuite) TestRequestCallback() {
 					JobId:           1,
 					CallbackHeight:  102,
 					Sender:          contractAddr.String(),
-					Fees:            sdk.NewInt64Coin("stake", 3500000000),
+					Fees:            sdk.NewInt64Coin("stake", 100000000),
 				}
 			},
 			expectError: true,
@@ -93,7 +93,7 @@ func (s *KeeperTestSuite) TestRequestCallback() {
 					JobId:           1,
 					CallbackHeight:  120,
 					Sender:          contractAdminAcc.Address.String(),
-					Fees:            sdk.NewInt64Coin("stake", 3500000000),
+					Fees:            sdk.NewInt64Coin("stake", 100000000),
 				}
 			},
 			expectError: false,
@@ -116,7 +116,7 @@ func (s *KeeperTestSuite) TestRequestCallback() {
 				s.Require().True(exists)
 				// Ensure account balance has been updated
 				contractAdminBalance = contractAdminBalance.Sub(req.Fees)
-				s.Require().Equal(contractAdminBalance, s.chain.GetBalance(sdk.MustAccAddressFromBech32(req.Sender)))
+				s.Require().True(contractAdminBalance.IsEqual(s.chain.GetBalance(sdk.MustAccAddressFromBech32(req.Sender))))
 			}
 		})
 	}
@@ -141,7 +141,7 @@ func (s *KeeperTestSuite) TestCancelCallback() {
 		JobId:           1,
 		CallbackHeight:  130,
 		Sender:          contractAdminAcc.Address.String(),
-		Fees:            sdk.NewInt64Coin("stake", 3500000000),
+		Fees:            sdk.NewInt64Coin("stake", 100),
 	}
 	_, err := msgServer.RequestCallback(sdk.WrapSDKContext(ctx), reqMsg)
 	s.Require().NoError(err)

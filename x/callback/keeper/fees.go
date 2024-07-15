@@ -49,8 +49,8 @@ func (k Keeper) EstimateCallbackFees(ctx sdk.Context, blockHeight int64) (sdk.Co
 	return futureReservationFee, blockReservationFee, transactionFee, nil
 }
 
-func (k Keeper) CalculateTransactionFees(ctx sdk.Context, gasAmount uint64, minPriceOfGas sdk.DecCoin) sdk.Coin {
-	transactionFeeAmount := minPriceOfGas.Amount.MulInt64(int64(gasAmount))
-	transactionFee := sdk.NewCoin(minPriceOfGas.Denom, transactionFeeAmount.RoundInt())
+func (k Keeper) CalculateTransactionFees(ctx sdk.Context, gasAmount uint64, minPriceOfGas sdk.Coin) sdk.Coin {
+	transactionFeeAmount := minPriceOfGas.Amount.MulRaw(int64(gasAmount))
+	transactionFee := sdk.NewCoin(minPriceOfGas.Denom, transactionFeeAmount)
 	return transactionFee
 }

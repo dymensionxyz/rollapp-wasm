@@ -4,7 +4,7 @@ This module enables CosmWasm based smart contracts to receive callbacks at the e
 
 ## Concepts
 
-Callbacks are an intent submitted by a smart contract or a contract admin or a contract owner(as set in x/rewards), which requests the protocol to execute an endpoint on the given contract for the desired height. The data structure of a callback can be found at [callback.proto](../../../proto/archway/callback/v1/callback.proto#L12).
+Callbacks are an intent submitted by a smart contract or a contract admin or a contract owner(as set in x/rewards), which requests the protocol to execute an endpoint on the given contract for the desired height. The data structure of a callback can be found at [callback.proto](../../../proto/rollapp/callback/v1/callback.proto#L12).
 
 The authorized user can register a callback by providing the following:
 1. Contract Address - The address of the contract which will receive the callback.
@@ -36,7 +36,7 @@ where,
 
 > **Note**
 >
-> The transaction fee to be paid at the time of registration is calculated based on the x/rewards [EstimateGasFees](../../../proto/archway/rewards/v1/query.proto#L39) endpoint for the current height. The refund is calculated based on the gas fees at the execution height. If the gas fee goes up enough in the duration that the tx fee provided during registration is not enough, the validators swallow the loss.
+> The transaction fee to be paid at the time of registration is calculated based on the x/rewards [EstimateGasFees](../../../proto/rollapp/rewards/v1/query.proto#L39) endpoint for the current height. The refund is calculated based on the gas fees at the execution height. If the gas fee goes up enough in the duration that the tx fee provided during registration is not enough, the validators swallow the loss.
 
 #### 2. Block Reservation Fee
 This part of the fee is calculated based on how many callbacks are registered at the current block. The more filled a block's callback queue is, the more expensive it is to request further callbacks in that block.
@@ -102,8 +102,3 @@ As the contracts are executed during the protocol end blocker, it is not possibl
 5. [Client](./05_client.md)
 6. [Wasm bindings](./06_wasm_bindings.md)
 7. [Module Errors](./07_errors.md)
-
-## References
-
-1. [RFC: x/cw-callback module](https://github.com/orgs/archway-network/discussions/25)
-2. [AIP: x/cw-callback module](https://github.com/dymensionxyz/rollapp-wasm/issues/477)

@@ -38,7 +38,7 @@ func TestGenesisValidate(t *testing.T) {
 					100,
 					sdk.MustNewDecFromStr("1.0"),
 					sdk.MustNewDecFromStr("1.0"),
-					sdk.NewDecCoin(sdk.DefaultBondDenom, sdk.ZeroInt()),
+					sdk.NewCoin(sdk.DefaultBondDenom, sdk.ZeroInt()),
 				),
 				Callbacks: []*types.Callback{
 					{

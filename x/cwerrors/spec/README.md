@@ -39,8 +39,3 @@ The subscriptions are an opt-in feature where the contractadmin/owner has to sub
 4. [Events](./04_events.md)
 5. [Client](./05_client.md)
 6. [Module Errors](./06_errors.md)
-
-## References
-
-1. [RFC: x/cwerrors module](https://github.com/orgs/archway-network/discussions/35)
-2. [AIP: x/cwerrors module](https://github.com/dymensionxyz/rollapp-wasm/issues/544)

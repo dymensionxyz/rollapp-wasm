@@ -1,5 +1,5 @@
 syntax = "proto3";
-package archway.callback.v1;
+package rollapp.callback.v1;
 
 import "google/protobuf/any.proto";
 import "gogoproto/gogo.proto";
@@ -49,5 +49,5 @@ message Params {
     // future_reservation_fee_multiplier is used to calculate a part of the reservation fees which will need to be paid while requesting the callback. 
     string future_reservation_fee_multiplier = 5 [(cosmos_proto.scalar) = "cosmos.Dec", (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
     // min_price_of_gas defines the minimum price for each single unit of gas in the network.
-    cosmos.base.v1beta1.DecCoin min_price_of_gas = 6 [ (gogoproto.nullable) = false ];
+    cosmos.base.v1beta1.Coin min_price_of_gas = 6 [ (gogoproto.nullable) = false ];
 }

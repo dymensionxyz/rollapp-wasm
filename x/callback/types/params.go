@@ -12,7 +12,7 @@ var (
 	DefaultMaxFutureReservationLimit      = uint64(10000)
 	DefaultBlockReservationFeeMultiplier  = sdk.MustNewDecFromStr("1.0")
 	DefaultFutureReservationFeeMultiplier = sdk.MustNewDecFromStr("1.0")
-	DefaultMinPriceOfGas                  = sdk.NewDecCoin(sdk.DefaultBondDenom, sdk.ZeroInt())
+	DefaultMinPriceOfGas                  = sdk.NewCoin(sdk.DefaultBondDenom, sdk.ZeroInt())
 )
 
 // NewParams creates a new Params instance.
@@ -22,7 +22,7 @@ func NewParams(
 	maxFutureReservationLimit uint64,
 	blockReservationFeeMultiplier sdk.Dec,
 	futureReservationFeeMultiplier sdk.Dec,
-	minPriceOfGas sdk.DecCoin,
+	minPriceOfGas sdk.Coin,
 ) Params {
 	return Params{
 		CallbackGasLimit:               callbackGasLimit,
