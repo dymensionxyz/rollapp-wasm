@@ -131,7 +131,7 @@ func (s *KeeperTestSuite) TestEstimateCallbackFees() {
 	})
 	s.Require().NoError(err)
 	expectedTxFeeAmount := params.GetMinPriceOfGas().Amount
-	expectedTxFeeCoin := sdk.NewInt64Coin("stake", expectedTxFeeAmount.RoundInt().Int64())
+	expectedTxFeeCoin := sdk.NewInt64Coin("stake", expectedTxFeeAmount.Int64())
 
 	testCases := []struct {
 		testCase       string
