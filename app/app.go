@@ -11,6 +11,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
+	gaslessmodule "github.com/dymensionxyz/dymension-rdk/x/gasless"
+	gaslesskeeper "github.com/dymensionxyz/dymension-rdk/x/gasless/keeper"
+	gaslesstypes "github.com/dymensionxyz/dymension-rdk/x/gasless/types"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -145,7 +148,7 @@ var (
 		ibchost.StoreKey, upgradetypes.StoreKey,
 		epochstypes.StoreKey, hubgentypes.StoreKey,
 		ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		wasmtypes.StoreKey,
+		wasmtypes.StoreKey, gaslesstypes.StoreKey,
 		hubtypes.StoreKey,
 	}
 )
@@ -185,6 +188,7 @@ var (
 		gov.NewAppModuleBasic(getGovProposalHandlers()),
 		params.AppModuleBasic{},
 		feegrantmodule.AppModuleBasic{},
+		gaslessmodule.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		ibctransfer.AppModuleBasic{},
@@ -206,6 +210,7 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		wasmtypes.ModuleName:           {authtypes.Burner},
 		hubgentypes.ModuleName:         {authtypes.Minter},
+		gaslesstypes.ModuleName:        nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -264,6 +269,7 @@ type App struct {
 	TransferKeeper   ibctransferkeeper.Keeper
 	WasmKeeper       wasmkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
+	GaslessKeeper    gaslesskeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -403,8 +409,15 @@ func NewRollapp(
 	)
 
 	app.DistrKeeper = distrkeeper.NewKeeper(
-		appCodec, keys[distrtypes.StoreKey], app.GetSubspace(distrtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
-		&stakingKeeper, &app.SequencersKeeper, authtypes.FeeCollectorName, nil, // TODO: upgrade to https://github.com/dymensionxyz/dymension-rdk/pull/476
+		appCodec,
+		keys[distrtypes.StoreKey],
+		app.GetSubspace(distrtypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+		&stakingKeeper,
+		&app.SequencersKeeper,
+		authtypes.FeeCollectorName,
+		// TODO: upgrade to https://github.com/dymensionxyz/dymension-rdk/pull/476
 	)
 
 	app.FeeGrantKeeper = feegrantkeeper.NewKeeper(appCodec, keys[feegrant.StoreKey], app.AccountKeeper)
@@ -545,6 +558,15 @@ func NewRollapp(
 		wasmOpts...,
 	)
 
+	app.GaslessKeeper = gaslesskeeper.NewKeeper(
+		appCodec,
+		keys[gaslesstypes.StoreKey],
+		app.GetSubspace(gaslesstypes.ModuleName),
+		app.interfaceRegistry,
+		app.BankKeeper,
+		&app.WasmKeeper,
+	)
+
 	wasmStack := wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper, app.IBCKeeper.ChannelKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -568,6 +590,7 @@ func NewRollapp(
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
+		gaslessmodule.NewAppModule(appCodec, app.GaslessKeeper),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, app.BankKeeper),
 		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
@@ -606,6 +629,7 @@ func NewRollapp(
 		govtypes.ModuleName,
 		genutiltypes.ModuleName,
 		feegrant.ModuleName,
+		gaslesstypes.ModuleName,
 		epochstypes.ModuleName,
 		paramstypes.ModuleName,
 		hubgentypes.ModuleName,
@@ -627,6 +651,7 @@ func NewRollapp(
 		minttypes.ModuleName,
 		genutiltypes.ModuleName,
 		feegrant.ModuleName,
+		gaslesstypes.ModuleName,
 		epochstypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
@@ -662,6 +687,7 @@ func NewRollapp(
 		upgradetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		feegrant.ModuleName,
+		gaslesstypes.ModuleName,
 		hubgentypes.ModuleName,
 		hubtypes.ModuleName,
 		wasm.ModuleName,
@@ -756,6 +782,7 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.Wa
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
 			TxCounterStoreKey: app.keys[wasmtypes.StoreKey],
+			GaslessKeeper:     app.GaslessKeeper,
 		},
 	)
 	if err != nil {
@@ -987,6 +1014,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(hubgentypes.ModuleName)
+	paramsKeeper.Subspace(gaslesstypes.ModuleName)
 
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	return paramsKeeper
