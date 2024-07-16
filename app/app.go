@@ -11,6 +11,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
+	gaslessmodule "github.com/dymensionxyz/dymension-rdk/x/gasless"
+	gaslesskeeper "github.com/dymensionxyz/dymension-rdk/x/gasless/keeper"
+	gaslesstypes "github.com/dymensionxyz/dymension-rdk/x/gasless/types"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -87,10 +90,6 @@ import (
 	epochskeeper "github.com/dymensionxyz/dymension-rdk/x/epochs/keeper"
 	epochstypes "github.com/dymensionxyz/dymension-rdk/x/epochs/types"
 
-	"github.com/dymensionxyz/dymension-rdk/x/denommetadata"
-	denommetadatamodulekeeper "github.com/dymensionxyz/dymension-rdk/x/denommetadata/keeper"
-	denommetadatamoduletypes "github.com/dymensionxyz/dymension-rdk/x/denommetadata/types"
-
 	hubgenesis "github.com/dymensionxyz/dymension-rdk/x/hub-genesis"
 	hubgenkeeper "github.com/dymensionxyz/dymension-rdk/x/hub-genesis/keeper"
 	hubgentypes "github.com/dymensionxyz/dymension-rdk/x/hub-genesis/types"
@@ -127,6 +126,12 @@ import (
 	distr "github.com/dymensionxyz/dymension-rdk/x/dist"
 	distrkeeper "github.com/dymensionxyz/dymension-rdk/x/dist/keeper"
 
+	"github.com/dymensionxyz/dymension-rdk/x/denommetadata"
+	denommetadatamoduletypes "github.com/dymensionxyz/dymension-rdk/x/denommetadata/types"
+	"github.com/dymensionxyz/dymension-rdk/x/hub"
+	hubkeeper "github.com/dymensionxyz/dymension-rdk/x/hub/keeper"
+	hubtypes "github.com/dymensionxyz/dymension-rdk/x/hub/types"
+
 	"github.com/dymensionxyz/rollapp-wasm/x/callback"
 	callbackKeeper "github.com/dymensionxyz/rollapp-wasm/x/callback/keeper"
 	callbackTypes "github.com/dymensionxyz/rollapp-wasm/x/callback/types"
@@ -151,8 +156,8 @@ var (
 		ibchost.StoreKey, upgradetypes.StoreKey,
 		epochstypes.StoreKey, hubgentypes.StoreKey,
 		ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		wasmtypes.StoreKey,
-		denommetadatamoduletypes.StoreKey,
+		wasmtypes.StoreKey, gaslesstypes.StoreKey,
+		hubtypes.StoreKey,
 		callbackTypes.StoreKey,
 		cwerrorsTypes.StoreKey,
 	}
@@ -193,31 +198,38 @@ var (
 		gov.NewAppModuleBasic(getGovProposalHandlers()),
 		params.AppModuleBasic{},
 		feegrantmodule.AppModuleBasic{},
+		gaslessmodule.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		ibctransfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		hubgenesis.AppModuleBasic{},
 		wasm.AppModuleBasic{},
-		denommetadata.AppModuleBasic{},
+		hub.AppModuleBasic{},
 		callback.AppModuleBasic{},
 		cwerrors.AppModuleBasic{},
 	)
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		authtypes.FeeCollectorName:          nil,
-		authz.ModuleName:                    nil,
-		distrtypes.ModuleName:               nil,
-		minttypes.ModuleName:                {authtypes.Minter},
-		stakingtypes.BondedPoolName:         {authtypes.Burner, authtypes.Staking},
-		stakingtypes.NotBondedPoolName:      {authtypes.Burner, authtypes.Staking},
-		govtypes.ModuleName:                 {authtypes.Burner},
-		ibctransfertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
-		wasmtypes.ModuleName:                {authtypes.Burner},
-		hubgentypes.ModuleName:              {authtypes.Burner},
-		denommetadatamoduletypes.ModuleName: nil,
-		callbackTypes.ModuleName:            nil,
+		authtypes.FeeCollectorName:     nil,
+		authz.ModuleName:               nil,
+		distrtypes.ModuleName:          nil,
+		minttypes.ModuleName:           {authtypes.Minter},
+		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+		govtypes.ModuleName:            {authtypes.Burner},
+		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+		wasmtypes.ModuleName:           {authtypes.Burner},
+		hubgentypes.ModuleName:         {authtypes.Minter},
+		gaslesstypes.ModuleName:        nil,
+		callbackTypes.ModuleName:       nil,
+	}
+
+	// module accounts that are allowed to receive tokens
+	maccCanReceiveTokens = []string{
+		distrtypes.ModuleName,
+		hubgentypes.ModuleName,
 	}
 )
 
@@ -270,6 +282,7 @@ type App struct {
 	TransferKeeper   ibctransferkeeper.Keeper
 	WasmKeeper       wasmkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
+	GaslessKeeper    gaslesskeeper.Keeper
 	CallbackKeeper   callbackKeeper.Keeper
 	CWErrorsKeeper   cwerrorsKeeper.Keeper
 
@@ -278,7 +291,7 @@ type App struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 	ScopedWasmKeeper     capabilitykeeper.ScopedKeeper
 
-	DenomMetadataKeeper denommetadatamodulekeeper.Keeper
+	HubKeeper hubkeeper.Keeper
 
 	// mm is the module manager
 	mm *module.Manager
@@ -305,7 +318,6 @@ func NewRollapp(
 	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
-
 	appCodec := encodingConfig.Codec
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -385,7 +397,7 @@ func NewRollapp(
 		keys[banktypes.StoreKey],
 		app.AccountKeeper,
 		app.GetSubspace(banktypes.ModuleName),
-		app.BlockedModuleAccountAddrs(),
+		app.BlockedAddrs(),
 	)
 
 	stakingKeeper := stakingkeeper.NewKeeper(
@@ -412,8 +424,15 @@ func NewRollapp(
 	)
 
 	app.DistrKeeper = distrkeeper.NewKeeper(
-		appCodec, keys[distrtypes.StoreKey], app.GetSubspace(distrtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
-		&stakingKeeper, &app.SequencersKeeper, authtypes.FeeCollectorName, app.ModuleAccountAddrs(),
+		appCodec,
+		keys[distrtypes.StoreKey],
+		app.GetSubspace(distrtypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+		&stakingKeeper,
+		&app.SequencersKeeper,
+		authtypes.FeeCollectorName,
+		// TODO: upgrade to https://github.com/dymensionxyz/dymension-rdk/pull/476
 	)
 
 	app.FeeGrantKeeper = feegrantkeeper.NewKeeper(appCodec, keys[feegrant.StoreKey], app.AccountKeeper)
@@ -466,38 +485,57 @@ func NewRollapp(
 		),
 	)
 
-	denomMetadataHooks := denommetadatamoduletypes.NewMultiDenommetadataHooks()
+	app.HubGenesisKeeper = hubgenkeeper.NewKeeper(
+		appCodec,
+		keys[hubgentypes.StoreKey],
+		app.GetSubspace(hubgentypes.ModuleName),
+		app.AccountKeeper,
+	)
+
+	app.HubKeeper = hubkeeper.NewKeeper(
+		appCodec,
+		keys[hubtypes.StoreKey],
+	)
+
+	denomMetadataMiddleware := denommetadata.NewICS4Wrapper(
+		app.IBCKeeper.ChannelKeeper,
+		app.HubKeeper,
+		app.BankKeeper,
+		app.HubGenesisKeeper.GetState,
+	)
+
+	genesisTransfersBlocker := hubgenkeeper.NewICS4Wrapper(denomMetadataMiddleware, app.HubGenesisKeeper) // ICS4 Wrapper: claims IBC middleware
 
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
 		keys[ibctransfertypes.StoreKey],
 		app.GetSubspace(ibctransfertypes.ModuleName),
-		app.IBCKeeper.ChannelKeeper,
+		genesisTransfersBlocker,
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
 		app.BankKeeper,
 		scopedTransferKeeper,
 	)
-	transferIBCModule := ibctransfer.NewIBCModule(app.TransferKeeper)
 
-	app.DenomMetadataKeeper = denommetadatamodulekeeper.NewKeeper(
-		appCodec,
-		keys[denommetadatamoduletypes.StoreKey],
+	// create IBC module from top to bottom of stack
+	var transferStack ibcporttypes.IBCModule
+
+	transferStack = ibctransfer.NewIBCModule(app.TransferKeeper)
+	transferStack = denommetadata.NewIBCModule(
+		transferStack,
 		app.BankKeeper,
 		app.TransferKeeper,
-		denomMetadataHooks,
-		app.GetSubspace(denommetadatamoduletypes.ModuleName),
+		app.HubKeeper,
+		denommetadatamoduletypes.NewMultiDenommetadataHooks(),
 	)
 
-	app.HubGenesisKeeper = hubgenkeeper.NewKeeper(
-		appCodec,
-		keys[hubgentypes.StoreKey],
-		app.GetSubspace(hubgentypes.ModuleName),
-		app.IBCKeeper.ChannelKeeper,
+	transferStack = hubgenkeeper.NewIBCModule(
+		transferStack,
+		app.TransferKeeper,
+		app.HubGenesisKeeper,
 		app.BankKeeper,
-		app.AccountKeeper,
 	)
 
 	app.CallbackKeeper = callbackKeeper.NewKeeper(
@@ -555,11 +593,20 @@ func NewRollapp(
 		wasmOpts...,
 	)
 
+	app.GaslessKeeper = gaslesskeeper.NewKeeper(
+		appCodec,
+		keys[gaslesstypes.StoreKey],
+		app.GetSubspace(gaslesstypes.ModuleName),
+		app.interfaceRegistry,
+		app.BankKeeper,
+		&app.WasmKeeper,
+	)
+
 	wasmStack := wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper, app.IBCKeeper.ChannelKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
-	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferIBCModule).AddRoute(wasmtypes.ModuleName, wasmStack)
+	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferStack).AddRoute(wasmtypes.ModuleName, wasmStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
 	/**** Module Options ****/
@@ -578,6 +625,7 @@ func NewRollapp(
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
+		gaslessmodule.NewAppModule(appCodec, app.GaslessKeeper),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, app.BankKeeper),
 		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
@@ -589,8 +637,8 @@ func NewRollapp(
 		ibc.NewAppModule(app.IBCKeeper),
 		ibctransfer.NewAppModule(app.TransferKeeper),
 		upgrade.NewAppModule(app.UpgradeKeeper),
-		hubgenesis.NewAppModule(appCodec, app.HubGenesisKeeper, app.AccountKeeper),
-		denommetadata.NewAppModule(app.DenomMetadataKeeper, app.BankKeeper),
+		hubgenesis.NewAppModule(appCodec, app.HubGenesisKeeper),
+		hub.NewAppModule(appCodec, app.HubKeeper),
 		callback.NewAppModule(app.appCodec, app.CallbackKeeper, app.WasmKeeper, app.CWErrorsKeeper),
 		cwerrors.NewAppModule(app.appCodec, app.CWErrorsKeeper, app.WasmKeeper),
 	}
@@ -618,10 +666,11 @@ func NewRollapp(
 		govtypes.ModuleName,
 		genutiltypes.ModuleName,
 		feegrant.ModuleName,
+		gaslesstypes.ModuleName,
 		epochstypes.ModuleName,
 		paramstypes.ModuleName,
 		hubgentypes.ModuleName,
-		denommetadatamoduletypes.ModuleName,
+		hubtypes.ModuleName,
 		wasm.ModuleName,
 		callbackTypes.ModuleName,
 		cwerrorsTypes.ModuleName, // does not have begin blocker
@@ -641,13 +690,14 @@ func NewRollapp(
 		minttypes.ModuleName,
 		genutiltypes.ModuleName,
 		feegrant.ModuleName,
+		gaslesstypes.ModuleName,
 		epochstypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		hubgentypes.ModuleName,
-		denommetadatamoduletypes.ModuleName,
+		hubtypes.ModuleName,
 		wasm.ModuleName,
 		callbackTypes.ModuleName,
 		cwerrorsTypes.ModuleName,
@@ -678,8 +728,9 @@ func NewRollapp(
 		upgradetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		feegrant.ModuleName,
+		gaslesstypes.ModuleName,
 		hubgentypes.ModuleName,
-		denommetadatamoduletypes.ModuleName,
+		hubtypes.ModuleName,
 		wasm.ModuleName,
 		callbackTypes.ModuleName,
 		cwerrorsTypes.ModuleName,
@@ -774,6 +825,7 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.Wa
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
 			TxCounterStoreKey: app.keys[wasmtypes.StoreKey],
+			GaslessKeeper:     app.GaslessKeeper,
 		},
 	)
 	if err != nil {
@@ -832,21 +884,23 @@ func (app *App) LoadHeight(height int64) error {
 
 // ModuleAccountAddrs returns all the app's module account addresses.
 func (app *App) ModuleAccountAddrs() map[string]bool {
-	modAccAddrs := make(map[string]bool)
+	ret := make(map[string]bool)
 	for acc := range maccPerms {
-		modAccAddrs[authtypes.NewModuleAddress(acc).String()] = true
+		ret[authtypes.NewModuleAddress(acc).String()] = true
 	}
-
-	return modAccAddrs
+	return ret
 }
 
-// BlockedModuleAccountAddrs returns all the app's blocked module account
-// addresses.
-func (app *App) BlockedModuleAccountAddrs() map[string]bool {
-	modAccAddrs := app.ModuleAccountAddrs()
-	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
-
-	return modAccAddrs
+// BlockedAddrs returns all the app's module account addresses that are not
+// allowed to receive funds. If the map value is true, that account cannot receive funds.
+func (app *App) BlockedAddrs() map[string]bool {
+	// block all modules by default
+	ret := app.ModuleAccountAddrs()
+	// delete them if they CAN receive tokens
+	for _, acc := range maccCanReceiveTokens {
+		delete(ret, authtypes.NewModuleAddress(acc).String())
+	}
+	return ret
 }
 
 // LegacyAmino returns App's amino codec.
@@ -956,7 +1010,7 @@ func (app *App) GetStakingKeeper() ibctestingtypes.StakingKeeper {
 	return app.StakingKeeper
 }
 
-// GetStakingKeeper implements the TestingApp interface.
+// GetStakingKeeperSDK implements the TestingApp interface.
 func (app *App) GetStakingKeeperSDK() stakingkeeper.Keeper {
 	return app.StakingKeeper
 }
@@ -988,15 +1042,6 @@ func RegisterSwaggerAPI(_ client.Context, rtr *mux.Router) {
 	rtr.PathPrefix("/swagger/").Handler(http.StripPrefix("/swagger/", staticServer))
 }
 
-// GetMaccPerms returns a copy of the module account permissions
-func GetMaccPerms() map[string][]string {
-	dupMaccPerms := make(map[string][]string)
-	for k, v := range maccPerms {
-		dupMaccPerms[k] = v
-	}
-	return dupMaccPerms
-}
-
 // initParamsKeeper init params keeper and its subspaces
 func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey) paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
@@ -1012,7 +1057,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(hubgentypes.ModuleName)
-	paramsKeeper.Subspace(denommetadatamoduletypes.ModuleName)
+	paramsKeeper.Subspace(gaslesstypes.ModuleName)
 
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(callbackTypes.ModuleName)
