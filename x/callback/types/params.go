@@ -10,8 +10,8 @@ var (
 	DefaultCallbackGasLimit               = uint64(1000000)
 	DefaultMaxBlockReservationLimit       = uint64(3)
 	DefaultMaxFutureReservationLimit      = uint64(10000)
-	DefaultBlockReservationFeeMultiplier  = sdk.MustNewDecFromStr("1.0")
-	DefaultFutureReservationFeeMultiplier = sdk.MustNewDecFromStr("1.0")
+	DefaultBlockReservationFeeMultiplier  = sdk.ZeroDec()
+	DefaultFutureReservationFeeMultiplier = sdk.ZeroDec()
 	DefaultMinPriceOfGas                  = sdk.NewCoin(sdk.DefaultBondDenom, sdk.ZeroInt())
 )
 
