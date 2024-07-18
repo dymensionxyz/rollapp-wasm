@@ -34,6 +34,10 @@ export the following variables:
 
 ```shell
 export EXECUTABLE="rollapp-wasm"
+
+export CELESTIA_NETWORK="mock" # for a testnet RollApp use "arabica", for mainnet - "celestia"
+export CELESTIA_HOME_DIR="${HOME}/.da"
+
 export BECH32_PREFIX="rol"
 export ROLLAPP_CHAIN_ID="rollappwasm_1234-1"
 export KEY_NAME_ROLLAPP="rol-user"
@@ -43,6 +47,8 @@ export MONIKER="$ROLLAPP_CHAIN_ID-sequencer"
 
 export ROLLAPP_HOME_DIR="$HOME/.rollapp-wasm"
 export ROLLAPP_SETTLEMENT_INIT_DIR_PATH="${ROLLAPP_HOME_DIR}/init"
+
+export SETTLEMENT_LAYER="mock" # when running a local hub or a public network use "dymension"
 ```
 
 And initialize the rollapp:
@@ -94,6 +100,8 @@ all scripts are adjusted to use local hub node that's hosted on the default port
 configuration with a remote hub node is also supported, the following variables must be set:
 
 ```shell
+export SETTLEMENT_LAYER="dymension" # when running a local hub or a public network use "dymension"
+
 export HUB_RPC_ENDPOINT="http://localhost"
 export HUB_RPC_PORT="36657" # default: 36657
 export HUB_RPC_URL="${HUB_RPC_ENDPOINT}:${HUB_RPC_PORT}"
@@ -190,10 +198,10 @@ or as a systemd service:
 
 ```shell
 sudo tee /etc/systemd/system/rollapp-wasm.service > /dev/null <<EOF
-[Unit] 
+[Unit]
 Description=rollapp-wasm
-After=network.target 
-[Service] 
+After=network.target
+[Service]
 Type=simple
 User=$USER
 ExecStart=$(which rollapp-wasm) start
