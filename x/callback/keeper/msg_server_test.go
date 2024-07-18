@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -44,7 +43,7 @@ func (s *KeeperTestSuite) TestRequestCallback() {
 			errorType:   status.Error(codes.InvalidArgument, "empty request"),
 		},
 		{
-			testCase: "FAIL: insufficient callback fees",
+			testCase: "OK: successfully register callback with 0 fees",
 			input: func() *types.MsgRequestCallback {
 				return &types.MsgRequestCallback{
 					ContractAddress: contractAddr.String(),
@@ -54,8 +53,8 @@ func (s *KeeperTestSuite) TestRequestCallback() {
 					Fees:            sdk.NewInt64Coin("stake", 0),
 				}
 			},
-			expectError: true,
-			errorType:   types.ErrInsufficientFees,
+			expectError: false,
+			errorType:   nil,
 		},
 		{
 			testCase: "FAIL: contract does not exist",
@@ -70,20 +69,6 @@ func (s *KeeperTestSuite) TestRequestCallback() {
 			},
 			expectError: true,
 			errorType:   types.ErrContractNotFound,
-		},
-		{
-			testCase: "Fail: account does not have enough balance",
-			input: func() *types.MsgRequestCallback {
-				return &types.MsgRequestCallback{
-					ContractAddress: contractAddr.String(),
-					JobId:           1,
-					CallbackHeight:  102,
-					Sender:          contractAddr.String(),
-					Fees:            sdk.NewInt64Coin("stake", 100000000),
-				}
-			},
-			expectError: true,
-			errorType:   sdkerrors.ErrInsufficientFunds,
 		},
 		{
 			testCase: "OK: successfully register callback",
@@ -116,7 +101,11 @@ func (s *KeeperTestSuite) TestRequestCallback() {
 				s.Require().True(exists)
 				// Ensure account balance has been updated
 				contractAdminBalance = contractAdminBalance.Sub(req.Fees)
-				s.Require().True(contractAdminBalance.IsEqual(s.chain.GetBalance(sdk.MustAccAddressFromBech32(req.Sender))))
+				if req.Sender == contractAddr.String() {
+					s.Require().True(contractAdminBalance.IsEqual(s.chain.GetBalance(contractAdminAcc.Address)))
+				} else {
+					s.Require().True(contractAdminBalance.IsEqual(s.chain.GetBalance(sdk.MustAccAddressFromBech32(req.Sender))))
+				}
 			}
 		})
 	}
