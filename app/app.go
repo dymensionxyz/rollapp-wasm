@@ -131,6 +131,14 @@ import (
 	"github.com/dymensionxyz/dymension-rdk/x/hub"
 	hubkeeper "github.com/dymensionxyz/dymension-rdk/x/hub/keeper"
 	hubtypes "github.com/dymensionxyz/dymension-rdk/x/hub/types"
+
+	"github.com/dymensionxyz/rollapp-wasm/x/callback"
+	callbackKeeper "github.com/dymensionxyz/rollapp-wasm/x/callback/keeper"
+	callbackTypes "github.com/dymensionxyz/rollapp-wasm/x/callback/types"
+
+	"github.com/dymensionxyz/rollapp-wasm/x/cwerrors"
+	cwerrorsKeeper "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/keeper"
+	cwerrorsTypes "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/types"
 )
 
 const (
@@ -150,6 +158,8 @@ var (
 		ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		wasmtypes.StoreKey, gaslesstypes.StoreKey,
 		hubtypes.StoreKey,
+		callbackTypes.StoreKey,
+		cwerrorsTypes.StoreKey,
 	}
 )
 
@@ -196,6 +206,8 @@ var (
 		hubgenesis.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 		hub.AppModuleBasic{},
+		callback.AppModuleBasic{},
+		cwerrors.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -211,6 +223,7 @@ var (
 		wasmtypes.ModuleName:           {authtypes.Burner},
 		hubgentypes.ModuleName:         {authtypes.Minter},
 		gaslesstypes.ModuleName:        nil,
+		callbackTypes.ModuleName:       nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -270,6 +283,8 @@ type App struct {
 	WasmKeeper       wasmkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
 	GaslessKeeper    gaslesskeeper.Keeper
+	CallbackKeeper   callbackKeeper.Keeper
+	CWErrorsKeeper   cwerrorsKeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -321,7 +336,7 @@ func NewRollapp(
 	keys := sdk.NewKVStoreKeys(
 		kvstorekeys...,
 	)
-	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
+	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey, cwerrorsTypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
 	// load state streaming if enabled
@@ -523,6 +538,21 @@ func NewRollapp(
 		app.BankKeeper,
 	)
 
+	app.CallbackKeeper = callbackKeeper.NewKeeper(
+		appCodec,
+		keys[callbackTypes.StoreKey],
+		&app.WasmKeeper,
+		app.BankKeeper,
+	)
+
+	app.CWErrorsKeeper = cwerrorsKeeper.NewKeeper(
+		appCodec,
+		keys[cwerrorsTypes.StoreKey],
+		tkeys[cwerrorsTypes.TStoreKey],
+		&app.WasmKeeper,
+		app.BankKeeper,
+	)
+
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
@@ -533,6 +563,11 @@ func NewRollapp(
 	if len(enabledProposals) != 0 {
 		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, enabledProposals))
 	}
+
+	// Include the x/cwerrors query to stargate queries
+	wasmOpts = append(wasmOpts, wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
+		Stargate: wasmkeeper.AcceptListStargateQuerier(getAcceptedStargateQueries(), app.GRPCQueryRouter(), appCodec),
+	}))
 
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
@@ -604,6 +639,8 @@ func NewRollapp(
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		hubgenesis.NewAppModule(appCodec, app.HubGenesisKeeper),
 		hub.NewAppModule(appCodec, app.HubKeeper),
+		callback.NewAppModule(app.appCodec, app.CallbackKeeper, app.WasmKeeper, app.CWErrorsKeeper),
+		cwerrors.NewAppModule(app.appCodec, app.CWErrorsKeeper, app.WasmKeeper),
 	}
 
 	app.mm = module.NewManager(modules...)
@@ -635,6 +672,8 @@ func NewRollapp(
 		hubgentypes.ModuleName,
 		hubtypes.ModuleName,
 		wasm.ModuleName,
+		callbackTypes.ModuleName,
+		cwerrorsTypes.ModuleName, // does not have begin blocker
 	}
 	app.mm.SetOrderBeginBlockers(beginBlockersList...)
 
@@ -660,6 +699,8 @@ func NewRollapp(
 		hubgentypes.ModuleName,
 		hubtypes.ModuleName,
 		wasm.ModuleName,
+		callbackTypes.ModuleName,
+		cwerrorsTypes.ModuleName,
 	}
 	app.mm.SetOrderEndBlockers(endBlockersList...)
 
@@ -691,6 +732,8 @@ func NewRollapp(
 		hubgentypes.ModuleName,
 		hubtypes.ModuleName,
 		wasm.ModuleName,
+		callbackTypes.ModuleName,
+		cwerrorsTypes.ModuleName,
 	}
 	app.mm.SetOrderInitGenesis(initGenesisList...)
 
@@ -1017,5 +1060,13 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(gaslesstypes.ModuleName)
 
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
+	paramsKeeper.Subspace(callbackTypes.ModuleName)
+	paramsKeeper.Subspace(cwerrorsTypes.ModuleName)
 	return paramsKeeper
+}
+
+func getAcceptedStargateQueries() wasmkeeper.AcceptedStargateQueries {
+	return wasmkeeper.AcceptedStargateQueries{
+		"/rollapp.cwerrors.v1.Query/Errors": &cwerrorsTypes.QueryErrorsRequest{},
+	}
 }
