@@ -92,6 +92,13 @@ pub fn sudo(
 ) -> Result<Response, ContractError> {
     match msg {
         SudoMsg::Callback { job_id } => sudo::handle_callback(deps, job_id),
+        SudoMsg::Error {
+            module_name,
+            error_code,
+            contract_address,
+            input_payload,
+            error_message,
+        } => sudo::handle_error(deps, module_name, error_code, contract_address, input_payload, error_message),
     }
 }
 
@@ -115,6 +122,17 @@ pub mod sudo {
 
         Ok(Response::new().add_attribute("action", "handle_callback"))
     }
+    
+    pub fn handle_error(deps: DepsMut, module_name: String, error_code: u32, _contract_address: String, _input_payload: String, _error_message: String) -> Result<Response, ContractError> {
+        STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
+            if module_name == "callback" && error_code == 2 {
+                state.count = 0; // reset the counter
+            }
+            Ok(state)
+        })?;
+
+        Ok(Response::new().add_attribute("action", "handle_error"))
+    }
 }
 
 #[cfg(test)]
@@ -123,7 +141,7 @@ mod tests {
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
     use cosmwasm_std::{coins, from_json};
 
-    use crate::contract::sudo::handle_callback;
+    use crate::contract::sudo::{handle_callback, handle_error};
 
     #[test]
     fn callback() {
@@ -157,5 +175,18 @@ mod tests {
         let res = query(deps.as_ref(), mock_env(), QueryMsg::GetCount {}).unwrap();
         let value: GetCountResponse = from_json(&res).unwrap();
         assert_eq!(100, value.count);
+
+        // error callback - unknown module and error code - do nothing
+        let _res = handle_error(deps.as_mut(), "unknown".to_string(), 1, "contract".to_string(), "".to_string(), "".to_string());
+        let res = query(deps.as_ref(), mock_env(), QueryMsg::GetCount {}).unwrap();
+        let value: GetCountResponse = from_json(&res).unwrap();
+        assert_eq!(100, value.count);
+
+        // error callback - when module is "callback" and error_code is 2, reset the counter
+        let _res = handle_error(deps.as_mut(), "callback".to_string(), 2, "contract".to_string(), "".to_string(), "".to_string());
+        let res = query(deps.as_ref(), mock_env(), QueryMsg::GetCount {}).unwrap();
+        let value: GetCountResponse = from_json(&res).unwrap();
+        assert_eq!(0, value.count);
+
     }
 }

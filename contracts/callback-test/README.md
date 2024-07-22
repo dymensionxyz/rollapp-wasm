@@ -11,7 +11,16 @@ The following changes have been made
 
 #[cw_serde]
 pub enum SudoMsg {
-    Callback { job_id: u64 },
+    Callback { 
+        job_id: u64
+    },
+    Error {
+        module_name: String,
+        error_code: u32,
+        contract_address: String,
+        input_payload: String,
+        error_message: String,
+    },
 }
 ```
 
@@ -38,6 +47,17 @@ pub mod sudo {
         })?;
 
         Ok(Response::new().add_attribute("action", "handle_callback"))
+    }
+
+    pub fn handle_error(deps: DepsMut, module_name: String, error_code: u32, _contract_address: String, _input_payload: String, _error_message: String) -> Result<Response, ContractError> {
+        STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
+            if module_name == "callback" && error_code == 2 {
+                state.count = 0; // reset the counter
+            }
+            Ok(state)
+        })?;
+
+        Ok(Response::new().add_attribute("action", "handle_error"))
     }
 }
 ```
