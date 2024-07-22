@@ -13,7 +13,6 @@ import (
 	e2eTesting "github.com/dymensionxyz/rollapp-wasm/e2e/testing"
 	callbackKeeper "github.com/dymensionxyz/rollapp-wasm/x/callback/keeper"
 	"github.com/dymensionxyz/rollapp-wasm/x/callback/types"
-	cwerrortypes "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/types"
 )
 
 const (
@@ -156,15 +155,9 @@ func TestEndBlocker(t *testing.T) {
 	chain.NextBlock(1)
 	chain.NextBlock(1)
 
-	// Checking if the count value has incremented. Should not have incremented as the callback failed due to out of gas error
+	// Checking if the count value is zero. should be as error callback rests count when out of gas error
 	count = getCount(t, chain, contractAddr)
-	require.Equal(t, initMsg.Count+1, count)
-
-	sudoErrs, err = errorsKeeper.GetErrorsByContractAddress(chain.GetContext(), contractAddr)
-	require.NoError(t, err)
-	require.Len(t, sudoErrs, 2)
-	require.Equal(t, "cwerrors", sudoErrs[1].ModuleName) // because Sudo::Error entrypoint does not exist on the contract
-	require.Equal(t, int32(cwerrortypes.ModuleErrors_ERR_CALLBACK_EXECUTION_FAILED), sudoErrs[1].ErrorCode)
+	require.Equal(t, int32(0), count)
 }
 
 func getCallbackRegistrationFees(chain *e2eTesting.TestChain) (sdk.Coin, error) {
