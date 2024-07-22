@@ -125,8 +125,8 @@ pub mod sudo {
     
     pub fn handle_error(deps: DepsMut, module_name: String, error_code: u32, _contract_address: String, _input_payload: String, _error_message: String) -> Result<Response, ContractError> {
         STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
-            if module_name == "callback" && error_code == 2 {
-                state.count = 0; // reset the counter
+            if module_name == "callback" && error_code == 1 {
+                state.count = 0; // reset the counter when out of gas error
             }
             Ok(state)
         })?;
@@ -177,13 +177,13 @@ mod tests {
         assert_eq!(100, value.count);
 
         // error callback - unknown module and error code - do nothing
-        let _res = handle_error(deps.as_mut(), "unknown".to_string(), 1, "contract".to_string(), "".to_string(), "".to_string());
+        let _res = handle_error(deps.as_mut(), "unknown".to_string(), 2, "contract".to_string(), "".to_string(), "".to_string());
         let res = query(deps.as_ref(), mock_env(), QueryMsg::GetCount {}).unwrap();
         let value: GetCountResponse = from_json(&res).unwrap();
         assert_eq!(100, value.count);
 
-        // error callback - when module is "callback" and error_code is 2, reset the counter
-        let _res = handle_error(deps.as_mut(), "callback".to_string(), 2, "contract".to_string(), "".to_string(), "".to_string());
+        // error callback - when module is "callback" and error_code is 1, reset the counter
+        let _res = handle_error(deps.as_mut(), "callback".to_string(), 1, "contract".to_string(), "".to_string(), "".to_string());
         let res = query(deps.as_ref(), mock_env(), QueryMsg::GetCount {}).unwrap();
         let value: GetCountResponse = from_json(&res).unwrap();
         assert_eq!(0, value.count);
