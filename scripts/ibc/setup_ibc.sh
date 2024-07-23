@@ -1,4 +1,31 @@
 #!/bin/bash
+EXECUTABLE=$(which rollapp-wasm)
+
+if ! command -v "$EXECUTABLE" >/dev/null; then
+  echo "$EXECUTABLE does not exist"
+  echo "please run make install"
+  exit 1
+fi
+
+if [ "$BECH32_PREFIX" = "" ]; then
+  echo "BECH32_PREFIX is not set"
+  exit 1
+fi
+
+if [ "$BASE_DENOM" = "" ]; then
+  echo "BASE_DENOM is not set"
+  exit 1
+fi
+
+if [ "$HUB_KEY_WITH_FUNDS" = "" ]; then
+  echo "HUB_KEY_WITH_FUNDS is not set"
+  exit 1
+fi
+
+if [ "$KEY_NAME_ROLLAPP" = "" ]; then
+  echo "KEY_NAME_ROLLAPP is not set"
+  exit 1
+fi
 
 BASEDIR=$(dirname "$0")
 
@@ -9,30 +36,30 @@ RELAYER_EXECUTABLE="rly"
 
 # settlement config
 SETTLEMENT_EXECUTABLE="dymd"
-SETTLEMENT_CHAIN_ID=$($SETTLEMENT_EXECUTABLE config | jq -r '."chain-id"')
-SETTLEMENT_RPC_FOR_RELAYER=$($SETTLEMENT_EXECUTABLE config | jq -r '."node"')
+SETTLEMENT_CHAIN_ID=$("$SETTLEMENT_EXECUTABLE" config | jq -r '."chain-id"')
+SETTLEMENT_RPC_FOR_RELAYER=$("$SETTLEMENT_EXECUTABLE" config | jq -r '."node"')
+
+SETTLEMENT_KEY_NAME_GENESIS="$HUB_KEY_WITH_FUNDS"
 SETTLEMENT_BASE_DENOM="adym"
-SETTLEMENT_KEY_NAME_GENESIS="hub-user"
 
 # rollapp config
-ROLLAPP_CHAIN_ID=$($EXECUTABLE config | jq -r '."chain-id"')
-ROLLAPP_RPC_FOR_RELAYER=$($EXECUTABLE config | jq -r '."node"')
-ROLLAPP_KEY_NAME_GENESIS="rol-user"
+ROLLAPP_CHAIN_ID=$("$EXECUTABLE" config | jq -r '."chain-id"')
+ROLLAPP_RPC_FOR_RELAYER=$("$EXECUTABLE" config | jq -r '."node"')
 
 RELAYER_KEY_FOR_ROLLAPP="relayer-rollapp-key"
 RELAYER_KEY_FOR_HUB="relayer-hub-key"
 RELAYER_PATH="hub-rollapp"
 
-if ! command -v $RELAYER_EXECUTABLE >/dev/null; then
+if ! command -v "$RELAYER_EXECUTABLE" >/dev/null; then
   echo "$RELAYER_EXECUTABLE does not exist"
   echo "please run make install of github.com/dymensionxyz/dymension-relayer"
   exit 1
 fi
 
 # --------------------------------- change block time to easily create ibc channels --------------------------------- #
-kill $(pgrep rollapp-wasm)
-sed -i '' 's/empty_blocks_max_time = "3600s"/empty_blocks_max_time = "3s"/' ${ROLLAPP_HOME_DIR}/config/dymint.toml
-rollapp-wasm start
+# kill $(pgrep rollapp-wasm)
+# sed -i '' 's/empty_blocks_max_time = "3600s"/empty_blocks_max_time = "3s"/' ${ROLLAPP_HOME_DIR}/config/dymint.toml
+# rollapp-wasm start
 
 # --------------------------------- rly init --------------------------------- #
 RLY_PATH="$HOME/.relayer"
@@ -54,17 +81,17 @@ echo '# -------------------------- initializing rly config ---------------------
 rly config init
 
 echo '# ------------------------- adding chains to rly config ------------------------- #'
-tmp=$(mktemp)
 
-jq --arg key "$RELAYER_KEY_FOR_ROLLAPP" '.value.key = $key' $ROLLAPP_IBC_CONF_FILE >"$tmp" && mv "$tmp" $ROLLAPP_IBC_CONF_FILE
-jq --arg chain "$ROLLAPP_CHAIN_ID" '.value."chain-id" = $chain' $ROLLAPP_IBC_CONF_FILE >"$tmp" && mv "$tmp" $ROLLAPP_IBC_CONF_FILE
-jq --arg rpc "$ROLLAPP_RPC_FOR_RELAYER" '.value."rpc-addr" = $rpc' $ROLLAPP_IBC_CONF_FILE >"$tmp" && mv "$tmp" $ROLLAPP_IBC_CONF_FILE
-jq --arg denom "0.0$BASE_DENOM" '.value."gas-prices" = $denom' $ROLLAPP_IBC_CONF_FILE >"$tmp" && mv "$tmp" $ROLLAPP_IBC_CONF_FILE
-jq --arg bech "$BECH32_PREFIX" '.value["account-prefix"] = $bech' "$ROLLAPP_IBC_CONF_FILE" >"$tmp" && mv "$tmp" "$ROLLAPP_IBC_CONF_FILE"
+dasel put -f "$ROLLAPP_IBC_CONF_FILE" '.value.key' -v "$RELAYER_KEY_FOR_ROLLAPP"
+dasel put -f "$ROLLAPP_IBC_CONF_FILE" '.value.chain-id' -v "$ROLLAPP_CHAIN_ID"
+dasel put -f "$ROLLAPP_IBC_CONF_FILE" '.value.account-prefix' -v "$BECH32_PREFIX"
+dasel put -f "$ROLLAPP_IBC_CONF_FILE" '.value.rpc-addr' -v "$ROLLAPP_RPC_FOR_RELAYER"
+dasel put -f "$ROLLAPP_IBC_CONF_FILE" '.value.gas-prices' -v "1000000000$BASE_DENOM"
 
-jq --arg key "$RELAYER_KEY_FOR_HUB" '.value.key = $key' $HUB_IBC_CONF_FILE >"$tmp" && mv "$tmp" $HUB_IBC_CONF_FILE
-jq --arg chain "$SETTLEMENT_CHAIN_ID" '.value."chain-id" = $chain' $HUB_IBC_CONF_FILE >"$tmp" && mv "$tmp" $HUB_IBC_CONF_FILE
-jq --arg rpc "$SETTLEMENT_RPC_FOR_RELAYER" '.value."rpc-addr" = $rpc' $HUB_IBC_CONF_FILE >"$tmp" && mv "$tmp" $HUB_IBC_CONF_FILE
+dasel put -f "$HUB_IBC_CONF_FILE" '.value.key' -v "$RELAYER_KEY_FOR_HUB"
+dasel put -f "$HUB_IBC_CONF_FILE" '.value.chain-id' -v "$SETTLEMENT_CHAIN_ID"
+dasel put -f "$HUB_IBC_CONF_FILE" '.value.rpc-addr' -v "$SETTLEMENT_RPC_FOR_RELAYER"
+dasel put -f "$HUB_IBC_CONF_FILE" '.value.gas-prices' -v "1000000000${SETTLEMENT_BASE_DENOM}"
 
 rly chains add --file "$ROLLAPP_IBC_CONF_FILE" "$ROLLAPP_CHAIN_ID"
 rly chains add --file "$HUB_IBC_CONF_FILE" "$SETTLEMENT_CHAIN_ID"
@@ -78,31 +105,26 @@ rly keys add "$SETTLEMENT_CHAIN_ID" "$RELAYER_KEY_FOR_HUB"
 
 RLY_HUB_ADDR=$(rly keys show "$SETTLEMENT_CHAIN_ID")
 RLY_ROLLAPP_ADDR=$(rly keys show "$ROLLAPP_CHAIN_ID")
+echo "$RLY_ROLLAPP_ADDR"
 
-echo '# -------------------------------- funding for rly account  ------------------------------- #'
-DYM_BALANCE=$(${SETTLEMENT_EXECUTABLE} q bank balances ${RLY_HUB_ADDR} -o json | jq -r '.balances[0].amount')
+echo '--------------------------------- Funding rly account on hub ['"$RLY_HUB_ADDR"']... --------------------------------'
+DYM_BALANCE=$("$SETTLEMENT_EXECUTABLE" q bank balances "$RLY_HUB_ADDR" -o json | jq -r '.balances[0].amount')
 
 if [ "$(echo "$DYM_BALANCE >= 100000000000000000000" | bc)" -eq 1 ]; then
   echo "${RLY_HUB_ADDR} already funded"
 else
-  "$SETTLEMENT_EXECUTABLE" tx bank send "$SETTLEMENT_KEY_NAME_GENESIS" "$RLY_HUB_ADDR" 100dym --keyring-backend test --broadcast-mode block --fees 1dym --node "$SETTLEMENT_RPC_FOR_RELAYER" -y
+  "$SETTLEMENT_EXECUTABLE" tx bank send "$SETTLEMENT_KEY_NAME_GENESIS" "$RLY_HUB_ADDR" 100dym --keyring-backend test --broadcast-mode block --fees 1dym --node "$SETTLEMENT_RPC_FOR_RELAYER" -y || exit 1
 fi
 
-RA_BALANCE=$(${EXECUTABLE} q bank balances ${RLY_ROLLAPP_ADDR} -o json | jq -r '.balances[0].amount')
+echo '--------------------------------- Funding rly account on rollapp ['"$RLY_ROLLAPP_ADDR"'].. --------------------------------'
+
+RA_BALANCE=$("$EXECUTABLE" q bank balances "$RLY_ROLLAPP_ADDR" -o json | jq -r '.balances[0].amount')
 
 if [ "$(echo "$RA_BALANCE >= 100000000000000000000" | bc)" -eq 1 ]; then
   echo "${RLY_ROLLAPP_ADDR} already funded"
 else
-  "$EXECUTABLE" tx bank send "$KEY_NAME_ROLLAPP" "$RLY_ROLLAPP_ADDR" 100000000000000000000"$BASE_DENOM" --keyring-backend test --broadcast-mode block -y --fees 4000000000$BASE_DENOM
+  "$EXECUTABLE" tx bank send "$KEY_NAME_ROLLAPP" "$RLY_ROLLAPP_ADDR" 100000000000000000000"$BASE_DENOM" --keyring-backend test --broadcast-mode block -y --fees 4000000000000"$BASE_DENOM" || exit 1
 fi
-
-echo "# ------------------------------- balance of rly account on hub [$RLY_HUB_ADDR]------------------------------ #"
-$SETTLEMENT_EXECUTABLE q bank balances "$(rly keys show "$SETTLEMENT_CHAIN_ID")"
-echo "From within the hub node: \n\"$SETTLEMENT_EXECUTABLE tx bank send $SETTLEMENT_KEY_NAME_GENESIS $RLY_HUB_ADDR 100000000000000000000${SETTLEMENT_BASE_DENOM} --keyring-backend test --broadcast-mode block --node $SETTLEMENT_RPC_FOR_RELAYER --chain-id $SETTLEMENT_CHAIN_ID\""
-
-echo "# ------------------------------- balance of rly account on rollapp [$RLY_ROLLAPP_ADDR] ------------------------------ #"
-$EXECUTABLE q bank balances "$(rly keys show "$ROLLAPP_CHAIN_ID")" --node "$ROLLAPP_RPC_FOR_RELAYER"
-echo "From within the rollapp node: \n\"$EXECUTABLE tx bank send $KEY_NAME_ROLLAPP $RLY_ROLLAPP_ADDR 100000000$BASE_DENOM --keyring-backend test --broadcast-mode block\""
 
 echo '# -------------------------------- creating IBC link ------------------------------- #'
 
@@ -112,10 +134,11 @@ rly tx link "$RELAYER_PATH" --src-port "$IBC_PORT" --dst-port "$IBC_PORT" --vers
 # Channel is currently not created in the tx link since we changed the relayer to support on demand blocks
 # Which messed up with channel creation as part of tx link.
 
-sleep 5
+rly tx channel "$RELAYER_PATH"
 
 echo '# -------------------------------- IBC channel established ------------------------------- #'
 echo "Channel Information:"
+
 channel_info=$(rly q channels "$ROLLAPP_CHAIN_ID" | jq '{ "rollapp-channel": .channel_id, "hub-channel": .counterparty.channel_id }')
 rollapp_channel=$(echo "$channel_info" | jq -r '.["rollapp-channel"]')
 hub_channel=$(echo "$channel_info" | jq -r '.["hub-channel"]')
@@ -124,7 +147,7 @@ echo "$channel_info"
 
 echo -e '--------------------------------- Set channel-filter --------------------------------'
 
-if [ -z "$rollapp_channel" ] || [ -z "$hub_channel" ]; then
+if [ "$rollapp_channel" = "" ] || [ "$hub_channel" = "" ]; then
   echo "Both channels must be provided. Something is wrong. Exiting."
   exit 1
 fi
@@ -134,6 +157,6 @@ sed -i.bak '/channel-list:/s/.*/            channel-list: ["'"$rollapp_channel"'
 echo "Config file updated successfully."
 
 # --------------------------------- revert empty block time to 1h --------------------------------- #
-kill $(pgrep rollapp-wasm)
-sed -i '' 's/empty_blocks_max_time = "3s"/empty_blocks_max_time = "3600s"/' ${ROLLAPP_HOME_DIR}/config/dymint.toml
-rollapp-wasm start
+# kill "$(pgrep rollapp-wasm)"
+# sed -i '' 's/empty_blocks_max_time = "3s"/empty_blocks_max_time = "3600s"/' "$ROLLAPP_HOME_DIR"/config/dymint.toml
+# rollapp-wasm start

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-KEYRING_PATH="$HOME/.rollapp/sequencer_keys"
+KEYRING_PATH="${ROLLAPP_HOME_DIR}/sequencer_keys"
 KEY_NAME_SEQUENCER="sequencer"
 
 #Register Sequencer

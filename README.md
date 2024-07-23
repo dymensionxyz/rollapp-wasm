@@ -143,18 +143,6 @@ TRANSFER_AMOUNT="${NEW_NUMERIC_PART}adym"
 dymd tx bank send $HUB_KEY_WITH_FUNDS $SEQUENCER_ADDR ${TRANSFER_AMOUNT} --keyring-backend test --broadcast-mode block --fees 1dym -y --node ${HUB_RPC_URL} --chain-id ${HUB_CHAIN_ID}
 ```
 
-### Generate denommetadata
-
-```shell
-sh scripts/settlement/generate_denom_metadata.sh
-```
-
-### Add genesis accounts
-
-```shell
-sh scripts/settlement/add_genesis_accounts.sh
-```
-
 ### Register rollapp on settlement
 
 ```shell
@@ -172,20 +160,14 @@ sh scripts/settlement/register_sequencer_to_hub.sh
 Modify `dymint.toml` in the chain directory (`~/.rollapp/config`)
 set:
 
-linux:
-
-```shell
-sed -i 's/settlement_layer.*/settlement_layer = "dymension"/' ${ROLLAPP_HOME_DIR}/config/dymint.toml
-sed -i '/node_address =/c\node_address = '\"$HUB_RPC_URL\" "${ROLLAPP_HOME_DIR}/config/dymint.toml"
-sed -i '/rollapp_id =/c\rollapp_id = '\"$ROLLAPP_CHAIN_ID\" "${ROLLAPP_HOME_DIR}/config/dymint.toml"
-```
-
-mac:
-
-```shell
-sed -i '' 's/settlement_layer.*/settlement_layer = "dymension"/' ${ROLLAPP_HOME_DIR}/config/dymint.toml
-sed -i '' 's|node_address =.*|node_address = '\"$HUB_RPC_URL\"'|' "${ROLLAPP_HOME_DIR}/config/dymint.toml"
-sed -i '' 's|rollapp_id =.*|rollapp_id = '\"$ROLLAPP_CHAIN_ID\"'|' "${ROLLAPP_HOME_DIR}/config/dymint.toml"
+```sh
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "settlement_layer" -v "dymension"
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "node_address" -v "$HUB_RPC_URL"
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "rollapp_id" -v "$ROLLAPP_CHAIN_ID"
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "max_idle_time" -v "2s" # may want to change to something longer after setup (see below)
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "batch_submit_max_time" -v "2s" # generally should be the same as max_idle_time
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "max_proof_time" -v "1s"
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/app.toml "minimum-gas-prices" -v "1${BASE_DENOM}"
 ```
 
 ### Run rollapp locally
