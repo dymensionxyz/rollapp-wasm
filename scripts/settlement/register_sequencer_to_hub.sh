@@ -13,7 +13,7 @@ dymd tx sequencer create-sequencer "$SEQ_PUB_KEY" "$ROLLAPP_CHAIN_ID" "$DESCRIPT
   --from "$KEY_NAME_SEQUENCER" \
   --keyring-dir "$KEYRING_PATH" \
   --keyring-backend test \
-  --broadcast-mode block \
+  --broadcast-mode sync \
   --node "$HUB_RPC_URL" \
   --chain-id "$HUB_CHAIN_ID" \
   --fees 1dym \

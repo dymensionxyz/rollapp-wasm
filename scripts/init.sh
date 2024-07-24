@@ -237,4 +237,3 @@ if [ ! "$answer" != "${answer#[Nn]}" ]; then
 fi
 
 "$EXECUTABLE" validate-genesis
-
