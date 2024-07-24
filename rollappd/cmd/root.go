@@ -134,10 +134,13 @@ func initAppConfig() (string, interface{}) {
 	customAppTemplate := serverconfig.DefaultConfigTemplate
 	srvCfg := serverconfig.DefaultConfig()
 
-	//Default pruning for a rollapp, represent 2 weeks of states kept while pruning in intervals of 10 minutes
-	srvCfg.Pruning = pruningtypes.PruningOptionCustom
-	srvCfg.PruningInterval = "18000"
-	srvCfg.PruningKeepRecent = "6048000"
+	// Default to no pruning
+	// With default values when pruning is enabled set to keep 10k blocks, prune states older
+	// then 100 at an interval of 10 states
+	srvCfg.Pruning = pruningtypes.PruningOptionNothing
+	srvCfg.PruningInterval = "10"
+	srvCfg.PruningKeepRecent = "100"
+	srvCfg.MinRetainBlocks = 10000
 
 	return customAppTemplate, srvCfg
 }
