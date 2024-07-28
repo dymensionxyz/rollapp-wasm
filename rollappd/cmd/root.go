@@ -131,18 +131,12 @@ func initTendermintConfig() *tmcfg.Config {
 // initAppConfig helps to override default appConfig template and configs.
 // return "", nil if no custom configuration is required for the application.
 func initAppConfig() (string, interface{}) {
-	customAppTemplate := serverconfig.DefaultConfigTemplate
-	srvCfg := serverconfig.DefaultConfig()
-
-	// Default to no pruning
-	// With default values when pruning is enabled set to keep 10k blocks, prune states older
-	// then 100 at an interval of 10 states
-	srvCfg.Pruning = pruningtypes.PruningOptionNothing
-	srvCfg.PruningInterval = "10"
-	srvCfg.PruningKeepRecent = "100"
-	srvCfg.MinRetainBlocks = 10000
-
-	return customAppTemplate, srvCfg
+    customAppTemplate := serverconfig.DefaultConfigTemplate
+    srvCfg := serverconfig.DefaultConfig()
+    
+    rdkserverconfig.SetDefaultPruningSettings(srvCfg)
+    
+    return customAppTemplate, srvCfg
 }
 
 func initRootCmd(
