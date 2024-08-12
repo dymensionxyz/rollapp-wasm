@@ -17,7 +17,7 @@ It uses Cosmos-SDK's [simapp](https://github.com/cosmos/cosmos-sdk/tree/main/sim
 
 ## Overview
 
-**Note**: Requires [Go 1.21](https://go.dev/)
+**Note**: Requires [Go 1.21](https://go.dev/). Requires [Dasel](https://formulae.brew.sh/formula/dasel) and [JQ](https://formulae.brew.sh/formula/jq).
 
 ## Installing / Getting started
 
