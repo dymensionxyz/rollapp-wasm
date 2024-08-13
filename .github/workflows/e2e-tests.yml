@@ -48,3 +48,4 @@ jobs:
     uses: dymensionxyz/e2e-tests/.github/workflows/e2e-test-wasm-workflow-call.yaml@main
     with:
       rollapp_wasm_ci: "e2e"
+      dymension_ci : "3.1.0"
