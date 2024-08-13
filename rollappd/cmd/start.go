@@ -160,7 +160,7 @@ which accepts a path for the resulting pprof file.
 			}
 			serverCtx.Logger = rdklogger.NewLogger(log_path, maxLogSize, log_level, map[string]string{})
 
-			dymconfig := dymintconf.DefaultConfig("", "")
+			dymconfig := dymintconf.DefaultConfig("")
 			err = dymconfig.GetViperConfig(cmd, serverCtx.Viper.GetString(flags.FlagHome))
 			if err != nil {
 				return err
