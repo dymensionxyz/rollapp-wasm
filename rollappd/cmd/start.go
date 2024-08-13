@@ -371,7 +371,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 			grpcAddress := fmt.Sprintf("127.0.0.1:%s", port)
 
 			// If grpc is enabled, configure grpc client for grpc gateway.
-			grpcClient, err := grpc.Dial(
+			grpcClient, err := grpc.Dial( //nolint
 				grpcAddress,
 				grpc.WithTransportCredentials(insecure.NewCredentials()),
 				grpc.WithDefaultCallOptions(
