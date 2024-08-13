@@ -79,7 +79,7 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 		case TestChainConfigOption:
 			chainCfgOpts = append(chainCfgOpts, opt)
 		case TestChainConsensusParamsOption:
-			consensusParamsOpts = append(consensusParamsOpts, opt)
+			consensusParamsOpts = append(consensusParamsOpts, opt) //nolint
 		case TestChainGenesisOption:
 			genStateOpts = append(genStateOpts, opt)
 		default:

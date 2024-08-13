@@ -137,9 +137,5 @@ func isAuthorizedToModify(ctx sdk.Context, k Keeper, contractAddress sdk.AccAddr
 	}
 
 	contractInfo := k.wasmKeeper.GetContractInfo(ctx, contractAddress)
-	if strings.EqualFold(sender, contractInfo.Admin) { // Admin of the contract can modify its callbacks
-		return true
-	}
-
-	return false
+	return strings.EqualFold(sender, contractInfo.Admin) // Admin of the contract can modify its callbacks
 }

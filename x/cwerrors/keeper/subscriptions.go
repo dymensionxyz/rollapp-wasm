@@ -86,9 +86,5 @@ func isAuthorizedToSubscribe(ctx sdk.Context, k Keeper, contractAddress sdk.AccA
 	}
 
 	contractInfo := k.wasmKeeper.GetContractInfo(ctx, contractAddress)
-	if strings.EqualFold(sender, contractInfo.Admin) { // Admin of the contract can set subscriptions
-		return true
-	}
-
-	return false
+	return strings.EqualFold(sender, contractInfo.Admin) // Admin of the contract can set subscriptions
 }

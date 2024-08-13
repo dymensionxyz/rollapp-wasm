@@ -222,11 +222,11 @@ var (
 		hubgentypes.ModuleName:              {authtypes.Minter},
 		denommetadatamoduletypes.ModuleName: nil,
 		gaslesstypes.ModuleName:             nil,
-		callbackTypes.ModuleName:       nil,
+		callbackTypes.ModuleName:            nil,
 	}
 
 	// module accounts that are allowed to receive tokens
-	maccCanReceiveTokens = []string{
+	maccCanReceiveTokens = []string{ //nolint
 		distrtypes.ModuleName,
 		hubgentypes.ModuleName,
 	}
