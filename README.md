@@ -214,6 +214,26 @@ EOF
 sudo systemctl daemon-reload
 ```
 
+## Set Sequencer reward address (optional)
+
+```shell
+# Add a new key for the reward address
+$EXECUTABLE keys add reward
+REWARD=$($EXECUTABLE keys show reward -a)
+
+# This assumes mock default sequencer consensus key location. for different location, update the path.
+KEY="${ROLLAPP_HOME_DIR}/config/priv_validator_key.json"
+
+# set the kerying backend to test
+$EXECUTABLE config keyring-backend test
+
+# Import the consensus key into the rollapp keyring
+$EXECUTABLE tx sequencer unsafe-import-cons-key sequencerConsensusKey $KEY
+
+# Update the sequencer reward address
+$EXECUTABLE tx sequencer create-sequencer sequencerConsensusKey --from $KEY_NAME_ROLLAPP --fees 20000000000000$BASE_DENOM --reward-addr $REWARD --keyring-backend test -y
+```
+
 ## Setup IBC between rollapp and local dymension hub node
 
 ### Install dymension relayer
