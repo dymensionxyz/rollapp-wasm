@@ -870,7 +870,9 @@ func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.Res
 	if len(req.Validators) == 0 {
 		panic(fmt.Sprint("Dymint have no sequencers defined on InitChain, req:", req))
 	}
-	app.SequencersKeeper.SetDymintSequencers(ctx, req.Validators)
+
+	// Passing the dymint sequencers to the sequencer module from RequestInitChain
+	app.SequencersKeeper.MustSetDymintValidatorUpdates(ctx, req.Validators)
 
 	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
 	res := app.mm.InitGenesis(ctx, app.appCodec, genesisState)

@@ -153,8 +153,7 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 	bondCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, bondAmt))
 
 	seqGenesis := seqtypes.GenesisState{
-		Params:                 seqtypes.DefaultParams(),
-		GenesisOperatorAddress: sdk.ValAddress(OperatorPK.Address()).String(),
+		Params: seqtypes.DefaultParams(),
 	}
 	genState[seqtypes.ModuleName] = rollApp.AppCodec().MustMarshalJSON(&seqGenesis)
 
