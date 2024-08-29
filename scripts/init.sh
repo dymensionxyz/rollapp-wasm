@@ -148,6 +148,23 @@ add_denom_metadata() {
   fi
 }
 
+set_consensus_params() {
+  local success=true
+
+  BLOCK_SIZE="500000"
+  COMMIT=$(git log -1 --format='%H')
+
+  dasel put -f "$GENESIS_FILE" '.consensus_params.block.max_gas' -v "400000000" || success=false
+  dasel put -f "$GENESIS_FILE" '.consensus_params.block.max_bytes' -v "$BLOCK_SIZE" || success=false
+  dasel put -f "$GENESIS_FILE" '.consensus_params.evidence.max_bytes' -v "$BLOCK_SIZE" || success=false
+  dasel put -f "$GENESIS_FILE" '.app_state.rollappparams.params.version' -v "$COMMIT" || success=false
+
+  if [ "$success" = false ]; then
+    echo "An error occurred. Please refer to README.md"
+    return 1
+  fi
+}
+
 # --------------------------------- run init --------------------------------- #
 if ! command -v "$EXECUTABLE" >/dev/null; then
   echo "$EXECUTABLE does not exist"
@@ -217,6 +234,7 @@ update_configuration
 add_genesis_accounts
 generate_denom_metadata
 update_configuration
+set_consensus_params
 
 # --------------------- adding keys and genesis accounts --------------------- #
 #local genesis account
