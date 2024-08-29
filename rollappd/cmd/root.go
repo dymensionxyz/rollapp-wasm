@@ -1,45 +1,45 @@
 package cmd
 
 import (
-    "errors"
-    "io"
-    "os"
-    
-    "github.com/cosmos/cosmos-sdk/client"
-    "github.com/cosmos/cosmos-sdk/client/config"
-    "github.com/cosmos/cosmos-sdk/client/debug"
-    "github.com/cosmos/cosmos-sdk/client/flags"
-    "github.com/cosmos/cosmos-sdk/client/keys"
-    sdk "github.com/cosmos/cosmos-sdk/types"
-    
-    "github.com/cosmos/cosmos-sdk/client/rpc"
-    "github.com/cosmos/cosmos-sdk/server"
-    serverconfig "github.com/cosmos/cosmos-sdk/server/config"
-    servertypes "github.com/cosmos/cosmos-sdk/server/types"
-    "github.com/cosmos/cosmos-sdk/version"
-    authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
-    "github.com/cosmos/cosmos-sdk/x/auth/types"
-    banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-    genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-    "github.com/prometheus/client_golang/prometheus"
-    "github.com/spf13/cast"
-    "github.com/spf13/cobra"
-    tmcfg "github.com/tendermint/tendermint/config"
-    tmcli "github.com/tendermint/tendermint/libs/cli"
-    tmlog "github.com/tendermint/tendermint/libs/log"
-    dbm "github.com/tendermint/tm-db"
-    
-    "github.com/CosmWasm/wasmd/x/wasm"
-    wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-    etherminthd "github.com/evmos/evmos/v12/crypto/hd"
-    
-    berpcconfig "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/config"
-    rdkserver "github.com/dymensionxyz/dymension-rdk/server"
-    rdkserverconfig "github.com/dymensionxyz/dymension-rdk/server/config"
-    "github.com/dymensionxyz/dymension-rdk/utils"
-    dymintconf "github.com/dymensionxyz/dymint/config"
-    "github.com/dymensionxyz/rollapp-wasm/app"
-    "github.com/dymensionxyz/rollapp-wasm/app/params"
+	"errors"
+	"io"
+	"os"
+
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/config"
+	"github.com/cosmos/cosmos-sdk/client/debug"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/keys"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/cosmos/cosmos-sdk/client/rpc"
+	"github.com/cosmos/cosmos-sdk/server"
+	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/version"
+	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
+	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/spf13/cast"
+	"github.com/spf13/cobra"
+	tmcfg "github.com/tendermint/tendermint/config"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
+	tmlog "github.com/tendermint/tendermint/libs/log"
+	dbm "github.com/tendermint/tm-db"
+
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	etherminthd "github.com/evmos/evmos/v12/crypto/hd"
+
+	berpcconfig "github.com/bcdevtools/block-explorer-rpc-cosmos/be_rpc/config"
+	rdkserver "github.com/dymensionxyz/dymension-rdk/server"
+	rdkserverconfig "github.com/dymensionxyz/dymension-rdk/server/config"
+	"github.com/dymensionxyz/dymension-rdk/utils"
+	dymintconf "github.com/dymensionxyz/dymint/config"
+	"github.com/dymensionxyz/rollapp-wasm/app"
+	"github.com/dymensionxyz/rollapp-wasm/app/params"
 )
 
 const rollappAscii = `
@@ -102,8 +102,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 
 			//create dymint toml config file
 			home := serverCtx.Viper.GetString(tmcli.HomeFlag)
-			chainID := client.GetClientContextFromCmd(cmd).ChainID
-			dymintconf.EnsureRoot(home, dymintconf.DefaultConfig(home, chainID))
+			dymintconf.EnsureRoot(home, dymintconf.DefaultConfig(home))
 
 			//create Block Explorer Json-RPC toml config file
 			berpcconfig.EnsureRoot(home, berpcconfig.DefaultBeJsonRpcConfig())
@@ -131,12 +130,12 @@ func initTendermintConfig() *tmcfg.Config {
 // initAppConfig helps to override default appConfig template and configs.
 // return "", nil if no custom configuration is required for the application.
 func initAppConfig() (string, interface{}) {
-    customAppTemplate := serverconfig.DefaultConfigTemplate
-    srvCfg := serverconfig.DefaultConfig()
-    
-    rdkserverconfig.SetDefaultPruningSettings(srvCfg)
-    
-    return customAppTemplate, srvCfg
+	customAppTemplate := serverconfig.DefaultConfigTemplate
+	srvCfg := serverconfig.DefaultConfig()
+
+	rdkserverconfig.SetDefaultPruningSettings(srvCfg)
+
+	return customAppTemplate, srvCfg
 }
 
 func initRootCmd(
