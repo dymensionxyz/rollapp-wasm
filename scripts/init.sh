@@ -223,10 +223,6 @@ update_configuration
 "$EXECUTABLE" keys add "$KEY_NAME_ROLLAPP" --keyring-backend test
 "$EXECUTABLE" add-genesis-account "$KEY_NAME_ROLLAPP" "$TOKEN_AMOUNT" --keyring-backend test
 
-# set sequencer's operator address
-operator_address=$("$EXECUTABLE" keys show "$KEY_NAME_ROLLAPP" -a --keyring-backend test --bech val)
-dasel put -f "$GENESIS_FILE" '.app_state.sequencers.genesis_operator_address' -v "$operator_address"
-
 echo "Do you want to include staker on genesis? (Y/n) "
 read -r answer
 if [ ! "$answer" != "${answer#[Nn]}" ]; then

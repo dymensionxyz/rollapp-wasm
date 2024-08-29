@@ -876,11 +876,10 @@ func (app *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.Respo
 	rollappparams := app.RollappConsensusParamsKeeper.GetParams(ctx)
 	abciEndBlockResponse := app.mm.EndBlock(ctx, req)
 	abciEndBlockResponse.RollappConsensusParamUpdates = &abci.RollappConsensusParams{
-		Da:     rollappparams.Da,
-		Commit: rollappparams.Commit,
+		Da:      rollappparams.Da,
+		Version: rollappparams.Version,
 		Block: &abci.BlockParams{
-			MaxGas:   int64(rollappparams.Blockmaxgas),
-			MaxBytes: int64(rollappparams.Blockmaxsize),
+			MaxBytes: int64(rollappparams.Blockmaxbytes),
 		},
 	}
 	return abciEndBlockResponse
@@ -897,7 +896,9 @@ func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.Res
 	if len(req.Validators) == 0 {
 		panic(fmt.Sprint("Dymint have no sequencers defined on InitChain, req:", req))
 	}
-	app.SequencersKeeper.SetDymintSequencers(ctx, req.Validators)
+
+	// Passing the dymint sequencers to the sequencer module from RequestInitChain
+	app.SequencersKeeper.MustSetDymintValidatorUpdates(ctx, req.Validators)
 
 	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
 	res := app.mm.InitGenesis(ctx, app.appCodec, genesisState)
