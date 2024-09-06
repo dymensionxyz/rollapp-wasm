@@ -300,7 +300,7 @@ type App struct {
 
 	HubKeeper hubkeeper.Keeper
 
-	RollappConsensusParamsKeeper rollappparamskeeper.Keeper
+	RollappParamsKeeper rollappparamskeeper.Keeper
 
 	// mm is the module manager
 	mm *module.Manager
@@ -611,7 +611,7 @@ func NewRollapp(
 		&app.WasmKeeper,
 	)
 
-	app.RollappConsensusParamsKeeper = rollappparamskeeper.NewKeeper(
+	app.RollappParamsKeeper = rollappparamskeeper.NewKeeper(
 		app.GetSubspace(rollappparamstypes.ModuleName),
 	)
 
@@ -654,7 +654,7 @@ func NewRollapp(
 		hub.NewAppModule(appCodec, app.HubKeeper),
 		callback.NewAppModule(app.appCodec, app.CallbackKeeper, app.WasmKeeper, app.CWErrorsKeeper),
 		cwerrors.NewAppModule(app.appCodec, app.CWErrorsKeeper, app.WasmKeeper),
-		rollappparams.NewAppModule(appCodec, app.RollappConsensusParamsKeeper),
+		rollappparams.NewAppModule(appCodec, app.RollappParamsKeeper),
 	}
 
 	app.mm = module.NewManager(modules...)
@@ -873,14 +873,11 @@ func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.R
 
 // EndBlocker application updates every end block
 func (app *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	rollappparams := app.RollappConsensusParamsKeeper.GetParams(ctx)
+	rollappparams := app.RollappParamsKeeper.GetParams(ctx)
 	abciEndBlockResponse := app.mm.EndBlock(ctx, req)
-	abciEndBlockResponse.RollappConsensusParamUpdates = &abci.RollappConsensusParams{
+	abciEndBlockResponse.RollappParamUpdates = &abci.RollappParams{
 		Da:      rollappparams.Da,
 		Version: rollappparams.Version,
-		Block: &abci.BlockParams{
-			MaxBytes: int64(rollappparams.Blockmaxbytes),
-		},
 	}
 	return abciEndBlockResponse
 }

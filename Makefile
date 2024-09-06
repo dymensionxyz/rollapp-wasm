@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 
 PROJECT_NAME=rollapp-wasm
+DA_LAYER=mock
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT := $(shell git log -1 --format='%H')
 ifndef BECH32_PREFIX
@@ -32,8 +33,8 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=dymension-rdk \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 	      -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION) \
 		  -X github.com/dymensionxyz/rollapp-wasm/app.AccountAddressPrefix=$(BECH32_PREFIX) \
-		  -X github.com/dymensionxyz/dymension-rdk/x/rollappparams/types.DefaultCommit=$(COMMIT) \
-          -X github.com/dymensionxyz/dymension-rdk/x/rollappparams/types.DefaultDA=$(DA_LAYER) \
+		  -X github.com/dymensionxyz/dymension-rdk/x/rollappparams/types.Version=$(COMMIT) \
+          -X github.com/dymensionxyz/dymension-rdk/x/rollappparams/types.DA=$(DA_LAYER) \
 		  -X github.com/dymensionxyz/dymint/version.Commit=$(COMMIT) 
 BUILD_FLAGS := -ldflags '$(ldflags)'
 
