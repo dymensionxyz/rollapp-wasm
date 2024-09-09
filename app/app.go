@@ -111,7 +111,7 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	rollappparams "github.com/dymensionxyz/rollapp-wasm/app/params"
+	rollappwasmparams "github.com/dymensionxyz/rollapp-wasm/app/params"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -139,6 +139,10 @@ import (
 	"github.com/dymensionxyz/rollapp-wasm/x/cwerrors"
 	cwerrorsKeeper "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/keeper"
 	cwerrorsTypes "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/types"
+
+	rollappparams "github.com/dymensionxyz/dymension-rdk/x/rollappparams"
+	rollappparamskeeper "github.com/dymensionxyz/dymension-rdk/x/rollappparams/keeper"
+	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
 )
 
 const (
@@ -160,6 +164,7 @@ var (
 		hubtypes.StoreKey,
 		callbackTypes.StoreKey,
 		cwerrorsTypes.StoreKey,
+		rollappparamstypes.StoreKey,
 	}
 )
 
@@ -208,6 +213,7 @@ var (
 		hub.AppModuleBasic{},
 		callback.AppModuleBasic{},
 		cwerrors.AppModuleBasic{},
+		rollappparams.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -224,6 +230,7 @@ var (
 		hubgentypes.ModuleName:         {authtypes.Minter},
 		gaslesstypes.ModuleName:        nil,
 		callbackTypes.ModuleName:       nil,
+		rollappparamstypes.ModuleName:  nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -293,6 +300,8 @@ type App struct {
 
 	HubKeeper hubkeeper.Keeper
 
+	RollappParamsKeeper rollappparamskeeper.Keeper
+
 	// mm is the module manager
 	mm *module.Manager
 
@@ -312,7 +321,7 @@ func NewRollapp(
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
 	invCheckPeriod uint,
-	encodingConfig rollappparams.EncodingConfig,
+	encodingConfig rollappwasmparams.EncodingConfig,
 	enabledProposals []wasm.ProposalType,
 	appOpts servertypes.AppOptions,
 	wasmOpts []wasmkeeper.Option,
@@ -602,6 +611,10 @@ func NewRollapp(
 		&app.WasmKeeper,
 	)
 
+	app.RollappParamsKeeper = rollappparamskeeper.NewKeeper(
+		app.GetSubspace(rollappparamstypes.ModuleName),
+	)
+
 	wasmStack := wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper, app.IBCKeeper.ChannelKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -641,6 +654,7 @@ func NewRollapp(
 		hub.NewAppModule(appCodec, app.HubKeeper),
 		callback.NewAppModule(app.appCodec, app.CallbackKeeper, app.WasmKeeper, app.CWErrorsKeeper),
 		cwerrors.NewAppModule(app.appCodec, app.CWErrorsKeeper, app.WasmKeeper),
+		rollappparams.NewAppModule(appCodec, app.RollappParamsKeeper),
 	}
 
 	app.mm = module.NewManager(modules...)
@@ -674,6 +688,7 @@ func NewRollapp(
 		wasm.ModuleName,
 		callbackTypes.ModuleName,
 		cwerrorsTypes.ModuleName, // does not have begin blocker
+		rollappparamstypes.ModuleName,
 	}
 	app.mm.SetOrderBeginBlockers(beginBlockersList...)
 
@@ -701,6 +716,7 @@ func NewRollapp(
 		wasm.ModuleName,
 		callbackTypes.ModuleName,
 		cwerrorsTypes.ModuleName,
+		rollappparamstypes.ModuleName,
 	}
 	app.mm.SetOrderEndBlockers(endBlockersList...)
 
@@ -734,6 +750,7 @@ func NewRollapp(
 		wasm.ModuleName,
 		callbackTypes.ModuleName,
 		cwerrorsTypes.ModuleName,
+		rollappparamstypes.ModuleName,
 	}
 	app.mm.SetOrderInitGenesis(initGenesisList...)
 
@@ -856,7 +873,13 @@ func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.R
 
 // EndBlocker application updates every end block
 func (app *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	return app.mm.EndBlock(ctx, req)
+	rollappparams := app.RollappParamsKeeper.GetParams(ctx)
+	abciEndBlockResponse := app.mm.EndBlock(ctx, req)
+	abciEndBlockResponse.RollappParamUpdates = &abci.RollappParams{
+		Da:      rollappparams.Da,
+		Version: rollappparams.Version,
+	}
+	return abciEndBlockResponse
 }
 
 // InitChainer application update at chain initialization
@@ -870,10 +893,8 @@ func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.Res
 	if len(req.Validators) == 0 {
 		panic(fmt.Sprint("Dymint have no sequencers defined on InitChain, req:", req))
 	}
-
 	// Passing the dymint sequencers to the sequencer module from RequestInitChain
 	app.SequencersKeeper.MustSetDymintValidatorUpdates(ctx, req.Validators)
-
 	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
 	res := app.mm.InitGenesis(ctx, app.appCodec, genesisState)
 	return res
@@ -1029,7 +1050,7 @@ func (app *App) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
 
 // GetTxConfig implements the TestingApp interface.
 func (app *App) GetTxConfig() client.TxConfig {
-	cfg := rollappparams.MakeEncodingConfig()
+	cfg := rollappwasmparams.MakeEncodingConfig()
 	return cfg.TxConfig
 }
 
@@ -1064,6 +1085,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(callbackTypes.ModuleName)
 	paramsKeeper.Subspace(cwerrorsTypes.ModuleName)
+	paramsKeeper.Subspace(rollappparamstypes.ModuleName)
 	return paramsKeeper
 }
 
