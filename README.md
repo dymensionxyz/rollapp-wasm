@@ -106,7 +106,7 @@ export HUB_RPC_ENDPOINT="http://localhost"
 export HUB_RPC_PORT="36657" # default: 36657
 export HUB_RPC_URL="${HUB_RPC_ENDPOINT}:${HUB_RPC_PORT}"
 export HUB_CHAIN_ID="dymension_100-1"
-export HUB_REST_URL="localhost:1318" # required for relayer
+export HUB_REST_URL="http://localhost:1318" # required for relayer
 
 dymd config chain-id ${HUB_CHAIN_ID}
 dymd config node ${HUB_RPC_URL}
@@ -178,6 +178,7 @@ dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "node_address" -v "$HUB_RP
 dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "rollapp_id" -v "$ROLLAPP_CHAIN_ID"
 dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "max_idle_time" -v "2s"
 dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "max_proof_time" -v "1s"
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "batch_submit_time" -v "10s"
 dasel put -f "${ROLLAPP_HOME_DIR}"/config/app.toml "minimum-gas-prices" -v "1awsm"
 ```
 
