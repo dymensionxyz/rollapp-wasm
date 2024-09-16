@@ -127,6 +127,7 @@ func (k Keeper) SaveCallback(ctx sdk.Context, callback types.Callback) error {
 	return k.Callbacks.Set(ctx, collections.Join3(callback.CallbackHeight, contractAddress.Bytes(), callback.JobId), callback)
 }
 
+// nolint: gosimple
 func isAuthorizedToModify(ctx sdk.Context, k Keeper, contractAddress sdk.AccAddress, sender string) bool {
 	if k.bankKeeper.BlockedAddr(sdk.MustAccAddressFromBech32(sender)) { // Blocked addresses cannot create/delete callbacks as we cant refund to these addresses. And they are module accounts anyway
 		return false

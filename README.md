@@ -106,6 +106,7 @@ export HUB_RPC_ENDPOINT="http://localhost"
 export HUB_RPC_PORT="36657" # default: 36657
 export HUB_RPC_URL="${HUB_RPC_ENDPOINT}:${HUB_RPC_PORT}"
 export HUB_CHAIN_ID="dymension_100-1"
+export HUB_REST_URL="http://localhost:1318" # required for relayer
 
 dymd config chain-id ${HUB_CHAIN_ID}
 dymd config node ${HUB_RPC_URL}
@@ -140,7 +141,7 @@ NEW_NUMERIC_PART=$(echo "$NUMERIC_PART + 100000000000000000000" | bc)
 # Append 'adym' back
 TRANSFER_AMOUNT="${NEW_NUMERIC_PART}adym"
 
-dymd tx bank send $HUB_KEY_WITH_FUNDS $SEQUENCER_ADDR ${TRANSFER_AMOUNT} --keyring-backend test --broadcast-mode block --fees 1dym -y --node ${HUB_RPC_URL} --chain-id ${HUB_CHAIN_ID}
+dymd tx bank send $HUB_KEY_WITH_FUNDS $SEQUENCER_ADDR ${TRANSFER_AMOUNT} --keyring-backend test --fees 1dym -y --node ${HUB_RPC_URL} --chain-id ${HUB_CHAIN_ID}
 ```
 
 ### Generate denommetadata
@@ -170,22 +171,15 @@ sh scripts/settlement/register_sequencer_to_hub.sh
 ### Configure the rollapp
 
 Modify `dymint.toml` in the chain directory (`~/.rollapp/config`)
-set:
-
-linux:
 
 ```shell
-sed -i 's/settlement_layer.*/settlement_layer = "dymension"/' ${ROLLAPP_HOME_DIR}/config/dymint.toml
-sed -i '/node_address =/c\node_address = '\"$HUB_RPC_URL\" "${ROLLAPP_HOME_DIR}/config/dymint.toml"
-sed -i '/rollapp_id =/c\rollapp_id = '\"$ROLLAPP_CHAIN_ID\" "${ROLLAPP_HOME_DIR}/config/dymint.toml"
-```
-
-mac:
-
-```shell
-sed -i '' 's/settlement_layer.*/settlement_layer = "dymension"/' ${ROLLAPP_HOME_DIR}/config/dymint.toml
-sed -i '' 's|node_address =.*|node_address = '\"$HUB_RPC_URL\"'|' "${ROLLAPP_HOME_DIR}/config/dymint.toml"
-sed -i '' 's|rollapp_id =.*|rollapp_id = '\"$ROLLAPP_CHAIN_ID\"'|' "${ROLLAPP_HOME_DIR}/config/dymint.toml"
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "settlement_layer" -v "dymension"
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "node_address" -v "$HUB_RPC_URL"
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "rollapp_id" -v "$ROLLAPP_CHAIN_ID"
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "max_idle_time" -v "2s"
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "max_proof_time" -v "1s"
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/dymint.toml "batch_submit_time" -v "10s"
+dasel put -f "${ROLLAPP_HOME_DIR}"/config/app.toml "minimum-gas-prices" -v "1awsm"
 ```
 
 ### Run rollapp locally
