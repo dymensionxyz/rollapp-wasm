@@ -22,8 +22,8 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
           check-latest: true
+          go-version-file: go.mod
 
       - name: Setup release environment
         env:
