@@ -9,18 +9,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/config"
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/client/keys"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+	ethermintclient "github.com/evmos/evmos/v12/client"
+	evmosconfig "github.com/evmos/evmos/v12/cmd/config"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
@@ -38,6 +38,7 @@ import (
 	rdkserverconfig "github.com/dymensionxyz/dymension-rdk/server/config"
 	"github.com/dymensionxyz/dymension-rdk/utils"
 	dymintconf "github.com/dymensionxyz/dymint/config"
+
 	"github.com/dymensionxyz/rollapp-wasm/app"
 	"github.com/dymensionxyz/rollapp-wasm/app/params"
 )
@@ -54,7 +55,7 @@ const rollappAscii = `
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	encodingConfig := app.MakeEncodingConfig()
 
-	//TODO: refactor to use depinject
+	// TODO: refactor to use depinject
 
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Codec).
@@ -68,7 +69,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithViper("ROLLAPP")
 
 	rootCmd := &cobra.Command{
-		//TODO: set by code, not in Makefile
+		// TODO: set by code, not in Makefile
 		Use:   version.AppName,
 		Short: rollappAscii,
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
@@ -100,11 +101,11 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 			}
 			serverCtx := server.GetServerContextFromCmd(cmd)
 
-			//create dymint toml config file
+			// create dymint toml config file
 			home := serverCtx.Viper.GetString(tmcli.HomeFlag)
 			dymintconf.EnsureRoot(home, dymintconf.DefaultConfig(home))
 
-			//create Block Explorer Json-RPC toml config file
+			// create Block Explorer Json-RPC toml config file
 			berpcconfig.EnsureRoot(home, berpcconfig.DefaultBeJsonRpcConfig())
 
 			return nil
@@ -145,6 +146,7 @@ func initRootCmd(
 	// Set config
 	sdkconfig := sdk.GetConfig()
 	utils.SetPrefixes(sdkconfig, app.AccountAddressPrefix)
+	evmosconfig.SetBip44CoinType(sdkconfig)
 	sdkconfig.Seal()
 
 	ac := appCreator{
@@ -171,7 +173,7 @@ func initRootCmd(
 		rpc.StatusCommand(),
 		queryCommand(),
 		txCommand(),
-		keys.Commands(app.DefaultNodeHome),
+		ethermintclient.KeyCommands(app.DefaultNodeHome),
 	)
 }
 
