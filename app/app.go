@@ -140,7 +140,7 @@ import (
 	cwerrorsKeeper "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/keeper"
 	cwerrorsTypes "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/types"
 
-	rollappparams "github.com/dymensionxyz/dymension-rdk/x/rollappparams"
+	"github.com/dymensionxyz/dymension-rdk/x/rollappparams"
 	rollappparamskeeper "github.com/dymensionxyz/dymension-rdk/x/rollappparams/keeper"
 	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
 )
@@ -830,14 +830,14 @@ func NewRollapp(
 }
 
 func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.WasmConfig) {
-	anteHandler, err := NewAnteHandler(
+	handler := NewAnteHandler(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: txConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+				SigGasConsumer:  defaultSigVerificationGasConsumer,
 			},
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
@@ -845,11 +845,8 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.Wa
 			GaslessKeeper:     app.GaslessKeeper,
 		},
 	)
-	if err != nil {
-		panic(err)
-	}
 
-	app.SetAnteHandler(anteHandler)
+	app.SetAnteHandler(handler)
 }
 
 func (app *App) setPostHandler() {
