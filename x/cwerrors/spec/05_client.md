@@ -82,12 +82,11 @@ Use the `-h`/`--help` flag to get a help description of a command.
 
 `rollapp-wasm tx cwerrors -h`
 
-
 #### subscribe-to-error
 
 Create a new subscription which will register a contract for a sudo callback on errors
 
-Usage: 
+Usage:
 
 `rollapp-wasm tx cwerrors subscribe-to-error [contract-address] [fee-amount] [flags]`
 
