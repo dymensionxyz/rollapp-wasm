@@ -19,11 +19,13 @@ message MsgSubscribeToError {
 ```
 
 On success
+
 * A subscription is created valid for the duration as specified in the module params.
 * The subscription fees are sent to the fee collector
 * In case a subscription already exists, it is extended.
 
 This message is expected to fail if:
+
 * The sender address and contract address are not valid addresses
 * There is no contract with given address
 * The sender is not authorized to subscribe - the sender is not the contract owner/admin or the contract itself
