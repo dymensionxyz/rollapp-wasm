@@ -36,3 +36,4 @@ This message is expected to fail if:
     * The contract itself
     * The contract admin as set in the x/wasmd module
     * The contract owner as set in the x/rewards module
+    
