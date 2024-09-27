@@ -9,6 +9,7 @@ Section describes all stored by the module objects and their storage keys
 The params value can only be updated by x/gov module via a governance upgrade proposal. [More](./02_messages.md#msgupdateparams)
 
 Storage keys:
+
 * Params: `ParamsKey -> ProtocolBuffer(Params)`
 
 ```protobuf
@@ -27,6 +28,7 @@ message Params {
 ErrorID is a sequence number used to increment error ID.
 
 Storage keys:
+
 * ErrorID: `ErrorIDKey -> uint64`
 
 ## Contract Errors
@@ -34,6 +36,7 @@ Storage keys:
 Contract Errors is a collection of all the error ids associated with a given contract address. This is used to query contract errors.
 
 Storage keys:
+
 * ContractErrors: `ContractErrorsKeyPrefix | contractAddress | errorID -> errorID`
 
 ## Errors
@@ -41,6 +44,7 @@ Storage keys:
 Errors is a collections of all the [SudoErrors](../../../proto/rollapp/cwerrors/v1/cwerrors.proto) currently stored by the module which can be queried.
 
 Storage keys:
+
 * Errors: `ErrorsKeyPrefix | errorID -> protobuf(SudoError)`
 
 ```protobuf
@@ -63,6 +67,7 @@ message SudoError {
 Deletion Blocks is a collection of all the error ids which need to be pruned in a given block height
 
 Storage keys:
+
 * DeletionBlocks: `DeletionBlocksKeyPrefix | blockHeight | errorID -> errorID`
 
 ## Contract Subscriptions
@@ -70,6 +75,7 @@ Storage keys:
 Contract Subscriptions is a map of the contract addresses which have subscriptions and the height when the subscription expires
 
 Storage keys:
+
 * Contract Subscriptions: `ContractSubscriptionsKeyPrefix | contractAddress -> deletionHeight`
 
 ## Subscription End Block
@@ -77,11 +83,13 @@ Storage keys:
 Subscritption End Block is a collections of all the subscriptions which need to be cleared at the given block height
 
 Storage keys:
+
 * Subscription End Block: `SubscriptionEndBlockKeyPrefix | blockHeight | contractAddress -> contractAddress`
 
-# Transient State
+## Transient State
 
 The sudo errors which belong to the contracts with subscription are stored in the transient state of the block.
 
 Transient Storage keys:
+
 * SudoErrors: `ErrorsForSudoCallbackKey | errorId -> SudoError`

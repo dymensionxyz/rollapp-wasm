@@ -72,14 +72,14 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 
 	// Split options by groups (each group is applied in a different init step)
 	var chainCfgOpts []TestChainConfigOption
-	var consensusParamsOpts []TestChainConsensusParamsOption
+	//var consensusParamsOpts []TestChainConsensusParamsOption
 	var genStateOpts []TestChainGenesisOption
 	for i, opt := range opts {
 		switch opt := opt.(type) {
 		case TestChainConfigOption:
 			chainCfgOpts = append(chainCfgOpts, opt)
-		case TestChainConsensusParamsOption:
-			consensusParamsOpts = append(consensusParamsOpts, opt)
+			//	case TestChainConsensusParamsOption:
+			//		consensusParamsOpts = append(consensusParamsOpts, opt)
 		case TestChainGenesisOption:
 			genStateOpts = append(genStateOpts, opt)
 		default:
