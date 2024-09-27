@@ -6,7 +6,7 @@ Section describes the module state changes on the ABCI end block call
 
 Every end block we iterate over all the callbacks registered at that height. For each of the registered callback we,
 
-1. Create a CallbackMsg 
+1. Create a CallbackMsg
 
    It is a json encoded msg which includes the job id and is sent to the contract
 
