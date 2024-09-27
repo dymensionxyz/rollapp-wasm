@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	cryptocodec "github.com/evmos/evmos/v12/crypto/codec"
-	ethermint "github.com/evmos/evmos/v12/types"
 
 	"github.com/dymensionxyz/rollapp-wasm/app/params"
 )
@@ -32,5 +31,4 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 func RegisterInterfaces(interfaceRegistry codectypes.InterfaceRegistry) {
 	std.RegisterInterfaces(interfaceRegistry)
 	cryptocodec.RegisterInterfaces(interfaceRegistry)
-	ethermint.RegisterInterfaces(interfaceRegistry)
 }
