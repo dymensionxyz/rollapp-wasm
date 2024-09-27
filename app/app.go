@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/dymensionxyz/dymension-rdk/server/consensus"
 	"io"
 	"net/http"
 	"os"
@@ -14,6 +15,8 @@ import (
 	gaslessmodule "github.com/dymensionxyz/dymension-rdk/x/gasless"
 	gaslesskeeper "github.com/dymensionxyz/dymension-rdk/x/gasless/keeper"
 	gaslesstypes "github.com/dymensionxyz/dymension-rdk/x/gasless/types"
+	"github.com/gogo/protobuf/proto"
+	prototypes "github.com/gogo/protobuf/types"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -310,6 +313,8 @@ type App struct {
 
 	// module configurator
 	configurator module.Configurator
+
+	consensusMessageAdmissionHandler consensus.AdmissionHandler
 }
 
 // NewRollapp returns a reference to an initialized blockchain app
@@ -643,7 +648,7 @@ func NewRollapp(
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, app.BankKeeper),
 		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
-		sequencers.NewAppModule(appCodec, app.SequencersKeeper),
+		sequencers.NewAppModule(app.SequencersKeeper),
 		epochs.NewAppModule(appCodec, app.EpochsKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
@@ -810,6 +815,13 @@ func NewRollapp(
 	// upgrade.
 	app.setPostHandler()
 
+	// Admission handler for consensus messages
+	app.setAdmissionHandler(consensus.MapAdmissionHandler(
+		[]string{
+			proto.MessageName(&banktypes.MsgSend{}),
+		},
+	))
+
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
 			tmos.Exit(err.Error())
@@ -863,12 +875,87 @@ func (app *App) setPostHandler() {
 	app.SetPostHandler(postHandler)
 }
 
+func (app *App) setAdmissionHandler(handler consensus.AdmissionHandler) {
+	app.consensusMessageAdmissionHandler = handler
+}
+
 // Name returns the name of the App
 func (app *App) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker application updates every begin block
 func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	return app.mm.BeginBlock(ctx, req)
+	consensusResponses := app.processConsensusMessage(ctx, req.ConsensusMessages)
+
+	resp := app.mm.BeginBlock(ctx, req)
+	resp.ConsensusMessagesResponses = consensusResponses
+
+	return resp
+}
+
+func (app *App) processConsensusMessage(ctx sdk.Context, consensusMsgs []*prototypes.Any) []*abci.ConsensusMessageResponse {
+	var responses []*abci.ConsensusMessageResponse
+
+	for _, anyMsg := range consensusMsgs {
+		sdkAny := &types.Any{
+			TypeUrl: "/" + anyMsg.TypeUrl,
+			Value:   anyMsg.Value,
+		}
+
+		var msg sdk.Msg
+		err := app.appCodec.UnpackAny(sdkAny, &msg)
+		if err != nil {
+			responses = append(responses, &abci.ConsensusMessageResponse{
+				Response: &abci.ConsensusMessageResponse_Error{
+					Error: fmt.Errorf("failed to unpack consensus message: %w", err).Error(),
+				},
+			})
+
+			continue
+		}
+
+		cacheCtx, writeCache := ctx.CacheContext()
+		err = app.consensusMessageAdmissionHandler(cacheCtx, msg)
+		if err != nil {
+			responses = append(responses, &abci.ConsensusMessageResponse{
+				Response: &abci.ConsensusMessageResponse_Error{
+					Error: fmt.Errorf("consensus message admission failed: %w", err).Error(),
+				},
+			})
+
+			continue
+		}
+
+		resp, err := app.MsgServiceRouter().Handler(msg)(ctx, msg)
+		if err != nil {
+			responses = append(responses, &abci.ConsensusMessageResponse{
+				Response: &abci.ConsensusMessageResponse_Error{
+					Error: fmt.Errorf("failed to execute consensus message: %w", err).Error(),
+				},
+			})
+
+			continue
+		}
+
+		theType, err := proto.Marshal(resp)
+		if err != nil {
+			return nil
+		}
+
+		anyResp := &prototypes.Any{
+			TypeUrl: proto.MessageName(resp),
+			Value:   theType,
+		}
+
+		responses = append(responses, &abci.ConsensusMessageResponse{
+			Response: &abci.ConsensusMessageResponse_Ok{
+				Ok: anyResp,
+			},
+		})
+
+		writeCache()
+	}
+
+	return responses
 }
 
 // EndBlocker application updates every end block
