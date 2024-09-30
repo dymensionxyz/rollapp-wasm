@@ -4,7 +4,7 @@ go 1.22.4
 
 require (
 	cosmossdk.io/collections v0.4.0
-	cosmossdk.io/core v0.10.0
+	cosmossdk.io/core v0.12.0
 	cosmossdk.io/errors v1.0.1
 	github.com/CosmWasm/wasmd v0.33.0
 	github.com/CosmWasm/wasmvm v1.3.0
@@ -15,7 +15,7 @@ require (
 	github.com/cosmos/gogoproto v1.5.0
 	github.com/cosmos/ibc-go/v6 v6.3.0
 	github.com/dvsekhvalnov/jose2go v1.5.0
-	github.com/dymensionxyz/dymension-rdk v1.6.1-0.20240916194645-3fe31b2db4b2
+	github.com/dymensionxyz/dymension-rdk v1.6.1-0.20240930130421-82c4d5f8c093
 	github.com/dymensionxyz/dymint v1.2.0-rc01.0.20240919105350-66f9b353655d
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/evmos/evmos/v12 v12.1.6
@@ -118,7 +118,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/dymensionxyz/cosmosclient v0.4.2-beta.0.20240821081230-b4018b2bac13 // indirect
 	github.com/dymensionxyz/gerr-cosmos v1.0.0 // indirect
-	github.com/dymensionxyz/sdk-utils v0.1.2-0.20240905104639-19dc09f5c6f5 // indirect
+	github.com/dymensionxyz/sdk-utils v0.1.2-0.20240909101947-e1b483ada9c8 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/elastic/gosigar v0.14.2 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
