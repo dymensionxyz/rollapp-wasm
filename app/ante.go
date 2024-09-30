@@ -47,12 +47,13 @@ func GetAnteDecorators(options HandlerOptions) []sdk.AnteDecorator {
 		ante.NewTxTimeoutHeightDecorator(),
 
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
+		NewCreateAccountDecorator(options.AccountKeeper.(accountKeeper)),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		gasless.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker, options.GaslessKeeper),
+		NewBypassIBCFeeDecorator(gasless.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker, options.GaslessKeeper)),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, sigGasConsumer),
-		ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
+		NewSigCheckDecorator(options.AccountKeeper.(accountKeeper), options.SignModeHandler),
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 	}
 

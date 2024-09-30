@@ -79,6 +79,7 @@ func (k Keeper) PruneSubscriptionsEndBlock(ctx sdk.Context) (err error) {
 	return k.SubscriptionEndBlock.Clear(ctx, rng)
 }
 
+// nolint: gosimple
 // isAuthorizedToSubscribe checks if the sender is authorized to subscribe to the contract
 func isAuthorizedToSubscribe(ctx sdk.Context, k Keeper, contractAddress sdk.AccAddress, sender string) bool {
 	if strings.EqualFold(sender, contractAddress.String()) { // A contract can set subscriptions for itself
