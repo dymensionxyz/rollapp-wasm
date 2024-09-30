@@ -4,7 +4,7 @@ go 1.22.4
 
 require (
 	cosmossdk.io/collections v0.4.0
-	cosmossdk.io/core v0.10.0
+	cosmossdk.io/core v0.12.0
 	cosmossdk.io/errors v1.0.1
 	github.com/CosmWasm/wasmd v0.33.0
 	github.com/CosmWasm/wasmvm v1.3.0
@@ -15,7 +15,7 @@ require (
 	github.com/cosmos/gogoproto v1.5.0
 	github.com/cosmos/ibc-go/v6 v6.3.0
 	github.com/dvsekhvalnov/jose2go v1.5.0
-	github.com/dymensionxyz/dymension-rdk v1.6.1-0.20240916194645-3fe31b2db4b2
+	github.com/dymensionxyz/dymension-rdk v1.6.1-0.20240921120829-c620e0b915d0
 	github.com/dymensionxyz/dymint v1.2.0-rc01.0.20240916140329-d51b961e7e0d
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/evmos/evmos/v12 v12.1.6
