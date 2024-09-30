@@ -11,6 +11,7 @@ Refer to the [callback.proto](../../../proto/rollapp/callback/v1/callback.proto)
 The params value can only be updated by x/gov module via a governance upgrade proposal.
 
 Storage keys:
+
 * Params: `ParamsKey -> ProtocolBuffer(Params)`
 
 ## Callback
@@ -20,4 +21,5 @@ Storage keys:
 The callbacks are pruned after they are executed.
 
 Storage keys:
+
 * Callback: `CallbacksKey | BlockHeight | ContractAddress | JobID -> ProtocolBuffer(Callback)`

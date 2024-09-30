@@ -18,6 +18,7 @@ type CallbackMsg struct {
 ```
 
 The above struct is converted into the json encoded string in the following way.
+
 ```json
 {"callback":{"job_id":1}}
 ```
