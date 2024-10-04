@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"github.com/dymensionxyz/dymension-rdk/server/consensus"
 	"io"
 	"net/http"
 	"os"
@@ -143,7 +142,9 @@ import (
 	cwerrorsKeeper "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/keeper"
 	cwerrorsTypes "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/types"
 
-	rollappparams "github.com/dymensionxyz/dymension-rdk/x/rollappparams"
+	"github.com/dymensionxyz/dymension-rdk/server/consensus"
+
+	"github.com/dymensionxyz/dymension-rdk/x/rollappparams"
 	rollappparamskeeper "github.com/dymensionxyz/dymension-rdk/x/rollappparams/keeper"
 	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
 )
