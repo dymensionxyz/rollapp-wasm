@@ -835,7 +835,7 @@ func NewRollapp(
 
 	// Admission handler for consensus messages
 	app.setAdmissionHandler(consensus.MapAdmissionHandler([]string{
-		proto.MessageName(&banktypes.MsgSend{}),
+		proto.MessageName(&seqtypes.MsgUpsertSequencer{}),
 	}))
 
 	if loadLatest {
