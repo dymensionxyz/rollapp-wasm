@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/cosmos/cosmos-sdk/codec"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"google.golang.org/grpc"
 
 	"github.com/dymensionxyz/rollapp-wasm/app"
@@ -27,7 +27,7 @@ func (c grpcClient) Invoke(ctx context.Context, method string, args, reply inter
 	})
 
 	if resp.Code != abci.CodeTypeOK {
-		return fmt.Errorf(resp.Log)
+		return fmt.Errorf("query response: %s", resp.Log)
 	}
 
 	c.app.AppCodec().MustUnmarshal(resp.Value, reply.(codec.ProtoMarshaler))
