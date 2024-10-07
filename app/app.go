@@ -834,7 +834,7 @@ func NewRollapp(
 	app.setPostHandler()
 
 	// Admission handler for consensus messages
-	app.setAdmissionHandler(consensus.MapAdmissionHandler([]string{
+	app.setAdmissionHandler(consensus.AllowedMessagesHandler([]string{
 		proto.MessageName(&seqtypes.MsgUpsertSequencer{}),
 	}))
 
