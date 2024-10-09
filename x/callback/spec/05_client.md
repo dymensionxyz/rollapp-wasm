@@ -110,7 +110,7 @@ Use the `-h`/`--help` flag to get a help description of a command.
 
 Create a new callback for the given contract at specified height and given job id by paying the mentioned fees
 
-Usage: 
+Usage:
 
 `rollapp-wasm tx callback request-callback [contract-address] [job-id] [callback-height] [fee-amount] [flags]`
 
