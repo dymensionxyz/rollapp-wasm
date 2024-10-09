@@ -11,9 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
-	gaslessmodule "github.com/dymensionxyz/dymension-rdk/x/gasless"
-	gaslesskeeper "github.com/dymensionxyz/dymension-rdk/x/gasless/keeper"
-	gaslesstypes "github.com/dymensionxyz/dymension-rdk/x/gasless/types"
+	evmosante "github.com/evmos/evmos/v12/app/ante"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -22,6 +20,10 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
+
+	gaslessmodule "github.com/dymensionxyz/dymension-rdk/x/gasless"
+	gaslesskeeper "github.com/dymensionxyz/dymension-rdk/x/gasless/keeper"
+	gaslesstypes "github.com/dymensionxyz/dymension-rdk/x/gasless/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -144,7 +146,7 @@ import (
 	cwerrorsKeeper "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/keeper"
 	cwerrorsTypes "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/types"
 
-	rollappparams "github.com/dymensionxyz/dymension-rdk/x/rollappparams"
+	"github.com/dymensionxyz/dymension-rdk/x/rollappparams"
 	rollappparamskeeper "github.com/dymensionxyz/dymension-rdk/x/rollappparams/keeper"
 	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
 )
@@ -847,14 +849,14 @@ func NewRollapp(
 }
 
 func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.WasmConfig) {
-	anteHandler, err := NewAnteHandler(
+	handler, err := NewAnteHandler(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: txConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+				SigGasConsumer:  evmosante.SigVerificationGasConsumer,
 			},
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
@@ -866,7 +868,7 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.Wa
 		panic(err)
 	}
 
-	app.SetAnteHandler(anteHandler)
+	app.SetAnteHandler(handler)
 }
 
 func (app *App) setPostHandler() {
