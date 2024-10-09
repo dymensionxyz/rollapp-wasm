@@ -508,6 +508,8 @@ func NewRollapp(
 		keys[hubgentypes.StoreKey],
 		app.GetSubspace(hubgentypes.ModuleName),
 		app.AccountKeeper,
+		app.BankKeeper,
+		app.MintKeeper,
 	)
 
 	app.HubKeeper = hubkeeper.NewKeeper(
@@ -515,21 +517,24 @@ func NewRollapp(
 		keys[hubtypes.StoreKey],
 	)
 
-	denomMetadataMiddleware := denommetadata.NewICS4Wrapper(
+	var ics4Wrapper ibcporttypes.ICS4Wrapper
+	// The IBC tranfer submit is wrapped with the following middlewares:
+	// - denom metadata middleware
+	ics4Wrapper = denommetadata.NewICS4Wrapper(
 		app.IBCKeeper.ChannelKeeper,
 		app.HubKeeper,
 		app.BankKeeper,
 		app.HubGenesisKeeper.GetState,
 	)
-
-	genesisTransfersBlocker := hubgenkeeper.NewICS4Wrapper(denomMetadataMiddleware, app.HubGenesisKeeper) // ICS4 Wrapper: claims IBC middleware
+	// - genesis bridge - IBC transfer disabled until genesis bridge protocol completes
+	ics4Wrapper = hubgenkeeper.NewICS4Wrapper(ics4Wrapper, app.HubGenesisKeeper)
 
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
 		keys[ibctransfertypes.StoreKey],
 		app.GetSubspace(ibctransfertypes.ModuleName),
-		genesisTransfersBlocker,
+		ics4Wrapper,
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
@@ -551,9 +556,9 @@ func NewRollapp(
 
 	transferStack = hubgenkeeper.NewIBCModule(
 		transferStack,
-		app.TransferKeeper,
 		app.HubGenesisKeeper,
 		app.BankKeeper,
+		app.IBCKeeper.ChannelKeeper,
 	)
 
 	app.CallbackKeeper = callbackKeeper.NewKeeper(
