@@ -14,6 +14,7 @@ import (
 	gaslessmodule "github.com/dymensionxyz/dymension-rdk/x/gasless"
 	gaslesskeeper "github.com/dymensionxyz/dymension-rdk/x/gasless/keeper"
 	gaslesstypes "github.com/dymensionxyz/dymension-rdk/x/gasless/types"
+	"github.com/gogo/protobuf/proto"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -144,7 +145,9 @@ import (
 	cwerrorsKeeper "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/keeper"
 	cwerrorsTypes "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/types"
 
-	rollappparams "github.com/dymensionxyz/dymension-rdk/x/rollappparams"
+	"github.com/dymensionxyz/dymension-rdk/server/consensus"
+
+	"github.com/dymensionxyz/dymension-rdk/x/rollappparams"
 	rollappparamskeeper "github.com/dymensionxyz/dymension-rdk/x/rollappparams/keeper"
 	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
 )
@@ -317,6 +320,8 @@ type App struct {
 
 	// module configurator
 	configurator module.Configurator
+
+	consensusMessageAdmissionHandler consensus.AdmissionHandler
 }
 
 // NewRollapp returns a reference to an initialized blockchain app
@@ -827,6 +832,11 @@ func NewRollapp(
 	// upgrade.
 	app.setPostHandler()
 
+	// Admission handler for consensus messages
+	app.setAdmissionHandler(consensus.AllowedMessagesHandler([]string{
+		proto.MessageName(&banktypes.MsgSend{}),
+	}))
+
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
 			tmos.Exit(err.Error())
@@ -880,12 +890,27 @@ func (app *App) setPostHandler() {
 	app.SetPostHandler(postHandler)
 }
 
+func (app *App) setAdmissionHandler(handler consensus.AdmissionHandler) {
+	app.consensusMessageAdmissionHandler = handler
+}
+
 // Name returns the name of the App
 func (app *App) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker application updates every begin block
 func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	return app.mm.BeginBlock(ctx, req)
+	consensusResponses := consensus.ProcessConsensusMessages(
+		ctx,
+		app.appCodec,
+		app.consensusMessageAdmissionHandler,
+		app.MsgServiceRouter(),
+		req.ConsensusMessages,
+	)
+
+	resp := app.mm.BeginBlock(ctx, req)
+	resp.ConsensusMessagesResponses = consensusResponses
+
+	return resp
 }
 
 // EndBlocker application updates every end block
