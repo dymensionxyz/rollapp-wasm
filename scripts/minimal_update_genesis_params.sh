@@ -14,10 +14,13 @@ update_params() {
   dasel put -f "$GENESIS_FILE" '.consensus_params.block.max_gas' -v "400000000" || success=false
   dasel put -f "$GENESIS_FILE" '.consensus_params.block.max_bytes' -v "$BLOCK_SIZE" || success=false
   dasel put -f "$GENESIS_FILE" '.consensus_params.evidence.max_bytes' -v "$BLOCK_SIZE" || success=false
-  dasel put -f "$GENESIS_FILE" 'app_state.distribution.params.base_proposer_reward' -v '0.8' || success=false
-  dasel put -f "$GENESIS_FILE" 'app_state.distribution.params.community_tax' -v "0.00002" || success=false
+  dasel put -f "$GENESIS_FILE" '.app_state.distribution.params.base_proposer_reward' -v '0.8' || success=false
+  dasel put -f "$GENESIS_FILE" '.app_state.distribution.params.community_tax' -v "0.00002" || success=false
+  dasel put -f "$GENESIS_FILE" '.app_state.auth.accounts' -t json -r json -v '[]' || success=false # 2 weeks
+  dasel put -f "$GENESIS_FILE" '.app_state.bank.balances' -t json -r json -v '[]' || success=false # 2 weeks
+  dasel put -f "$GENESIS_FILE" '.app_state.genutil.gen_txs' -t json -r json -v '[]' || success=false # 2 weeks
   # these vary depending on environment
-  dasel put -f "$GENESIS_FILE" 'app_state.gov.voting_params.voting_period' -v "300s" || success=false
+  dasel put -f "$GENESIS_FILE" '.app_state.gov.voting_params.voting_period' -v "300s" || success=false
   dasel put -f "$GENESIS_FILE" '.app_state.sequencers.params.unbonding_time' -v "1209600s" || success=false # 2 weeks
   dasel put -f "$GENESIS_FILE" '.app_state.staking.params.unbonding_time' -v "1209600s" || success=false # 2 weeks
 
