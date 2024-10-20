@@ -11,9 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
-	gaslessmodule "github.com/dymensionxyz/dymension-rdk/x/gasless"
-	gaslesskeeper "github.com/dymensionxyz/dymension-rdk/x/gasless/keeper"
-	gaslesstypes "github.com/dymensionxyz/dymension-rdk/x/gasless/types"
+	evmosante "github.com/evmos/evmos/v12/app/ante"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
@@ -23,6 +21,10 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
+
+	gaslessmodule "github.com/dymensionxyz/dymension-rdk/x/gasless"
+	gaslesskeeper "github.com/dymensionxyz/dymension-rdk/x/gasless/keeper"
+	gaslesstypes "github.com/dymensionxyz/dymension-rdk/x/gasless/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -511,6 +513,8 @@ func NewRollapp(
 		keys[hubgentypes.StoreKey],
 		app.GetSubspace(hubgentypes.ModuleName),
 		app.AccountKeeper,
+		app.BankKeeper,
+		app.MintKeeper,
 	)
 
 	app.HubKeeper = hubkeeper.NewKeeper(
@@ -518,21 +522,24 @@ func NewRollapp(
 		keys[hubtypes.StoreKey],
 	)
 
-	denomMetadataMiddleware := denommetadata.NewICS4Wrapper(
+	var ics4Wrapper ibcporttypes.ICS4Wrapper
+	// The IBC tranfer submit is wrapped with the following middlewares:
+	// - denom metadata middleware
+	ics4Wrapper = denommetadata.NewICS4Wrapper(
 		app.IBCKeeper.ChannelKeeper,
 		app.HubKeeper,
 		app.BankKeeper,
 		app.HubGenesisKeeper.GetState,
 	)
-
-	genesisTransfersBlocker := hubgenkeeper.NewICS4Wrapper(denomMetadataMiddleware, app.HubGenesisKeeper) // ICS4 Wrapper: claims IBC middleware
+	// - genesis bridge - IBC transfer disabled until genesis bridge protocol completes
+	ics4Wrapper = hubgenkeeper.NewICS4Wrapper(ics4Wrapper, app.HubGenesisKeeper)
 
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
 		keys[ibctransfertypes.StoreKey],
 		app.GetSubspace(ibctransfertypes.ModuleName),
-		genesisTransfersBlocker,
+		ics4Wrapper,
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
@@ -554,9 +561,9 @@ func NewRollapp(
 
 	transferStack = hubgenkeeper.NewIBCModule(
 		transferStack,
-		app.TransferKeeper,
 		app.HubGenesisKeeper,
 		app.BankKeeper,
+		app.IBCKeeper.ChannelKeeper,
 	)
 
 	app.CallbackKeeper = callbackKeeper.NewKeeper(
@@ -857,14 +864,14 @@ func NewRollapp(
 }
 
 func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.WasmConfig) {
-	anteHandler, err := NewAnteHandler(
+	handler, err := NewAnteHandler(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: txConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+				SigGasConsumer:  evmosante.SigVerificationGasConsumer,
 			},
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
@@ -876,7 +883,7 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.Wa
 		panic(err)
 	}
 
-	app.SetAnteHandler(anteHandler)
+	app.SetAnteHandler(handler)
 }
 
 func (app *App) setPostHandler() {
