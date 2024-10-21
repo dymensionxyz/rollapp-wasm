@@ -12,7 +12,6 @@ import (
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 	evmosante "github.com/evmos/evmos/v12/app/ante"
-	"github.com/gogo/protobuf/proto"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -841,7 +840,7 @@ func NewRollapp(
 
 	// Admission handler for consensus messages
 	app.setAdmissionHandler(consensus.AllowedMessagesHandler([]string{
-		proto.MessageName(&banktypes.MsgSend{}),
+		// proto.MessageName(&banktypes.MsgSend{}), // Example of message allowed as consensus message
 	}))
 
 	if loadLatest {
