@@ -14,13 +14,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	conntypes "github.com/cosmos/ibc-go/v6/modules/core/03-connection/types"
 	ibckeeper "github.com/cosmos/ibc-go/v6/modules/core/keeper"
+	rdkante "github.com/dymensionxyz/dymension-rdk/server/ante"
+	distrkeeper "github.com/dymensionxyz/dymension-rdk/x/dist/keeper"
+	"github.com/dymensionxyz/dymension-rdk/x/gasless"
+	gaslesskeeper "github.com/dymensionxyz/dymension-rdk/x/gasless/keeper"
+	seqkeeper "github.com/dymensionxyz/dymension-rdk/x/sequencers/keeper"
 	cosmosante "github.com/evmos/evmos/v12/app/ante/cosmos"
 	evmostypes "github.com/evmos/evmos/v12/types"
 	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
 	tmlog "github.com/tendermint/tendermint/libs/log"
-
-	"github.com/dymensionxyz/dymension-rdk/x/gasless"
-	gaslesskeeper "github.com/dymensionxyz/dymension-rdk/x/gasless/keeper"
 )
 
 // HandlerOptions are the options required for constructing a default SDK AnteHandler.
@@ -31,6 +33,8 @@ type HandlerOptions struct {
 	WasmConfig        *wasmtypes.WasmConfig
 	TxCounterStoreKey storetypes.StoreKey
 	GaslessKeeper     gaslesskeeper.Keeper
+	DistrKeeper       distrkeeper.Keeper
+	SequencersKeeper  seqkeeper.Keeper
 }
 
 // NewAnteHandler returns an AnteHandler that checks and increments sequence
@@ -117,7 +121,11 @@ func cosmosHandler(options HandlerOptions, sigChecker sdk.AnteDecorator) sdk.Ant
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		NewCreateAccountDecorator(options.AccountKeeper.(accountKeeper)),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		NewBypassIBCFeeDecorator(gasless.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker, options.GaslessKeeper)),
+		rdkante.NewBypassIBCFeeDecorator(
+			gasless.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker, options.GaslessKeeper),
+			options.DistrKeeper,
+			options.SequencersKeeper,
+		),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, sigGasConsumer),

@@ -12,6 +12,7 @@ import (
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 	evmosante "github.com/evmos/evmos/v12/app/ante"
+	"github.com/gogo/protobuf/proto"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -472,7 +473,10 @@ func NewRollapp(
 	)
 
 	app.SequencersKeeper = *seqkeeper.NewKeeper(
-		appCodec, keys[seqtypes.StoreKey], app.GetSubspace(seqtypes.ModuleName),
+		appCodec,
+		keys[seqtypes.StoreKey],
+		app.GetSubspace(seqtypes.ModuleName),
+		authtypes.NewModuleAddress(seqtypes.ModuleName).String(),
 	)
 
 	app.IBCKeeper = ibckeeper.NewKeeper(
@@ -840,7 +844,7 @@ func NewRollapp(
 
 	// Admission handler for consensus messages
 	app.setAdmissionHandler(consensus.AllowedMessagesHandler([]string{
-		// proto.MessageName(&banktypes.MsgSend{}), // Example of message allowed as consensus message
+		proto.MessageName(new(seqtypes.ConsensusMsgUpsertSequencer)),
 	}))
 
 	if loadLatest {
