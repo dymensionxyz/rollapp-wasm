@@ -5,29 +5,30 @@ import (
 	"encoding/json"
 	"math/rand"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/cosmos/cosmos-sdk/types/tx/signing"
-
-	seqtypes "github.com/dymensionxyz/dymension-rdk/x/sequencers/types"
-
 	"github.com/CosmWasm/wasmd/x/wasm"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codecTypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptoCodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptoTypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authsign "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	authTypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankTypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	slashingTypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingTypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/ibc-go/v6/testing/mock"
+	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
+	seqtypes "github.com/dymensionxyz/dymension-rdk/x/sequencers/types"
 	"github.com/golang/protobuf/proto" //nolint:staticcheck
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -36,7 +37,6 @@ import (
 	tmTypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/dymensionxyz/rollapp-wasm/app"
 )
 
@@ -72,7 +72,7 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 
 	// Split options by groups (each group is applied in a different init step)
 	var chainCfgOpts []TestChainConfigOption
-	//var consensusParamsOpts []TestChainConsensusParamsOption
+	// var consensusParamsOpts []TestChainConsensusParamsOption
 	var genStateOpts []TestChainGenesisOption
 	for i, opt := range opts {
 		switch opt := opt.(type) {
@@ -224,7 +224,19 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 		Coins:   bondedPoolCoins,
 	})
 
-	bankGenesis := bankTypes.NewGenesisState(bankTypes.DefaultGenesisState().Params, balances, totalSupply, []bankTypes.Metadata{})
+	bankGenesis := bankTypes.NewGenesisState(bankTypes.DefaultGenesisState().Params, balances, totalSupply, []bankTypes.Metadata{
+		{
+			Description: "Stake token",
+			DenomUnits: []*bankTypes.DenomUnit{
+				{
+					Denom:    "stake",
+					Exponent: 18,
+				},
+			},
+			Base:    "stake",
+			Display: "stake",
+		},
+	})
 	genState[bankTypes.ModuleName] = rollApp.AppCodec().MustMarshalJSON(bankGenesis)
 
 	signInfo := make([]slashingTypes.SigningInfo, len(validatorSet.Validators))
@@ -237,6 +249,10 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 		}
 	}
 	genState[slashingTypes.ModuleName] = rollApp.AppCodec().MustMarshalJSON(slashingTypes.NewGenesisState(slashingTypes.DefaultParams(), signInfo, nil))
+
+	rollappParamsState := rollappparamstypes.DefaultGenesisState()
+	rollappParamsState.Params.Version = strings.Repeat("x", 40)
+	genState[rollappparamstypes.ModuleName] = rollApp.AppCodec().MustMarshalJSON(rollappParamsState)
 
 	// Apply genesis options
 	for _, opt := range genStateOpts {

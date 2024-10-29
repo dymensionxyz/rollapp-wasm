@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/dymensionxyz/dymension-rdk/server/consensus"
 	"github.com/gogo/protobuf/proto"
 	prototypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/require"
@@ -18,6 +19,10 @@ func TestBeginBlocker(t *testing.T) {
 		Height:  1,
 		ChainID: "testchain_9000-1",
 	})
+
+	app.setAdmissionHandler(consensus.AllowedMessagesHandler([]string{
+		proto.MessageName(&banktypes.MsgSend{}),
+	}))
 
 	bankSend := &banktypes.MsgSend{
 		FromAddress: valAccount.GetAddress().String(),
