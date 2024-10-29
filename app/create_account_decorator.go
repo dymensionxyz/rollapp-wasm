@@ -7,6 +7,7 @@ import (
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	rdkante "github.com/dymensionxyz/dymension-rdk/server/ante"
 )
 
 type createAccountDecorator struct {
@@ -39,7 +40,7 @@ func (cad createAccountDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 		return ctx, err
 	}
 
-	ibcRelayerMsg := isIBCRelayerMsg(tx.GetMsgs())
+	ibcRelayerMsg := rdkante.IsIBCRelayerMsg(tx.GetMsgs())
 
 	for i, pk := range pubkeys {
 		if pk == nil {
