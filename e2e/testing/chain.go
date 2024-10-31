@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"math/rand"
 	"strconv"
-	"strings"
 	"testing"
 	"time"
 
@@ -251,7 +250,7 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 	genState[slashingTypes.ModuleName] = rollApp.AppCodec().MustMarshalJSON(slashingTypes.NewGenesisState(slashingTypes.DefaultParams(), signInfo, nil))
 
 	rollappParamsState := rollappparamstypes.DefaultGenesisState()
-	rollappParamsState.Params.Version = strings.Repeat("x", 40)
+	rollappParamsState.Params.DrsVersion = 1
 	genState[rollappparamstypes.ModuleName] = rollApp.AppCodec().MustMarshalJSON(rollappParamsState)
 
 	// Apply genesis options

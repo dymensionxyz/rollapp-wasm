@@ -7,13 +7,14 @@ COMMIT := $(shell git log -1 --format='%H')
 ifndef BECH32_PREFIX
     $(error BECH32_PREFIX is not set)
 endif
+DRS_VERSION = 1
 
 # don't override user values
-ifeq (,$(VERSION))
-  VERSION := $(shell git describe --tags)
+ifeq (,$(NAME))
+  NAME := $(shell git describe --tags)
   # if VERSION is empty, then populate it with branch's name and raw commit hash
-  ifeq (,$(VERSION))
-    VERSION := $(BRANCH)-$(COMMIT)
+  ifeq (,$(NAME))
+    NAME := $(BRANCH)-$(COMMIT)
   endif
 endif
 
@@ -27,14 +28,13 @@ TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::
 export GO111MODULE = on
 
 # process linker flags
-ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=dymension-rdk \
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=$(NAME) \
 		  -X github.com/cosmos/cosmos-sdk/version.AppName=rollapp-wasm \
-		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
+		  -X github.com/cosmos/cosmos-sdk/version.Version=DRS-$(DRS_VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 	      -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION) \
 		  -X github.com/dymensionxyz/rollapp-wasm/app.AccountAddressPrefix=$(BECH32_PREFIX) \
-		  -X github.com/dymensionxyz/dymension-rdk/x/rollappparams/types.Version=$(COMMIT) \
-		  -X github.com/dymensionxyz/dymint/version.Commit=$(COMMIT) 
+		  -X github.com/dymensionxyz/dymint/version.DrsVersion=$(DRS_VERSION) 
 BUILD_FLAGS := -ldflags '$(ldflags)'
 
 
