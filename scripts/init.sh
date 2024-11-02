@@ -1,6 +1,10 @@
 #!/bin/bash
 ROLLAPP_HOME_DIR="$HOME/.rollapp-wasm"
 
+if [ "$EXECUTABLE" = "" ]; then
+  echo "EXECUTABLE is not set" exit 1
+fi
+
 # ---------------------------- initial parameters ---------------------------- #
 # Assuming 1,000,000 tokens
 #half is staked
@@ -169,11 +173,15 @@ set_consensus_params() {
     ;;
   esac 
 
+  VERSION=$($EXECUTABLE version --long | grep DRS-)
+  DRS_VERSION="${VERSION#*-}"
+
   dasel put -f "$GENESIS_FILE" '.consensus_params.block.max_gas' -v "400000000" || success=false
   dasel put -f "$GENESIS_FILE" '.consensus_params.block.max_bytes' -v "$BLOCK_SIZE" || success=false
   dasel put -f "$GENESIS_FILE" '.consensus_params.evidence.max_bytes' -v "$BLOCK_SIZE" || success=false
   dasel put -f "$GENESIS_FILE" '.app_state.rollappparams.params.version' -v "$COMMIT" || success=false
   dasel put -f "$GENESIS_FILE" '.app_state.rollappparams.params.da' -v "$DA" || success=false
+  dasel put -f "$GENESIS_FILE" '.app_state.rollappparams.params.drs_version' -v $DRS_VERSION -t int || success=false
 
   if [ "$success" = false ]; then
     echo "An error occurred. Please refer to README.md"

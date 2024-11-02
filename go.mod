@@ -15,8 +15,8 @@ require (
 	github.com/cosmos/gogoproto v1.5.0
 	github.com/cosmos/ibc-go/v6 v6.3.0
 	github.com/dvsekhvalnov/jose2go v1.5.0
-	github.com/dymensionxyz/dymension-rdk v1.6.1-0.20241029165002-545051749bc0
-	github.com/dymensionxyz/dymint v1.2.0-rc01.0.20241024144934-db109b2859b4
+	github.com/dymensionxyz/dymension-rdk v1.6.1-0.20241030213845-88f668faab66
+	github.com/dymensionxyz/dymint v1.2.0-rc01.0.20241031114544-58b9cafae18c
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/evmos/evmos/v12 v12.1.6
 	github.com/gogo/protobuf v1.3.3
@@ -360,5 +360,5 @@ replace (
 	// replace broken goleveldb
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 	// use cometbft
-	github.com/tendermint/tendermint => github.com/dymensionxyz/cometbft v0.34.29-0.20241008141942-63af9d24107f
+	github.com/tendermint/tendermint => github.com/dymensionxyz/cometbft v0.34.29-0.20241030154748-3f9dfa21d17b
 )
