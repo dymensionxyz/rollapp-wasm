@@ -194,6 +194,7 @@ func queryCommand() *cobra.Command {
 		rpc.BlockCommand(),
 		authcmd.QueryTxsByEventsCmd(),
 		authcmd.QueryTxCmd(),
+		genesisChecksumCmd(),
 	)
 
 	app.ModuleBasics.AddQueryCommands(cmd)

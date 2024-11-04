@@ -47,6 +47,7 @@ import (
 
 	"github.com/dymensionxyz/dymension-rdk/utils"
 	rdklogger "github.com/dymensionxyz/dymension-rdk/utils/logger"
+	"github.com/dymensionxyz/dymint/cmd/dymint/commands"
 	dymintconf "github.com/dymensionxyz/dymint/config"
 	dymintconv "github.com/dymensionxyz/dymint/conv"
 	dymintmemp "github.com/dymensionxyz/dymint/mempool"
@@ -300,6 +301,11 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 		return err
 	}
 
+	genesisChecksum, err := commands.ComputeGenesisHash(cfg.GenesisFile())
+	if err != nil {
+		return fmt.Errorf("failed to compute genesis checksum: %w", err)
+	}
+
 	ctx.Logger.Info("starting node with ABCI dymint in-process")
 	tmNode, err := dymintnode.NewNode(
 		context.Background(),
@@ -308,6 +314,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, nodeConfig *d
 		signingKey,
 		proxy.NewLocalClientCreator(app),
 		genesis,
+		genesisChecksum,
 		ctx.Logger,
 		dymintmemp.PrometheusMetrics("dymint"),
 	)
@@ -595,4 +602,24 @@ func wrapCPUProfile(ctx *server.Context, callback func() error) error {
 	}
 
 	return <-errCh
+}
+
+func genesisChecksumCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "genesis-checksum",
+		Short: "Compute the checksum of the genesis file",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			serverCtx := server.GetServerContextFromCmd(cmd)
+			checksum, err := commands.ComputeGenesisHash(serverCtx.Config.GenesisFile())
+			if err != nil {
+				return err
+			}
+
+			fmt.Println(checksum)
+			return nil
+		},
+	}
+
+	return cmd
 }
