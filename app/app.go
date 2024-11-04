@@ -941,6 +941,10 @@ func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.Res
 		panic(err)
 	}
 
+	genesisInfo := app.HubGenesisKeeper.GetGenesisInfo(ctx)
+	genesisInfo.GenesisChecksum = req.GenesisChecksum
+	app.HubGenesisKeeper.SetGenesisInfo(ctx, genesisInfo)
+
 	// Passing the dymint sequencers to the sequencer module from RequestInitChain
 	if len(req.Validators) == 0 {
 		panic(fmt.Sprint("Dymint have no sequencers defined on InitChain, req:", req))
