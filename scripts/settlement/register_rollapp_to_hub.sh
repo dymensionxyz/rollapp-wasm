@@ -106,8 +106,7 @@ EOF
 
 fi
 
-GENESIS_PATH="${ROLLAPP_HOME_DIR}/config/genesis.json"
-GENESIS_HASH=$(sha256sum "$GENESIS_PATH" | awk '{print $1}' | sed 's/[[:space:]]*$//')
+GENESIS_HASH=$($EXECUTABLE q genesis-checksum)
 SEQUENCER_ADDR=$(dymd keys show "$SEQUENCER_KEY_NAME" --address --keyring-backend test --keyring-dir "$SEQUENCER_KEY_PATH")
 
 echo "deployer" $DEPLOYER;
