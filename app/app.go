@@ -442,7 +442,7 @@ func NewRollapp(
 	)
 	app.MintKeeper.SetHooks(
 		minttypes.NewMultiMintHooks(
-		// insert mint hooks receivers here
+			// insert mint hooks receivers here
 		),
 	)
 
@@ -472,11 +472,19 @@ func NewRollapp(
 		),
 	)
 
+	app.RollappParamsKeeper = rollappparamskeeper.NewKeeper(
+		app.GetSubspace(rollappparamstypes.ModuleName),
+	)
+
 	app.SequencersKeeper = *seqkeeper.NewKeeper(
 		appCodec,
 		keys[seqtypes.StoreKey],
 		app.GetSubspace(seqtypes.ModuleName),
 		authtypes.NewModuleAddress(seqtypes.ModuleName).String(),
+		app.AccountKeeper,
+		app.RollappParamsKeeper,
+		app.UpgradeKeeper,
+		[]seqkeeper.AccountBumpFilterFunc{},
 	)
 
 	app.IBCKeeper = ibckeeper.NewKeeper(
@@ -507,7 +515,7 @@ func NewRollapp(
 
 	app.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(
-		// register the governance hooks
+			// register the governance hooks
 		),
 	)
 
@@ -637,10 +645,6 @@ func NewRollapp(
 		app.interfaceRegistry,
 		app.BankKeeper,
 		&app.WasmKeeper,
-	)
-
-	app.RollappParamsKeeper = rollappparamskeeper.NewKeeper(
-		app.GetSubspace(rollappparamstypes.ModuleName),
 	)
 
 	wasmStack := wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper, app.IBCKeeper.ChannelKeeper)
@@ -845,6 +849,8 @@ func NewRollapp(
 	// Admission handler for consensus messages
 	app.setAdmissionHandler(consensus.AllowedMessagesHandler([]string{
 		proto.MessageName(new(seqtypes.ConsensusMsgUpsertSequencer)),
+		proto.MessageName(new(seqtypes.MsgBumpAccountSequences)),
+		proto.MessageName(new(seqtypes.MsgUpgradeDRS)),
 	}))
 
 	if loadLatest {
