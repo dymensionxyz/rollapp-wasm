@@ -34,7 +34,7 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=$(NAME) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 	      -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION) \
 		  -X github.com/dymensionxyz/rollapp-wasm/app.AccountAddressPrefix=$(BECH32_PREFIX) \
-		  -X github.com/dymensionxyz/dymint/version.DrsVersion=$(DRS_VERSION) 
+		  -X github.com/dymensionxyz/dymint/version.DRS=$(DRS_VERSION)
 BUILD_FLAGS := -ldflags '$(ldflags)'
 
 
