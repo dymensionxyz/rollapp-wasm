@@ -124,6 +124,7 @@ func SetupWithGenesisValSet(t *testing.T, valSet *types2.ValidatorSet, genAccs [
 			ConsensusParams: utils.DefaultConsensusParams,
 			AppStateBytes:   stateBytes,
 			ChainId:         TestChainID,
+			GenesisChecksum: "notwmpty",
 		},
 	)
 

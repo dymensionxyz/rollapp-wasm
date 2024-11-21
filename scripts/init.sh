@@ -88,6 +88,21 @@ add_genesis_accounts() {
 EOF
 }
 
+update_genesis_params() {
+  local success=true
+
+  dasel put -f "$GENESIS_FILE" '.app_state.gov.voting_params.voting_period' -v "300s" || success=false
+  dasel put -f "$GENESIS_FILE" '.app_state.gov.tally_params.threshold' -v "0.490000000000000000" || success=false
+  dasel put -f "$GENESIS_FILE" '.app_state.sequencers.params.unbonding_time' -v "1814400s" || success=false # 2 weeks
+  dasel put -f "$GENESIS_FILE" '.app_state.staking.params.unbonding_time' -v "1814400s" || success=false # 2 weeks
+
+  if [ "$success" = false ]; then
+    echo "An error occurred. Please refer to README.md"
+    return 1
+  fi
+  echo "Successfully updated the genesis file"
+}
+
 generate_denom_metadata() {
   tee "$ROLLAPP_SETTLEMENT_INIT_DIR_PATH/denommetadata.json" >/dev/null <<EOF
 [
@@ -274,5 +289,6 @@ if [ ! "$answer" != "${answer#[Nn]}" ]; then
   set +x
 fi
 
+update_genesis_params
 "$EXECUTABLE" validate-genesis
 
