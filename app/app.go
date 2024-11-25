@@ -450,7 +450,7 @@ func NewRollapp(
 	)
 	app.MintKeeper.SetHooks(
 		minttypes.NewMultiMintHooks(
-		// insert mint hooks receivers here
+			// insert mint hooks receivers here
 		),
 	)
 
@@ -523,7 +523,7 @@ func NewRollapp(
 
 	app.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(
-		// register the governance hooks
+			// register the governance hooks
 		),
 	)
 
@@ -805,6 +805,7 @@ func NewRollapp(
 		gaslesstypes.ModuleName,
 		hubgentypes.ModuleName,
 		hubtypes.ModuleName,
+		tokenfactorytypes.ModuleName,
 		wasm.ModuleName,
 		callbackTypes.ModuleName,
 		cwerrorsTypes.ModuleName,
@@ -1167,6 +1168,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(gaslesstypes.ModuleName)
 
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
+	paramsKeeper.Subspace(tokenfactorytypes.ModuleName)
 	paramsKeeper.Subspace(callbackTypes.ModuleName)
 	paramsKeeper.Subspace(cwerrorsTypes.ModuleName)
 	paramsKeeper.Subspace(rollappparamstypes.ModuleName)
