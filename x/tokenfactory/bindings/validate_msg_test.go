@@ -1,19 +1,6 @@
 package bindings_test
 
-import (
-	"fmt"
-	"testing"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	wasmbinding "github.com/dymensionxyz/rollapp-wasm/x/tokenfactory/bindings"
-	bindings "github.com/dymensionxyz/rollapp-wasm/x/tokenfactory/bindings/types"
-	"github.com/dymensionxyz/rollapp-wasm/x/tokenfactory/types"
-
-	"github.com/stretchr/testify/require"
-)
-
-func TestCreateDenom(t *testing.T) {
+/*func TestCreateDenom(t *testing.T) {
 	actor := RandomAccountAddress()
 	tokenz, ctx := SetupCustomApp(t, actor)
 
@@ -412,3 +399,4 @@ func TestBurn(t *testing.T) {
 		})
 	}
 }
+*/

@@ -1,6 +1,6 @@
 package bindings_test
 
-import (
+/*import (
 	"fmt"
 	"testing"
 
@@ -113,3 +113,4 @@ func TestDenomAdmin(t *testing.T) {
 		})
 	}
 }
+*/

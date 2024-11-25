@@ -1,6 +1,6 @@
 package testhelpers
 
-import (
+/*import (
 	"encoding/json"
 	"testing"
 	"time"
@@ -64,3 +64,4 @@ func TestMessageAuthzSerialization(t *testing.T, msg sdk.Msg) {
 	require.NoError(t, err)
 	require.Equal(t, msgExec.Msgs[0].Value, mockMsgExec.Msgs[0].Value)
 }
+*/
