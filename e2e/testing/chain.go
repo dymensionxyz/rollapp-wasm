@@ -276,8 +276,9 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 			Validators: []abci.ValidatorUpdate{
 				{PubKey: pk, Power: 1},
 			},
-			AppStateBytes: genStateBytes,
-			InitialHeight: 0,
+			AppStateBytes:   genStateBytes,
+			InitialHeight:   0,
+			GenesisChecksum: "notempty",
 		},
 	)
 
