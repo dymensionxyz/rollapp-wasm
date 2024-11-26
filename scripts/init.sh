@@ -152,15 +152,12 @@ EOF
 EOF
 }
 
+
 add_denom_metadata() {
   local success=true
 
-  denom_metadata=$(cat "$ROLLAPP_SETTLEMENT_INIT_DIR_PATH"/denommetadata.json)
-  elevated_address=$("$EXECUTABLE" keys show "$KEY_NAME_ROLLAPP" --keyring-backend test -a)
-
-  dasel put -f "$GENESIS_FILE" '.app_state.bank.denom_metadata' -v "$denom_metadata" || success=false
-  dasel put -t json -f "$GENESIS_FILE" '.app_state.denommetadata.params.allowed_addresses.' -v "$elevated_address" || success=false
-
+  jq --argjson metadata "$(cat "$ROLLAPP_SETTLEMENT_INIT_DIR_PATH"/denommetadata.json)" '.app_state.bank.denom_metadata = $metadata' "$GENESIS_FILE" > temp.json && mv temp.json "$GENESIS_FILE"
+  
   if [ "$success" = false ]; then
     echo "An error occurred. Please refer to README.md"
     return 1
@@ -194,7 +191,6 @@ set_consensus_params() {
   dasel put -f "$GENESIS_FILE" '.consensus_params.block.max_gas' -v "400000000" || success=false
   dasel put -f "$GENESIS_FILE" '.consensus_params.block.max_bytes' -v "$BLOCK_SIZE" || success=false
   dasel put -f "$GENESIS_FILE" '.consensus_params.evidence.max_bytes' -v "$BLOCK_SIZE" || success=false
-  dasel put -f "$GENESIS_FILE" '.app_state.rollappparams.params.version' -v "$COMMIT" || success=false
   dasel put -f "$GENESIS_FILE" '.app_state.rollappparams.params.da' -v "$DA" || success=false
   dasel put -f "$GENESIS_FILE" '.app_state.rollappparams.params.drs_version' -v $DRS_VERSION -t int || success=false
 
@@ -272,6 +268,7 @@ set_denom "$BASE_DENOM"
 update_configuration
 add_genesis_accounts
 generate_denom_metadata
+add_denom_metadata
 update_configuration
 set_consensus_params
 
