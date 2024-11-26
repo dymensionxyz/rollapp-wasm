@@ -3,15 +3,15 @@
 # this account must be whitelisted on the hub for permissioned deployment setup
 DEPLOYER=${HUB_PERMISSIONED_KEY-"$HUB_KEY_WITH_FUNDS"}
 
-if [ "$EXECUTABLE" = "" ]; then
+if [ "$SETTLEMENT_EXECUTABLE" = "" ]; then
   DEFAULT_EXECUTABLE=$(which dymd)
 
   if [ "$DEFAULT_EXECUTABLE" = "" ]; then
     echo "dymd not found in PATH. Exiting."
     exit 1
   fi
-  echo "EXECUTABLE is not set, using '${DEFAULT_EXECUTABLE}'"
-  EXECUTABLE=$DEFAULT_SEQUENCER_KEY_PATH
+  echo "SETTLEMENT_EXECUTABLE is not set, using '${DEFAULT_EXECUTABLE}'"
+  SETTLEMENT_EXECUTABLE=$DEFAULT_EXECUTABLE
 fi
 
 if [ "$SEQUENCER_KEY_PATH" = "" ]; then
