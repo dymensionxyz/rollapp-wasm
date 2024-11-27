@@ -882,6 +882,8 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.Wa
 				SignModeHandler: txConfig.SignModeHandler(),
 				SigGasConsumer:  evmosante.SigVerificationGasConsumer,
 			},
+			DistrKeeper:       app.DistrKeeper,
+			SequencersKeeper:  app.SequencersKeeper,
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
 			TxCounterStoreKey: app.keys[wasmtypes.StoreKey],
