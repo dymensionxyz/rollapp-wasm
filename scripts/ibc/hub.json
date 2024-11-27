@@ -13,5 +13,8 @@
     "output-format": "json",
     "sign-mode": "direct",
     "client-type": "07-tendermint"
+    "extra-codecs": [
+      "ethermint"
+    ]
   }
 }
