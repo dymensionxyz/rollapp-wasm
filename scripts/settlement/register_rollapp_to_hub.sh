@@ -93,8 +93,8 @@ if [ "$NATIVE_DENOM_PATH" = "" ]; then
     if [ "$answer" != "${answer#[Yy]}" ]; then
       cat <<EOF > "$NATIVE_DENOM_PATH"
 {
-  "display": "DEN",
-  "base": "aden",
+  "display": "$DENOM",
+  "base": "$BASE_DENOM",
   "exponent": 18
 }
 EOF
@@ -107,18 +107,16 @@ EOF
 fi
 
 GENESIS_HASH=$($EXECUTABLE q genesis-checksum)
-SEQUENCER_ADDR=$(dymd keys show "$SEQUENCER_KEY_NAME" --address --keyring-backend test --keyring-dir "$SEQUENCER_KEY_PATH")
-
-echo "deployer" $DEPLOYER;
+INITIAL_SUPPLY=$(jq -r '.app_state.bank.supply[0].amount' "${ROLLAPP_HOME_DIR}/config/genesis.json")
 
 set -x
 "$SETTLEMENT_EXECUTABLE" tx rollapp create-rollapp "$ROLLAPP_CHAIN_ID" "$ROLLAPP_ALIAS" WASM \
   --bech32-prefix "$BECH32_PREFIX" \
-  --init-sequencer "$SEQUENCER_ADDR" \
+  --init-sequencer "*" \
   --genesis-checksum "$GENESIS_HASH" \
   --metadata "$METADATA_PATH" \
   --native-denom "$NATIVE_DENOM_PATH" \
-  --initial-supply 1 \
+  --initial-supply $INITIAL_SUPPLY \
 	--from "$DEPLOYER" \
 	--keyring-backend test \
   --gas auto --gas-adjustment 1.2 \
