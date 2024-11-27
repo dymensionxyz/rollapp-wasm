@@ -7,7 +7,7 @@
     "account-prefix": "rol",
     "keyring-backend": "test",
     "gas-adjustment": 1.2,
-    "gas-prices": "0.0awsm",
+    "gas-prices": "1000000000awsm",
     "debug": true,
     "timeout": "10s",
     "output-format": "json",

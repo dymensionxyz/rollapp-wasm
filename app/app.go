@@ -454,6 +454,17 @@ func NewRollapp(
 		),
 	)
 
+	app.SequencersKeeper = *seqkeeper.NewKeeper(
+		appCodec,
+		keys[seqtypes.StoreKey],
+		app.GetSubspace(seqtypes.ModuleName),
+		authtypes.NewModuleAddress(seqtypes.ModuleName).String(),
+		app.AccountKeeper,
+		app.RollappParamsKeeper,
+		app.UpgradeKeeper,
+		[]seqkeeper.AccountBumpFilterFunc{},
+	)
+
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec,
 		keys[distrtypes.StoreKey],
@@ -482,17 +493,6 @@ func NewRollapp(
 
 	app.RollappParamsKeeper = rollappparamskeeper.NewKeeper(
 		app.GetSubspace(rollappparamstypes.ModuleName),
-	)
-
-	app.SequencersKeeper = *seqkeeper.NewKeeper(
-		appCodec,
-		keys[seqtypes.StoreKey],
-		app.GetSubspace(seqtypes.ModuleName),
-		authtypes.NewModuleAddress(seqtypes.ModuleName).String(),
-		app.AccountKeeper,
-		app.RollappParamsKeeper,
-		app.UpgradeKeeper,
-		[]seqkeeper.AccountBumpFilterFunc{},
 	)
 
 	app.IBCKeeper = ibckeeper.NewKeeper(
@@ -905,6 +905,8 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.Wa
 				SignModeHandler: txConfig.SignModeHandler(),
 				SigGasConsumer:  evmosante.SigVerificationGasConsumer,
 			},
+			DistrKeeper:       app.DistrKeeper,
+			SequencersKeeper:  app.SequencersKeeper,
 			IBCKeeper:         app.IBCKeeper,
 			WasmConfig:        &wasmConfig,
 			TxCounterStoreKey: app.keys[wasmtypes.StoreKey],
