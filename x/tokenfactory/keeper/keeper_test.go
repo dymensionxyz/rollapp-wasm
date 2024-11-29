@@ -1,16 +1,15 @@
 package keeper_test
 
-/*import (
+import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/suite"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-
 	"github.com/dymensionxyz/rollapp-wasm/app/apptesting"
 	"github.com/dymensionxyz/rollapp-wasm/x/tokenfactory/keeper"
 	"github.com/dymensionxyz/rollapp-wasm/x/tokenfactory/testhelpers"
 	"github.com/dymensionxyz/rollapp-wasm/x/tokenfactory/types"
+	"github.com/stretchr/testify/suite"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 type KeeperTestSuite struct {
@@ -62,4 +61,3 @@ func (suite *KeeperTestSuite) TestCreateModuleAccount() {
 	tokenfactoryModuleAccount = app.AccountKeeper.GetAccount(suite.Ctx, app.AccountKeeper.GetModuleAddress(types.ModuleName))
 	suite.Require().NotNil(tokenfactoryModuleAccount)
 }
-*/

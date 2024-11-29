@@ -1,6 +1,6 @@
 package keeper_test
 
-/*import (
+import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
@@ -11,15 +11,15 @@ func (suite *KeeperTestSuite) TestGenesis() {
 	genesisState := types.GenesisState{
 		FactoryDenoms: []types.GenesisDenom{
 			{
-				Denom: "factory/cosmos1t7egva48prqmzl59x5ngv4zx0dtrwewcdqdjr8/bitcoin",
-				AuthorityMetadata: types.DenomAuthorityMetadata{
-					Admin: "cosmos1t7egva48prqmzl59x5ngv4zx0dtrwewcdqdjr8",
-				},
-			},
-			{
 				Denom: "factory/cosmos1t7egva48prqmzl59x5ngv4zx0dtrwewcdqdjr8/diff-admin",
 				AuthorityMetadata: types.DenomAuthorityMetadata{
 					Admin: "cosmos15czt5nhlnvayqq37xun9s9yus0d6y26dx74r5p",
+				},
+			},
+			{
+				Denom: "factory/cosmos1t7egva48prqmzl59x5ngv4zx0dtrwewcdqdjr8/bitcoin",
+				AuthorityMetadata: types.DenomAuthorityMetadata{
+					Admin: "cosmos1t7egva48prqmzl59x5ngv4zx0dtrwewcdqdjr8",
 				},
 			},
 			{
@@ -55,6 +55,8 @@ func (suite *KeeperTestSuite) TestGenesis() {
 
 	exportedGenesis := app.TokenFactoryKeeper.ExportGenesis(suite.Ctx)
 	suite.Require().NotNil(exportedGenesis)
-	suite.Require().Equal(genesisState, *exportedGenesis)
+	suite.Require().Equal(
+		string(app.AppCodec().MustMarshalJSON(&genesisState)),
+		string(app.AppCodec().MustMarshalJSON(exportedGenesis)),
+	)
 }
-*/

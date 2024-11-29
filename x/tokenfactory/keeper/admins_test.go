@@ -1,6 +1,6 @@
 package keeper_test
 
-/*import (
+import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -401,4 +401,3 @@ func (suite *KeeperTestSuite) TestSetDenomMetaData() {
 		})
 	}
 }
-*/

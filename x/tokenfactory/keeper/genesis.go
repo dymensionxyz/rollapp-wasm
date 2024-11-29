@@ -1,6 +1,9 @@
 package keeper
 
 import (
+	"fmt"
+	"strings"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/dymensionxyz/rollapp-wasm/x/tokenfactory/types"
@@ -17,11 +20,10 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) {
 	k.SetParams(ctx, genState.Params)
 
 	for _, genDenom := range genState.GetFactoryDenoms() {
-		creator, _, err := types.DeconstructDenom(genDenom.GetDenom())
-		if err != nil {
-			panic(err)
+		if strings.HasPrefix(genDenom.Denom, "ibc") {
+			panic(fmt.Errorf("IBC denoms are not allowed in denom metadata"))
 		}
-		err = k.createDenomAfterValidation(ctx, creator, genDenom.GetDenom())
+		err := k.createDenomAfterValidation(ctx, genDenom.AuthorityMetadata.Admin, genDenom.GetDenom())
 		if err != nil {
 			panic(err)
 		}
@@ -34,7 +36,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) {
 
 // ExportGenesis returns the tokenfactory module's exported genesis.
 func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
-	genDenoms := []types.GenesisDenom{}
+	var genDenoms []types.GenesisDenom
 	iterator := k.GetAllDenomsIterator(ctx)
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {

@@ -1,6 +1,6 @@
 package keeper_test
 
-/*import (
+import (
 	"fmt"
 
 	"github.com/dymensionxyz/rollapp-wasm/x/tokenfactory/types"
@@ -245,4 +245,3 @@ func (suite *KeeperTestSuite) TestSetDenomMetaDataMsg() {
 		})
 	}
 }
-*/
