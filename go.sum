@@ -205,6 +205,7 @@ cosmossdk.io/errors v1.0.1 h1:bzu+Kcr0kS/1DuPBtUFdWjzLqyUuCiyHjyJB6srBV/0=
 cosmossdk.io/errors v1.0.1/go.mod h1:MeelVSZThMi4bEakzhhhE/CKqVv3nOJDA25bIqRDu/U=
 cosmossdk.io/math v1.3.0 h1:RC+jryuKeytIiictDslBP9i1fhkVm6ZDmZEoNP316zE=
 cosmossdk.io/math v1.3.0/go.mod h1:vnRTxewy+M7BtXBNFybkuhSH4WfedVAAnERHgVFhp3k=
+cosmossdk.io/math v1.4.0/go.mod h1:O5PkD4apz2jZs4zqFdTr16e1dcaQCc5z6lkEnrrppuk=
 dmitri.shuralyov.com/app/changes v0.0.0-20180602232624-0a106ad413e3/go.mod h1:Yl+fi1br7+Rr3LqpNJf1/uxUdtRUV+Tnj0o93V2B9MU=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 dmitri.shuralyov.com/html/belt v0.0.0-20180602232347-f7d459c86be0/go.mod h1:JLBrvjyP0v+ecvNYvCpyZgu5/xkfAUhi6wJj28eUfSU=
@@ -575,6 +576,8 @@ github.com/dymensionxyz/cosmosclient v0.4.2-beta.0.20241121093220-e0d7ad456fbd h
 github.com/dymensionxyz/cosmosclient v0.4.2-beta.0.20241121093220-e0d7ad456fbd/go.mod h1:3weqpVj/TqTFpC0LjEB3H+HZSpm7BrQ1QkEg1Ahy6KY=
 github.com/dymensionxyz/dymension-rdk v1.6.1-0.20241119103059-def6322e4345 h1:FcHidPgGEHh9ELwodNJkGcHqsG+mdPiGdughzG4W+X8=
 github.com/dymensionxyz/dymension-rdk v1.6.1-0.20241119103059-def6322e4345/go.mod h1:y89w1OG4C4aF7yyW8bv9PwV3o1KkCx1hyt34ap04Rnk=
+github.com/dymensionxyz/dymension-rdk v1.6.1-0.20241202152140-ffec6e81a1ca h1:jW7rlPl/VdJTnm5Ie9aUsyFG3cwM0KdN+0LTV70/nN4=
+github.com/dymensionxyz/dymension-rdk v1.6.1-0.20241202152140-ffec6e81a1ca/go.mod h1:AA0rq+4H+yn/Agnx5L8ermhhny3FYgCv6UW9DzK5vss=
 github.com/dymensionxyz/dymint v1.2.0-rc01.0.20241126070643-7ef37e51de91 h1:w1aFCVNQm8EUGxJy7bztCI0wTNZ6FphRCLmjtXgodLc=
 github.com/dymensionxyz/dymint v1.2.0-rc01.0.20241126070643-7ef37e51de91/go.mod h1:wqEC/5bf0bZwW/1+A+YGGLirDL0r8uj46U0999lPO8Q=
 github.com/dymensionxyz/evmos/v12 v12.1.6-dymension-v0.4.2 h1:aVP3off7u2vsvRH7lHAUPTLdf9/AfnzC/rvvi0wC/co=
@@ -1547,6 +1550,7 @@ github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
+github.com/stretchr/testify v1.10.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 github.com/subosito/gotenv v1.4.2 h1:X1TuBLAMDFbaTAChgCBLu3DU3UPyELpnF2jjJ2cz/S8=
 github.com/subosito/gotenv v1.4.2/go.mod h1:ayKnFf/c6rvx/2iiLrJUk1e6plDbT3edrFNGqEflhK0=
 github.com/supranational/blst v0.3.8-0.20220526154634-513d2456b344/go.mod h1:jZJtfjgudtNl4en1tzwPIV3KjUnQUvG3/j+w+fVonLw=
