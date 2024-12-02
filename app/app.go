@@ -101,6 +101,11 @@ import (
 	timeupgradekeeper "github.com/dymensionxyz/dymension-rdk/x/timeupgrade/keeper"
 	timeupgradetypes "github.com/dymensionxyz/dymension-rdk/x/timeupgrade/types"
 
+	"github.com/dymensionxyz/rollapp-wasm/x/tokenfactory"
+	"github.com/dymensionxyz/rollapp-wasm/x/tokenfactory/bindings"
+	tokenfactorykeeper "github.com/dymensionxyz/rollapp-wasm/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/dymensionxyz/rollapp-wasm/x/tokenfactory/types"
+
 	ibctransfer "github.com/cosmos/ibc-go/v6/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v6/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
@@ -169,7 +174,7 @@ var (
 		ibchost.StoreKey, upgradetypes.StoreKey,
 		epochstypes.StoreKey, hubgentypes.StoreKey,
 		ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		wasmtypes.StoreKey, gaslesstypes.StoreKey,
+		wasmtypes.StoreKey, tokenfactorytypes.StoreKey, gaslesstypes.StoreKey,
 		hubtypes.StoreKey,
 		callbackTypes.StoreKey,
 		cwerrorsTypes.StoreKey,
@@ -219,6 +224,7 @@ var (
 		ibctransfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		hubgenesis.AppModuleBasic{},
+		tokenfactory.NewAppModuleBasic(),
 		wasm.AppModuleBasic{},
 		hub.AppModuleBasic{},
 		timeupgrade.AppModuleBasic{},
@@ -242,6 +248,7 @@ var (
 		gaslesstypes.ModuleName:        nil,
 		callbackTypes.ModuleName:       nil,
 		rollappparamstypes.ModuleName:  nil,
+		tokenfactorytypes.ModuleName:   {authtypes.Minter, authtypes.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -283,27 +290,28 @@ type App struct {
 	memKeys map[string]*storetypes.MemoryStoreKey
 
 	// keepers
-	AccountKeeper     authkeeper.AccountKeeper
-	AuthzKeeper       authzkeeper.Keeper
-	BankKeeper        bankkeeper.Keeper
-	CapabilityKeeper  *capabilitykeeper.Keeper
-	StakingKeeper     stakingkeeper.Keeper
-	SequencersKeeper  seqkeeper.Keeper
-	MintKeeper        mintkeeper.Keeper
-	EpochsKeeper      epochskeeper.Keeper
-	DistrKeeper       distrkeeper.Keeper
-	GovKeeper         govkeeper.Keeper
-	HubGenesisKeeper  hubgenkeeper.Keeper
-	UpgradeKeeper     upgradekeeper.Keeper
-	ParamsKeeper      paramskeeper.Keeper
-	IBCKeeper         *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	TransferKeeper    ibctransferkeeper.Keeper
-	WasmKeeper        wasmkeeper.Keeper
-	FeeGrantKeeper    feegrantkeeper.Keeper
-	GaslessKeeper     gaslesskeeper.Keeper
-	CallbackKeeper    callbackKeeper.Keeper
-	CWErrorsKeeper    cwerrorsKeeper.Keeper
-	TimeUpgradeKeeper timeupgradekeeper.Keeper
+	AccountKeeper      authkeeper.AccountKeeper
+	AuthzKeeper        authzkeeper.Keeper
+	BankKeeper         bankkeeper.BaseKeeper
+	CapabilityKeeper   *capabilitykeeper.Keeper
+	StakingKeeper      stakingkeeper.Keeper
+	SequencersKeeper   seqkeeper.Keeper
+	MintKeeper         mintkeeper.Keeper
+	EpochsKeeper       epochskeeper.Keeper
+	DistrKeeper        distrkeeper.Keeper
+	GovKeeper          govkeeper.Keeper
+	HubGenesisKeeper   hubgenkeeper.Keeper
+	UpgradeKeeper      upgradekeeper.Keeper
+	ParamsKeeper       paramskeeper.Keeper
+	IBCKeeper          *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	TransferKeeper     ibctransferkeeper.Keeper
+	WasmKeeper         wasmkeeper.Keeper
+	TokenFactoryKeeper tokenfactorykeeper.Keeper
+	FeeGrantKeeper     feegrantkeeper.Keeper
+	GaslessKeeper      gaslesskeeper.Keeper
+	CallbackKeeper     callbackKeeper.Keeper
+	CWErrorsKeeper     cwerrorsKeeper.Keeper
+	TimeUpgradeKeeper  timeupgradekeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -446,6 +454,17 @@ func NewRollapp(
 		),
 	)
 
+	app.SequencersKeeper = *seqkeeper.NewKeeper(
+		appCodec,
+		keys[seqtypes.StoreKey],
+		app.GetSubspace(seqtypes.ModuleName),
+		authtypes.NewModuleAddress(seqtypes.ModuleName).String(),
+		app.AccountKeeper,
+		app.RollappParamsKeeper,
+		app.UpgradeKeeper,
+		[]seqkeeper.AccountBumpFilterFunc{},
+	)
+
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec,
 		keys[distrtypes.StoreKey],
@@ -476,17 +495,6 @@ func NewRollapp(
 		app.GetSubspace(rollappparamstypes.ModuleName),
 	)
 
-	app.SequencersKeeper = *seqkeeper.NewKeeper(
-		appCodec,
-		keys[seqtypes.StoreKey],
-		app.GetSubspace(seqtypes.ModuleName),
-		authtypes.NewModuleAddress(seqtypes.ModuleName).String(),
-		app.AccountKeeper,
-		app.RollappParamsKeeper,
-		app.UpgradeKeeper,
-		[]seqkeeper.AccountBumpFilterFunc{},
-	)
-
 	app.IBCKeeper = ibckeeper.NewKeeper(
 		appCodec, keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), &app.SequencersKeeper, app.UpgradeKeeper, scopedIBCKeeper,
 	)
@@ -502,6 +510,11 @@ func NewRollapp(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
+
+	// The gov proposal types can be individually enabled
+	if len(enabledProposals) != 0 {
+		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, enabledProposals))
+	}
 
 	govConfig := govtypes.DefaultConfig()
 	/*
@@ -532,6 +545,15 @@ func NewRollapp(
 		appCodec,
 		keys[hubtypes.StoreKey],
 	)
+
+	tokenFactoryKeeper := tokenfactorykeeper.NewKeeper(
+		keys[tokenfactorytypes.StoreKey],
+		app.GetSubspace(tokenfactorytypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.DistrKeeper,
+	)
+	app.TokenFactoryKeeper = tokenFactoryKeeper
 
 	var ics4Wrapper ibcporttypes.ICS4Wrapper
 	// The IBC tranfer submit is wrapped with the following middlewares:
@@ -604,15 +626,12 @@ func NewRollapp(
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
 	}
 
-	// The gov proposal types can be individually enabled
-	if len(enabledProposals) != 0 {
-		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, enabledProposals))
-	}
-
 	// Include the x/cwerrors query to stargate queries
 	wasmOpts = append(wasmOpts, wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
 		Stargate: wasmkeeper.AcceptListStargateQuerier(getAcceptedStargateQueries(), app.GRPCQueryRouter(), appCodec),
 	}))
+
+	wasmOpts = append(bindings.RegisterCustomPlugins(&app.BankKeeper, &app.TokenFactoryKeeper), wasmOpts...)
 
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
@@ -682,6 +701,7 @@ func NewRollapp(
 		ibc.NewAppModule(app.IBCKeeper),
 		ibctransfer.NewAppModule(app.TransferKeeper),
 		upgrade.NewAppModule(app.UpgradeKeeper),
+		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper),
 		hubgenesis.NewAppModule(appCodec, app.HubGenesisKeeper),
 		hub.NewAppModule(appCodec, app.HubKeeper),
 		timeupgrade.NewAppModule(app.TimeUpgradeKeeper, app.UpgradeKeeper),
@@ -720,6 +740,7 @@ func NewRollapp(
 		hubgentypes.ModuleName,
 		hubtypes.ModuleName,
 		wasm.ModuleName,
+		tokenfactorytypes.ModuleName,
 		callbackTypes.ModuleName,
 		cwerrorsTypes.ModuleName, // does not have begin blocker
 		rollappparamstypes.ModuleName,
@@ -752,6 +773,7 @@ func NewRollapp(
 		callbackTypes.ModuleName,
 		cwerrorsTypes.ModuleName,
 		rollappparamstypes.ModuleName,
+		tokenfactorytypes.ModuleName,
 	}
 	app.mm.SetOrderEndBlockers(endBlockersList...)
 
@@ -783,6 +805,7 @@ func NewRollapp(
 		gaslesstypes.ModuleName,
 		hubgentypes.ModuleName,
 		hubtypes.ModuleName,
+		tokenfactorytypes.ModuleName,
 		wasm.ModuleName,
 		callbackTypes.ModuleName,
 		cwerrorsTypes.ModuleName,
@@ -1161,6 +1184,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(gaslesstypes.ModuleName)
 
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
+	paramsKeeper.Subspace(tokenfactorytypes.ModuleName)
 	paramsKeeper.Subspace(callbackTypes.ModuleName)
 	paramsKeeper.Subspace(cwerrorsTypes.ModuleName)
 	paramsKeeper.Subspace(rollappparamstypes.ModuleName)
