@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
 	appcodec "github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/codec"
@@ -20,6 +21,7 @@ import (
 	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
 	"github.com/tendermint/tendermint/crypto/encoding"
 	"github.com/tendermint/tendermint/libs/log"
+	"github.com/tendermint/tendermint/proto/tendermint/crypto"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	types2 "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
@@ -237,4 +239,68 @@ func addDenomToBankModule(appCodec appcodec.Codec, genesisState GenesisState, de
 	genesisState["bank"] = appCodec.MustMarshalJSON(&bankGenesis)
 
 	return genesisState
+}
+
+func Setup(isCheckTx bool, opts ...wasm.Option) *App {
+	db := dbm.NewMemDB()
+	app := NewRollapp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, MakeEncodingConfig(), wasm.EnableAllProposals, EmptyBaseAppOptions{}, opts)
+
+	if !isCheckTx {
+		genesisState := NewDefaultGenesisState(app.appCodec)
+
+		// make hub genesis happy by adding denom meta
+		bankGenesis := new(banktypes.GenesisState)
+		app.appCodec.MustUnmarshalJSON(genesisState[banktypes.ModuleName], bankGenesis)
+		bankGenesis.DenomMetadata = append(bankGenesis.DenomMetadata, banktypes.Metadata{
+			Description: "stake",
+			DenomUnits: []*banktypes.DenomUnit{
+				{
+					Denom:    "stake",
+					Exponent: 6,
+					Aliases:  nil,
+				},
+			},
+			Base:    "stake",
+			Display: "stake",
+			Name:    "stake",
+			Symbol:  "stake",
+			URI:     "",
+			URIHash: "",
+		})
+		genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
+
+		app.InitChain(
+			abci.RequestInitChain{
+				Time:            time.Now(),
+				ChainId:         "cookies",
+				ConsensusParams: DefaultConsensusParams,
+				Validators: []abci.ValidatorUpdate{
+					{
+						PubKey: crypto.PublicKey{},
+						Power:  50,
+					},
+				},
+				AppStateBytes:   marshalGenesis(genesisState),
+				InitialHeight:   0,
+				GenesisChecksum: "cookies",
+			},
+		)
+	}
+	return app
+}
+
+// EmptyBaseAppOptions is a stub implementing AppOptions
+type EmptyBaseAppOptions struct{}
+
+// Get implements AppOptions
+func (ao EmptyBaseAppOptions) Get(o string) interface{} {
+	return nil
+}
+
+func marshalGenesis(genesisState GenesisState) json.RawMessage {
+	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
+	if err != nil {
+		panic(err)
+	}
+	return stateBytes
 }
