@@ -1,6 +1,6 @@
 package types
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import sdk "cosmossdk.io/math"
 
 type TokenFactoryMsg struct {
 	Token *TokenMsg `json:"token,omitempty"`
