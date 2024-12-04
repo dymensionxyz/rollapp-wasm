@@ -101,10 +101,10 @@ import (
 	timeupgradekeeper "github.com/dymensionxyz/dymension-rdk/x/timeupgrade/keeper"
 	timeupgradetypes "github.com/dymensionxyz/dymension-rdk/x/timeupgrade/types"
 
-	"github.com/dymensionxyz/rollapp-wasm/x/tokenfactory"
-	"github.com/dymensionxyz/rollapp-wasm/x/tokenfactory/bindings"
-	tokenfactorykeeper "github.com/dymensionxyz/rollapp-wasm/x/tokenfactory/keeper"
-	tokenfactorytypes "github.com/dymensionxyz/rollapp-wasm/x/tokenfactory/types"
+	"github.com/dymensionxyz/dymension-rdk/x/tokenfactory"
+	"github.com/dymensionxyz/dymension-rdk/x/tokenfactory/bindings"
+	tokenfactorykeeper "github.com/dymensionxyz/dymension-rdk/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/dymensionxyz/dymension-rdk/x/tokenfactory/types"
 
 	ibctransfer "github.com/cosmos/ibc-go/v6/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v6/modules/apps/transfer/keeper"
