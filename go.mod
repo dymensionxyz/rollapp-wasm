@@ -18,7 +18,7 @@ require (
 	github.com/cosmos/gogoproto v1.5.0
 	github.com/cosmos/ibc-go/v6 v6.3.0
 	github.com/dvsekhvalnov/jose2go v1.5.0
-	github.com/dymensionxyz/dymension-rdk v1.6.1-0.20241202152140-ffec6e81a1ca
+	github.com/dymensionxyz/dymension-rdk v1.6.1-0.20241206123648-30ef7199888d
 	github.com/dymensionxyz/dymint v1.2.0-rc01.0.20241203150638-c0e39f93d729
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/evmos/evmos/v12 v12.1.6
@@ -368,5 +368,4 @@ replace (
 	github.com/libp2p/go-libp2p-pubsub => github.com/dymensionxyz/go-libp2p-pubsub v0.0.0-20240513081713-3ecd83c19ea2
 	github.com/osmosis-labs/osmosis/v15 => github.com/dymensionxyz/osmosis/v15 v15.2.0-dymension-v1.1.3
 	github.com/tendermint/tendermint => github.com/dymensionxyz/cometbft v0.34.29-0.20241128205759-2a9d5f015da5
-	github.com/dymensionxyz/dymension-rdk => ../dymension-rdk
 )
