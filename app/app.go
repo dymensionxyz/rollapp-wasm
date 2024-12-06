@@ -904,6 +904,7 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.Wa
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: txConfig.SignModeHandler(),
 				SigGasConsumer:  evmosante.SigVerificationGasConsumer,
+				TxFeeChecker:    app.RollappParamsKeeper.CheckTxFeeWithMinGasPrices(),
 			},
 			DistrKeeper:       app.DistrKeeper,
 			SequencersKeeper:  app.SequencersKeeper,
