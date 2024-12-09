@@ -1,5 +1,5 @@
 {
-  "genesis_time": "2024-12-09T07:41:25.834885Z",
+  "genesis_time": "2024-12-09T13:53:21.008106Z",
   "chain_id": "rollappwasm_1234-1",
   "initial_height": "1",
   "consensus_params": {
@@ -176,7 +176,7 @@
         "max_deposit_period": "172800s"
       },
       "voting_params": {
-        "voting_period": "300s"
+        "voting_period": "432000s"
       },
       "tally_params": {
         "quorum": "0.334000000000000000",
@@ -244,21 +244,21 @@
     "params": null,
     "rollappparams": {
       "params": {
-        "da": "mock",
+        "da": "celestia",
         "drs_version": 1,
         "min_gas_prices": []
       }
     },
     "sequencers": {
       "params": {
-        "unbonding_time": "1309600s",
+        "unbonding_time": "1814400s",
         "historical_entries": 10000
       },
       "sequencers": []
     },
     "staking": {
       "params": {
-        "unbonding_time": "1309600s",
+        "unbonding_time": "1814400s",
         "max_validators": 100,
         "max_entries": 7,
         "historical_entries": 10000,

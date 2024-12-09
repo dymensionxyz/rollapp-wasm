@@ -2,12 +2,15 @@
 set -x
 
 # Get environment parameter
-if [ $# -eq 0 ]; then
-    echo "Error: Environment parameter (mainnet/testnet) is required"
+# Get environment parameter
+if [ $# -lt 2 ]; then
+    echo "Error: Both Environment (mainnet/testnet) and DRS parameters are required"
     exit 1
 fi
 
 ENVIRONMENT=$1
+DRS=$2
+
 if [ "$ENVIRONMENT" != "mainnet" ] && [ "$ENVIRONMENT" != "testnet" ]; then
     echo "Error: Environment must be either 'mainnet' or 'testnet'"
     exit 1
@@ -35,6 +38,8 @@ update_params() {
   dasel put -f "$TEMP_GENESIS" '.consensus_params.evidence.max_bytes' -v "$BLOCK_SIZE" || success=false
   dasel put -f "$TEMP_GENESIS" 'app_state.distribution.params.base_proposer_reward' -v '0.8' || success=false
   dasel put -f "$TEMP_GENESIS" 'app_state.distribution.params.community_tax' -v "0.00002" || success=false
+  dasel put -f "$TEMP_GENESIS" 'app_state.rollappparams.params.drs_version' -v "$DRS" -t int || success=false
+  dasel put -f "$TEMP_GENESIS" 'app_state.rollappparams.params.da' -v "celestia" || success=false
   
 
   # Update jq command to use temp file
@@ -80,11 +85,11 @@ update_params() {
     return 1
   fi
   
-  # Create templates directory if it doesn't exist
-  mkdir -p ./genesis-templates
+  # Create templates directory with DRS subdirectory if it doesn't exist
+  mkdir -p "./genesis-templates/DRS/${DRS}"
   
-  # Copy the modified genesis file to the template location
-  cp "$TEMP_GENESIS" "./genesis-templates/genesis-${ENVIRONMENT}.json"
+  # Copy the modified genesis file to the DRS-specific template location
+  cp "$TEMP_GENESIS" "./genesis-templates/DRS/${DRS}/genesis-${ENVIRONMENT}.json"
   
   # Cleanup temp directory
   rm -rf "$TEMP_DIR"
