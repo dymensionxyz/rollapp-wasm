@@ -1,5 +1,5 @@
 {
-  "genesis_time": "2024-12-09T07:41:25.834885Z",
+  "genesis_time": "2024-12-09T13:10:44.021333Z",
   "chain_id": "rollappwasm_1234-1",
   "initial_height": "1",
   "consensus_params": {
@@ -307,20 +307,6 @@
       "codes": [],
       "contracts": [],
       "sequences": []
-    },
-    "feemarket": {
-      "params": {
-        "no_base_fee": false,
-        "min_gas_price": "10000000.0"
-      }
-    },
-    "evm": {
-      "params": {
-        "extra_eips": [
-          "3855",
-          "3855"
-        ]
-      }
     }
   }
 }
