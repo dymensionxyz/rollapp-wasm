@@ -244,7 +244,7 @@
     "params": null,
     "rollappparams": {
       "params": {
-        "da": "mock",
+        "da": "celestia",
         "drs_version": 1,
         "min_gas_prices": []
       }

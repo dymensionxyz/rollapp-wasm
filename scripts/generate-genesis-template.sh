@@ -39,6 +39,7 @@ update_params() {
   dasel put -f "$TEMP_GENESIS" 'app_state.distribution.params.base_proposer_reward' -v '0.8' || success=false
   dasel put -f "$TEMP_GENESIS" 'app_state.distribution.params.community_tax' -v "0.00002" || success=false
   dasel put -f "$TEMP_GENESIS" 'app_state.rollappparams.params.drs_version' -v "$DRS" -t int || success=false
+  dasel put -f "$TEMP_GENESIS" 'app_state.rollappparams.params.da' -v "celestia" || success=false
   
 
   # Update jq command to use temp file
