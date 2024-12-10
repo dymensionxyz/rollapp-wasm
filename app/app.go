@@ -157,6 +157,8 @@ import (
 	"github.com/dymensionxyz/dymension-rdk/x/rollappparams"
 	rollappparamskeeper "github.com/dymensionxyz/dymension-rdk/x/rollappparams/keeper"
 	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
+
+	dymintversion "github.com/dymensionxyz/dymint/version"
 )
 
 const (
@@ -952,6 +954,13 @@ func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.R
 	resp := app.mm.BeginBlock(ctx, req)
 	resp.ConsensusMessagesResponses = consensusResponses
 
+	drsVersion, err := dymintversion.GetDRSVersion()
+	if err != nil {
+		panic(fmt.Errorf("Unable to get DRS version from binary: %w", err))
+	}
+	if drsVersion != app.RollappParamsKeeper.Version(ctx) {
+		panic(fmt.Errorf("DRS version mismatch. rollapp DRS version: %d binary DRS version:%d", app.RollappParamsKeeper.Version(ctx), drsVersion))
+	}
 	return resp
 }
 
