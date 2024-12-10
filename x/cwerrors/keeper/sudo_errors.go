@@ -75,7 +75,7 @@ func (k Keeper) storeErrorCallback(ctx sdk.Context, sudoErr types.SudoError) err
 	return nil
 }
 
-// GetErrosByContractAddress returns all errors (in state) for a given contract address
+// GetErrorsByContractAddress returns all errors (in state) for a given contract address
 func (k Keeper) GetErrorsByContractAddress(ctx sdk.Context, contractAddress []byte) (sudoErrs []types.SudoError, err error) {
 	rng := collections.NewPrefixedPairRange[[]byte, uint64](contractAddress)
 	err = k.ContractErrors.Walk(ctx, rng, func(key collections.Pair[[]byte, uint64], _ []byte) (bool, error) {
