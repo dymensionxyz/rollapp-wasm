@@ -159,9 +159,9 @@ import (
 	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
 
 	dymintversion "github.com/dymensionxyz/dymint/version"
-
 	// Upgrade handlers
-	drs2_upgrade "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-2"
+	"github.com/dymensionxyz/rollapp-wasm/app/upgrades"
+	drs2 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-2"
 )
 
 const (
@@ -186,6 +186,8 @@ var (
 		timeupgradetypes.StoreKey,
 		rollappparamstypes.StoreKey,
 	}
+	// Upgrades contains the upgrade handlers for the application
+	Upgrades = []upgrades.Upgrade{drs2.Upgrade}
 )
 
 func getGovProposalHandlers() []govclient.ProposalHandler {
@@ -1212,13 +1214,28 @@ func getAcceptedStargateQueries() wasmkeeper.AcceptedStargateQueries {
 }
 
 func (app *App) setupUpgradeHandlers() {
+	for _, u := range Upgrades {
+		app.setupUpgradeHandler(u)
+	}
+}
 
+func (app *App) setupUpgradeHandler(upgrade upgrades.Upgrade) {
 	app.UpgradeKeeper.SetUpgradeHandler(
-		"upgrade-drs-2",
-		drs2_upgrade.CreateUpgradeHandler(
+		upgrade.Name,
+		upgrade.CreateHandler(
 			app.RollappParamsKeeper,
-			app.mm, app.configurator,
+			app.mm,
+			app.configurator,
 		),
 	)
 
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
+	}
+
+	if upgradeInfo.Name == upgrade.Name && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		// configure store loader with the store upgrades
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &upgrade.StoreUpgrades))
+	}
 }
