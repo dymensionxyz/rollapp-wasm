@@ -159,6 +159,9 @@ import (
 	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
 
 	dymintversion "github.com/dymensionxyz/dymint/version"
+
+	// Upgrade handlers
+	drs2_upgrade "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-2"
 )
 
 const (
@@ -847,6 +850,7 @@ func NewRollapp(
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 	app.setAnteHandler(encodingConfig.TxConfig, wasmConfig)
+	app.setupUpgradeHandlers()
 
 	if manager := app.SnapshotManager(); manager != nil {
 		err := manager.RegisterExtensions(
@@ -1205,4 +1209,16 @@ func getAcceptedStargateQueries() wasmkeeper.AcceptedStargateQueries {
 	return wasmkeeper.AcceptedStargateQueries{
 		"/rollapp.cwerrors.v1.Query/Errors": &cwerrorsTypes.QueryErrorsRequest{},
 	}
+}
+
+func (app *App) setupUpgradeHandlers() {
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		"upgrade-drs-2",
+		drs2_upgrade.CreateUpgradeHandler(
+			app.RollappParamsKeeper,
+			app.mm, app.configurator,
+		),
+	)
+
 }
