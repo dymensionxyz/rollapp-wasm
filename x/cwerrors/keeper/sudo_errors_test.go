@@ -112,7 +112,6 @@ func (s *KeeperTestSuite) TestGetErrorsByContractAddress() {
 		contractAddr2.String(),
 		contractAdminAcc.Address.String(),
 	)
-
 	// Set errors for block 1
 	// 2 errors for contract1
 	// 1 error for contract2
