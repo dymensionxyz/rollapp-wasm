@@ -28,6 +28,7 @@ import (
 	"github.com/cosmos/ibc-go/v6/testing/mock"
 	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
 	seqtypes "github.com/dymensionxyz/dymension-rdk/x/sequencers/types"
+	"github.com/dymensionxyz/dymint/version"
 	"github.com/golang/protobuf/proto" //nolint:staticcheck
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -248,6 +249,7 @@ func NewTestChain(t *testing.T, chainIdx int, opts ...interface{}) *TestChain {
 		}
 	}
 	genState[slashingTypes.ModuleName] = rollApp.AppCodec().MustMarshalJSON(slashingTypes.NewGenesisState(slashingTypes.DefaultParams(), signInfo, nil))
+	version.DRS = "1"
 
 	rollappParamsState := rollappparamstypes.DefaultGenesisState()
 	rollappParamsState.Params.DrsVersion = 1

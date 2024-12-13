@@ -19,6 +19,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/dymensionxyz/dymension-rdk/testutil/utils"
 	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
+	"github.com/dymensionxyz/dymint/version"
 	"github.com/tendermint/tendermint/crypto/encoding"
 	"github.com/tendermint/tendermint/libs/log"
 	"github.com/tendermint/tendermint/proto/tendermint/crypto"
@@ -92,6 +93,7 @@ func SetupWithGenesisValSet(t *testing.T, valSet *types2.ValidatorSet, genAccs [
 	app, genesisState := setup(true, 5)
 	genesisState = genesisStateWithValSet(t, app, genesisState, valSet, genAccs, balances...)
 
+	version.DRS = "1"
 	genesisState = setRollappVersion(app.appCodec, genesisState, 1)
 
 	denomMD := banktypes.Metadata{
@@ -126,7 +128,7 @@ func SetupWithGenesisValSet(t *testing.T, valSet *types2.ValidatorSet, genAccs [
 			ConsensusParams: utils.DefaultConsensusParams,
 			AppStateBytes:   stateBytes,
 			ChainId:         TestChainID,
-			GenesisChecksum: "notwmpty",
+			GenesisChecksum: "notempty",
 		},
 	)
 
