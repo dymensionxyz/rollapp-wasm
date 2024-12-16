@@ -7,7 +7,7 @@ COMMIT := $(shell git log -1 --format='%H')
 ifndef BECH32_PREFIX
     $(error BECH32_PREFIX is not set)
 endif
-DRS_VERSION = 2
+DRS_VERSION = 3
 
 # don't override user values
 ifeq (,$(NAME))
