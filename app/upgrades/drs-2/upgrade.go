@@ -14,14 +14,19 @@ func CreateUpgradeHandler(
 	configurator module.Configurator,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		da := rpKeeper.DA(ctx)
-		version := uint32(2)
-		params := rollappparamstypes.DefaultParams()
-		params.Da = da
-		params.DrsVersion = version
+		// upgrade drs to 2
+		if err := rpKeeper.SetVersion(ctx, uint32(2)); err != nil {
+			return nil, err
+		}
 
-		rpKeeper.SetParams(ctx, params)
-
+		if err := HandleUpgrade(ctx, rpKeeper); err != nil {
+			return nil, err
+		}
 		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
+}
+
+func HandleUpgrade(ctx sdk.Context, rpKeeper rollappparamskeeper.Keeper) error {
+	// migrate rollapp params with missing min-gas-prices
+	return rpKeeper.SetMinGasPrices(ctx, rollappparamstypes.DefaultParams().MinGasPrices)
 }
