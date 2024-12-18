@@ -48,6 +48,7 @@ RUN make build BECH32_PREFIX=rol
 FROM ubuntu:latest
 
 RUN apt-get update -y
+RUN apt-get install -y curl
 
 COPY --from=go-builder /app/build/rollapp-wasm /usr/local/bin/rollappd
 COPY --from=go-builder /lib/libwasmvm.x86_64.so /lib/libwasmvm.x86_64.so
