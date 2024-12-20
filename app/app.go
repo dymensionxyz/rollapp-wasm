@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/evmos/evmos/v12/ethereum/eip712"
+
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
@@ -360,6 +362,8 @@ func NewRollapp(
 	appCodec := encodingConfig.Codec
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
+
+	eip712.SetEncodingConfig(rollappwasmparams.EncodingAsSimapp(encodingConfig))
 
 	bApp := baseapp.NewBaseApp(
 		Name,
