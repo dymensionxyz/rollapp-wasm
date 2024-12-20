@@ -155,6 +155,7 @@ import (
 	cwerrorsTypes "github.com/dymensionxyz/rollapp-wasm/x/cwerrors/types"
 
 	"github.com/dymensionxyz/dymension-rdk/server/consensus"
+	"github.com/dymensionxyz/dymension-rdk/server/proposal"
 
 	"github.com/dymensionxyz/dymension-rdk/x/rollappparams"
 	rollappparamskeeper "github.com/dymensionxyz/dymension-rdk/x/rollappparams/keeper"
@@ -519,7 +520,7 @@ func NewRollapp(
 	govRouter := govv1beta1.NewRouter()
 	govRouter.
 		AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler).
-		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
+		AddRoute(paramproposal.RouterKey, proposal.NewCustomParamChangeProposalHandler(app.ParamsKeeper, app.BankKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
