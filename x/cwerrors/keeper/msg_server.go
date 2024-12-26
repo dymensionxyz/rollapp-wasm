@@ -73,6 +73,9 @@ func (s *MsgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdatePara
 		return nil, err
 	}
 
-	s.keeper.SetParams(ctx, msg.Params)
+	err = s.keeper.SetParams(ctx, msg.Params)
+	if err != nil {
+		return nil, err
+	}
 	return &types.MsgUpdateParamsResponse{}, nil
 }

@@ -6,9 +6,9 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/dymensionxyz/rollapp-wasm/x/callback/types"
 )
@@ -142,6 +142,9 @@ func (s MsgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParam
 		return nil, err
 	}
 
-	s.keeper.SetParams(ctx, msg.Params)
+	err = s.keeper.SetParams(ctx, msg.Params)
+	if err != nil {
+		return nil, err
+	}
 	return &types.MsgUpdateParamsResponse{}, nil
 }
