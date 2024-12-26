@@ -11,6 +11,8 @@ const (
 	StoreKey = ModuleName
 	// QuerierRoute is the querier route for the module.
 	QuerierRoute = ModuleName
+
+	RouterKey = ModuleName
 )
 
 var (

@@ -14,6 +14,8 @@ const (
 	QuerierRoute = ModuleName
 	// TStoreKey defines the transient store key
 	TStoreKey = "t_" + ModuleName
+
+	RouterKey = ModuleName
 )
 
 // Collections
