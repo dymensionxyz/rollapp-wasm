@@ -4,7 +4,7 @@ PROJECT_NAME=rollapp-wasm
 DA_LAYER=mock
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT := $(shell git log -1 --format='%H')
-DRS_VERSION = 4
+DRS_VERSION = 5
 
 LEDGER_ENABLED ?= true
 
