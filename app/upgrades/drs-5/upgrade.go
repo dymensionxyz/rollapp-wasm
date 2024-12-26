@@ -1,12 +1,12 @@
-package drs2
+package drs5
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-
 	rollappparamskeeper "github.com/dymensionxyz/dymension-rdk/x/rollappparams/keeper"
-	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
+
+	drs4 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-4"
 )
 
 func CreateUpgradeHandler(
@@ -14,7 +14,7 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		if err := HandleUpgrade(ctx, rpKeeper); err != nil {
 			return nil, err
 		}
@@ -23,10 +23,15 @@ func CreateUpgradeHandler(
 }
 
 func HandleUpgrade(ctx sdk.Context, rpKeeper rollappparamskeeper.Keeper) error {
-	// upgrade drs to 2
-	if err := rpKeeper.SetVersion(ctx, uint32(2)); err != nil {
+	if rpKeeper.Version(ctx) < 4 {
+		// first run drs-4 migration
+		if err := drs4.HandleUpgrade(ctx, rpKeeper); err != nil {
+			return err
+		}
+	}
+	// upgrade drs to 5
+	if err := rpKeeper.SetVersion(ctx, uint32(5)); err != nil {
 		return err
 	}
-	// migrate rollapp params with missing min-gas-prices
-	return rpKeeper.SetMinGasPrices(ctx, rollappparamstypes.DefaultParams().MinGasPrices)
+	return nil
 }

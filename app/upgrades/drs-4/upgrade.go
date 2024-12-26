@@ -15,16 +15,23 @@ func CreateUpgradeHandler(
 	configurator module.Configurator,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		if rpKeeper.Version(ctx) < 3 {
-			// first run drs-3 migration
-			if err := drs3.HandleUpgrade(ctx, rpKeeper); err != nil {
-				return nil, err
-			}
-		}
-		// upgrade drs to 4
-		if err := rpKeeper.SetVersion(ctx, uint32(4)); err != nil {
+		if err := HandleUpgrade(ctx, rpKeeper); err != nil {
 			return nil, err
 		}
 		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
+}
+
+func HandleUpgrade(ctx sdk.Context, rpKeeper rollappparamskeeper.Keeper) error {
+	if rpKeeper.Version(ctx) < 3 {
+		// first run drs-3 migration
+		if err := drs3.HandleUpgrade(ctx, rpKeeper); err != nil {
+			return err
+		}
+	}
+	// upgrade drs to 4
+	if err := rpKeeper.SetVersion(ctx, uint32(4)); err != nil {
+		return err
+	}
+	return nil
 }
