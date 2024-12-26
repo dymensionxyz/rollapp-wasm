@@ -4,10 +4,47 @@ PROJECT_NAME=rollapp-wasm
 DA_LAYER=mock
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT := $(shell git log -1 --format='%H')
+DRS_VERSION = 4
+
+LEDGER_ENABLED ?= true
+
 ifndef BECH32_PREFIX
     $(error BECH32_PREFIX is not set)
 endif
-DRS_VERSION = 4
+
+
+# LEDGER_ENABLED is set to true by default
+build_tags = netgo
+ifeq ($(LEDGER_ENABLED),true)
+  ifeq ($(OS),Windows_NT)
+    GCCEXE = $(shell where gcc.exe 2> NUL)
+    ifeq ($(GCCEXE),)
+      $(error gcc.exe not installed for ledger support, please install or set LEDGER_ENABLED=false)
+    else
+      build_tags += ledger
+    endif
+  else
+    UNAME_S = $(shell uname -s)
+    ifeq ($(UNAME_S),OpenBSD)
+      $(warning OpenBSD detected, disabling ledger support (https://github.com/cosmos/cosmos-sdk/issues/1988))
+    else
+      GCC = $(shell command -v gcc 2> /dev/null)
+      ifeq ($(GCC),)
+        $(error gcc not installed for ledger support, please install or set LEDGER_ENABLED=false)
+      else
+        build_tags += ledger
+      endif
+    endif
+  endif
+endif
+
+build_tags += $(BUILD_TAGS)
+build_tags := $(strip $(build_tags))
+
+whitespace :=
+whitespace := $(whitespace) $(whitespace)
+comma := ,
+build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
 # don't override user values
 ifeq (,$(NAME))
@@ -32,6 +69,7 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=$(NAME) \
 		  -X github.com/cosmos/cosmos-sdk/version.AppName=rollapp-wasm \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=DRS-$(DRS_VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
+		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
 	      -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION) \
 		  -X github.com/dymensionxyz/rollapp-wasm/app.AccountAddressPrefix=$(BECH32_PREFIX) \
 		  -X github.com/dymensionxyz/dymint/version.DRS=$(DRS_VERSION)
@@ -54,8 +92,8 @@ install: build
 build: go.sum ## Compiles the rollapd binary
 	@echo "--> Ensure dependencies have not been modified"
 	@go mod verify
-	@echo "--> building rollapp-wasm"
-	go build  -o build/rollapp-wasm $(BUILD_FLAGS) ./rollappd
+	@echo "--> building rollapp-wasm with tags: $(build_tags)"
+	CGO_ENABLED=1 go build -tags "$(build_tags)" -o build/rollapp-wasm $(BUILD_FLAGS) ./rollappd
 
 
 .PHONY: clean
