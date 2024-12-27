@@ -2,13 +2,19 @@ package types
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkErrors "github.com/cosmos/cosmos-sdk/types/errors"
+)
+
+const (
+	TypeMsgUpdateParams = "update_params"
 )
 
 var (
 	_ sdk.Msg = &MsgRequestCallback{}
 	_ sdk.Msg = &MsgCancelCallback{}
+	_ sdk.Msg = &MsgUpdateParams{}
 )
 
 // NewMsgRequestCallback creates a new MsgRequestCallback instance.
@@ -79,4 +85,36 @@ func (m MsgCancelCallback) ValidateBasic() error {
 	}
 
 	return nil
+}
+
+// GetSigners implements types.Msg.
+func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Authority)
+	return []sdk.AccAddress{addr}
+}
+
+// ValidateBasic implements types.Msg.
+func (m *MsgUpdateParams) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
+		return fmt.Errorf("invalid authority address: %w", err)
+	}
+
+	if err := m.Params.Validate(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *MsgUpdateParams) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(m)
+	return sdk.MustSortJSON(bz)
+}
+
+func (m *MsgUpdateParams) Route() string {
+	return RouterKey
+}
+
+func (m *MsgUpdateParams) Type() string {
+	return TypeMsgUpdateParams
 }

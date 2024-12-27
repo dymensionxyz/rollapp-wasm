@@ -619,6 +619,7 @@ func NewRollapp(
 		keys[callbackTypes.StoreKey],
 		&app.WasmKeeper,
 		app.BankKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	app.CWErrorsKeeper = cwerrorsKeeper.NewKeeper(
@@ -627,6 +628,7 @@ func NewRollapp(
 		tkeys[cwerrorsTypes.TStoreKey],
 		&app.WasmKeeper,
 		app.BankKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	app.TimeUpgradeKeeper = timeupgradekeeper.NewKeeper(
