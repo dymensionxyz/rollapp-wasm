@@ -13,6 +13,7 @@ import (
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgRequestCallback{}, "callback/MsgRequestCallback", nil)
 	cdc.RegisterConcrete(&MsgCancelCallback{}, "callback/MsgCancelCallback", nil)
+	cdc.RegisterConcrete(&MsgUpdateParams{}, "callback/MsgUpdateParams", nil)
 }
 
 // RegisterInterfaces registers interfaces types with the interface registry.
@@ -20,6 +21,7 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgRequestCallback{},
 		&MsgCancelCallback{},
+		&MsgUpdateParams{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

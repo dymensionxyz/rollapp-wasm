@@ -2,10 +2,10 @@ package keeper
 
 import (
 	"cosmossdk.io/collections"
-	"github.com/tendermint/tendermint/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/dymensionxyz/rollapp-wasm/internal/collcompat"
 	"github.com/dymensionxyz/rollapp-wasm/x/cwerrors/types"
@@ -13,11 +13,12 @@ import (
 
 // Keeper provides module state operations.
 type Keeper struct {
-	cdc           codec.Codec
-	storeKey      storetypes.StoreKey
-	tStoreKey     storetypes.StoreKey
-	wasmKeeper    types.WasmKeeperExpected
-	bankKeeper    types.BankKeeperExpected
+	authority  string // authority is the x/gov module account
+	cdc        codec.Codec
+	storeKey   storetypes.StoreKey
+	tStoreKey  storetypes.StoreKey
+	wasmKeeper types.WasmKeeperExpected
+	bankKeeper types.BankKeeperExpected
 
 	Schema collections.Schema
 
@@ -39,15 +40,16 @@ type Keeper struct {
 
 // NewKeeper creates a new Keeper instance.
 func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey, tStoreKey storetypes.StoreKey,
-	wk types.WasmKeeperExpected, bk types.BankKeeperExpected,
+	wk types.WasmKeeperExpected, bk types.BankKeeperExpected, authority string,
 ) Keeper {
 	sb := collections.NewSchemaBuilder(collcompat.NewKVStoreService(storeKey))
 	k := Keeper{
-		cdc:           cdc,
-		storeKey:      storeKey,
-		tStoreKey:     tStoreKey,
-		wasmKeeper:    wk,
-		bankKeeper:    bk,
+		cdc:        cdc,
+		storeKey:   storeKey,
+		tStoreKey:  tStoreKey,
+		wasmKeeper: wk,
+		bankKeeper: bk,
+		authority:  authority,
 		Params: collections.NewItem(
 			sb,
 			types.ParamsKeyPrefix,
@@ -107,7 +109,6 @@ func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey, tStoreKey storetyp
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/"+types.ModuleName)
 }
-
 
 // SetWasmKeeper sets the given wasm keeper.
 // Only for testing purposes
