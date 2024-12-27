@@ -6,6 +6,7 @@ option go_package = "github.com/dymensionxyz/rollapp-wasm/x/callback/types";
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
 import "rollapp/callback/v1/callback.proto";
 
 // Msg defines the module messaging service.
@@ -15,6 +16,9 @@ service Msg {
 
   // CancelCallback defines a message for cancelling an existing callback
   rpc CancelCallback(MsgCancelCallback) returns (MsgCancelCallbackResponse);
+
+  // UpdateParams is used for updating module params.
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
 // MsgRequestCallback is the Msg/RequestCallback request type.
@@ -54,4 +58,17 @@ message MsgCancelCallback{
 message MsgCancelCallbackResponse {
   // refund is the amount of fees being refunded due to the cancellation of the callback
   cosmos.base.v1beta1.Coin refund = 1 [ (gogoproto.nullable) = false ];
-} 
+}
+
+// MsgUpdateParams is the Msg/UpdateParams request type.
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address that controls the module (defaults to x/gov unless overwritten).
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // NOTE: All parameters must be supplied.
+  Params params = 2 [(gogoproto.nullable) = false];
+}
+
+// MsgUpdateParamsResponse defines the response structure for executing a MsgUpdateParams message.
+message MsgUpdateParamsResponse {}

@@ -6,6 +6,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -127,4 +128,23 @@ func (s MsgServer) RequestCallback(c context.Context, request *types.MsgRequestC
 	)
 
 	return &types.MsgRequestCallbackResponse{}, nil
+}
+
+func (s MsgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if s.keeper.authority != msg.Authority {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "invalid authority; expected %s, got %s", s.keeper.authority, msg.Authority)
+	}
+
+	err := msg.ValidateBasic()
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.keeper.SetParams(ctx, msg.Params)
+	if err != nil {
+		return nil, err
+	}
+	return &types.MsgUpdateParamsResponse{}, nil
 }
