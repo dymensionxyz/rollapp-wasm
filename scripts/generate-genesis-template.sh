@@ -36,6 +36,7 @@ update_params() {
   dasel put -f "$TEMP_GENESIS" '.consensus_params.block.max_gas' -v "400000000" || success=false
   dasel put -f "$TEMP_GENESIS" '.consensus_params.block.max_bytes' -v "$BLOCK_SIZE" || success=false
   dasel put -f "$TEMP_GENESIS" '.consensus_params.evidence.max_bytes' -v "$BLOCK_SIZE" || success=false
+  dasel put -f "$TEMP_GENESIS" 'app_state.staking.params.min_commission_rate' -v "0.000000000000000000" || success=false
   dasel put -f "$TEMP_GENESIS" 'app_state.distribution.params.base_proposer_reward' -v '0.8' || success=false
   dasel put -f "$TEMP_GENESIS" 'app_state.distribution.params.community_tax' -v "0.00002" || success=false
   dasel put -f "$TEMP_GENESIS" 'app_state.rollappparams.params.drs_version' -v "$DRS" -t int || success=false
