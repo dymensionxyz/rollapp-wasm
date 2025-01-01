@@ -169,6 +169,7 @@ import (
 	drs4 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-4"
 	drs5 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-5"
 	drs6 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-6"
+	drs7 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-7"
 )
 
 const (
@@ -194,7 +195,7 @@ var (
 		rollappparamstypes.StoreKey,
 	}
 	// Upgrades contains the upgrade handlers for the application
-	Upgrades = []upgrades.Upgrade{drs2.Upgrade, drs3.Upgrade, drs4.Upgrade, drs5.Upgrade, drs6.Upgrade}
+	Upgrades = []upgrades.Upgrade{drs2.Upgrade, drs3.Upgrade, drs4.Upgrade, drs5.Upgrade, drs6.Upgrade, drs7.Upgrade}
 )
 
 func getGovProposalHandlers() []govclient.ProposalHandler {
