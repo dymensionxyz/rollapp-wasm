@@ -1,5 +1,5 @@
 {
-  "genesis_time": "2024-12-26T14:51:43.530985Z",
+  "genesis_time": "2025-01-01T07:46:47.489094Z",
   "chain_id": "rollappwasm_1234-1",
   "initial_height": "1",
   "consensus_params": {
@@ -251,19 +251,19 @@
     },
     "sequencers": {
       "params": {
-        "unbonding_time": "1309600s",
+        "unbonding_time": "1814400s",
         "historical_entries": 10000
       },
       "sequencers": []
     },
     "staking": {
       "params": {
-        "unbonding_time": "1309600s",
+        "unbonding_time": "86400s",
         "max_validators": 100,
         "max_entries": 7,
         "historical_entries": 10000,
         "bond_denom": "stake",
-        "min_commission_rate": "0.050000000000000000"
+        "min_commission_rate": "0.000000000000000000"
       },
       "last_total_power": "0",
       "last_validator_powers": [],

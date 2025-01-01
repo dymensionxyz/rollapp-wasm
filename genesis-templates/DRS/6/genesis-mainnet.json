@@ -1,5 +1,5 @@
 {
-  "genesis_time": "2025-01-01T07:46:29.322669Z",
+  "genesis_time": "2025-01-01T07:50:57.505484Z",
   "chain_id": "rollappwasm_1234-1",
   "initial_height": "1",
   "consensus_params": {
@@ -245,7 +245,7 @@
     "rollappparams": {
       "params": {
         "da": "celestia",
-        "drs_version": 5,
+        "drs_version": 6,
         "min_gas_prices": []
       }
     },
