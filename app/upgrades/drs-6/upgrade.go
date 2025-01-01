@@ -6,7 +6,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	rollappparamskeeper "github.com/dymensionxyz/dymension-rdk/x/rollappparams/keeper"
 
-	drs4 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-4"
+	drs5 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-5"
 )
 
 func CreateUpgradeHandler(
@@ -25,7 +25,7 @@ func CreateUpgradeHandler(
 func HandleUpgrade(ctx sdk.Context, rpKeeper rollappparamskeeper.Keeper) error {
 	if rpKeeper.Version(ctx) < 5 {
 		// first run drs-5 migration
-		if err := drs4.HandleUpgrade(ctx, rpKeeper); err != nil {
+		if err := drs5.HandleUpgrade(ctx, rpKeeper); err != nil {
 			return err
 		}
 	}
