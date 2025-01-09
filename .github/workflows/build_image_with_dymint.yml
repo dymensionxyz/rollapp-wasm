@@ -14,7 +14,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
+        with:
+            repository: dymensionxyz/rollapp-wasm
+            ref: main
+            
       - name: Update dymint module version
         run: |
           echo "Updating dymint to version ${{ inputs.commit_hash }}"
