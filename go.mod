@@ -18,8 +18,8 @@ require (
 	github.com/cosmos/gogoproto v1.5.0
 	github.com/cosmos/ibc-go/v6 v6.3.0
 	github.com/dvsekhvalnov/jose2go v1.5.0
-	github.com/dymensionxyz/dymension-rdk v1.8.0-rc01.0.20250113104911-7fe0f886c502
-	github.com/dymensionxyz/dymint v1.3.0-rc02.0.20250113111506-bd2214e0dbb0
+	github.com/dymensionxyz/dymension-rdk v1.8.1-rc01
+	github.com/dymensionxyz/dymint v1.3.0-rc03
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/evmos/evmos/v12 v12.1.6
 	github.com/gogo/protobuf v1.3.3
