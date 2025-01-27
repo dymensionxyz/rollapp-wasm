@@ -508,8 +508,6 @@ github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davidlazar/go-crypto v0.0.0-20200604182044-b73af7476f6c h1:pFUpOrbxDR6AkioZ1ySsx5yxlDQZ8stG2b88gTPxgJU=
 github.com/davidlazar/go-crypto v0.0.0-20200604182044-b73af7476f6c/go.mod h1:6UhI8N9EjYm1c2odKpFpAYeR8dsBeM7PtzQhRgxRr9U=
-github.com/decentrio/wasmd v0.33.0-sdk46.2 h1:cUgYN8crDXiQiKLBYfGR5IXg77Z/QrvZBoU9Fg/1ACo=
-github.com/decentrio/wasmd v0.33.0-sdk46.2/go.mod h1:mPBiB+54La70eS2HHzvK2Vn7Frgf7rjnxDo70oopw+w=
 github.com/deckarep/golang-set v1.8.0 h1:sk9/l/KqpunDwP7pSjUg0keiOOLEnOBHzykLrsPppp4=
 github.com/deckarep/golang-set v1.8.0/go.mod h1:5nI87KwE7wgsBU1F4GKAw2Qod7p5kyS383rP6+o6qqo=
 github.com/decred/base58 v1.0.4 h1:QJC6B0E0rXOPA8U/kw2rP+qiRJsUaE2Er+pYb3siUeA=
@@ -587,6 +585,8 @@ github.com/dymensionxyz/rpc v1.3.1 h1:7EXWIobaBes5zldRvTIg7TmNsEKjicrWA/OjCc0NaG
 github.com/dymensionxyz/rpc v1.3.1/go.mod h1:f+WpX8ysy8wt95iGc6auYlHcnHj2bUkhiRVkkKNys8c=
 github.com/dymensionxyz/sdk-utils v0.1.2-0.20240909101947-e1b483ada9c8 h1:J7MH912xEkmYKEg1VxDZ4RARZ/ku1OO7VOoUZQQqWEU=
 github.com/dymensionxyz/sdk-utils v0.1.2-0.20240909101947-e1b483ada9c8/go.mod h1:5fmenxP75quS5D1gPynbmh5qE6vla64Kks2O/hM+gi4=
+github.com/dymensionxyz/wasmd v0.33.1-sdk0.46.2 h1:oOZJ+LQFW4rYRvjsqvW3bnzS0AqIBvYOE0YUsh/kOCA=
+github.com/dymensionxyz/wasmd v0.33.1-sdk0.46.2/go.mod h1:mPBiB+54La70eS2HHzvK2Vn7Frgf7rjnxDo70oopw+w=
 github.com/eapache/go-resiliency v1.1.0/go.mod h1:kFI+JgMyC7bLPUVY133qvEBtVayf5mFgVsvEsIPBvNs=
 github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21/go.mod h1:+020luEh2TKB4/GOp8oxxtq0Daoen/Cii55CzbTV6DU=
 github.com/eapache/queue v1.1.0/go.mod h1:6eCeP0CKFpHLu8blIFXhExK/dRa7WDZfr6jVFPTqq+I=
