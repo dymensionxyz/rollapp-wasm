@@ -56,7 +56,7 @@ func HandleUpgrade(ctx sdk.Context, rpKeeper rollappparamskeeper.Keeper) error {
 
 const (
 	MaxSecs      int64 = 2000000000
-	millisToSecs       = 1000
+	millisToSecs int64 = 1000
 )
 
 // migrateVestingAccounts fixes the vesting accounts' start and end times to be expressed in seconds instead of milliseconds
