@@ -7,15 +7,17 @@ import (
 
 	rollappparamskeeper "github.com/dymensionxyz/dymension-rdk/x/rollappparams/keeper"
 	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
+
+	"github.com/dymensionxyz/rollapp-wasm/app/upgrades"
 )
 
 func CreateUpgradeHandler(
-	rpKeeper rollappparamskeeper.Keeper,
+	kk upgrades.UpgradeKeepers,
 	mm *module.Manager,
 	configurator module.Configurator,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		if err := HandleUpgrade(ctx, rpKeeper); err != nil {
+		if err := HandleUpgrade(ctx, kk.RpKeeper); err != nil {
 			return nil, err
 		}
 		return mm.RunMigrations(ctx, configurator, fromVM)
