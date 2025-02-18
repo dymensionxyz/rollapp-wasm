@@ -1236,7 +1236,10 @@ func (app *App) setupUpgradeHandler(upgrade upgrades.Upgrade) {
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgrade.Name,
 		upgrade.CreateHandler(
-			app.RollappParamsKeeper,
+			upgrades.UpgradeKeepers{
+				RpKeeper:      app.RollappParamsKeeper,
+				AccountKeeper: app.AccountKeeper,
+			},
 			app.mm,
 			app.configurator,
 		),

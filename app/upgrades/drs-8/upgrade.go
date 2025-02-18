@@ -6,16 +6,17 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	rollappparamskeeper "github.com/dymensionxyz/dymension-rdk/x/rollappparams/keeper"
 
+	"github.com/dymensionxyz/rollapp-wasm/app/upgrades"
 	drs7 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-7"
 )
 
 func CreateUpgradeHandler(
-	rpKeeper rollappparamskeeper.Keeper,
+	kk upgrades.UpgradeKeepers,
 	mm *module.Manager,
 	configurator module.Configurator,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		if err := HandleUpgrade(ctx, rpKeeper); err != nil {
+		if err := HandleUpgrade(ctx, kk.RpKeeper); err != nil {
 			return nil, err
 		}
 		return mm.RunMigrations(ctx, configurator, fromVM)
