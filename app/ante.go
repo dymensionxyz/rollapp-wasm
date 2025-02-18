@@ -18,6 +18,7 @@ import (
 	distrkeeper "github.com/dymensionxyz/dymension-rdk/x/dist/keeper"
 	"github.com/dymensionxyz/dymension-rdk/x/gasless"
 	gaslesskeeper "github.com/dymensionxyz/dymension-rdk/x/gasless/keeper"
+	rollappparamskeeper "github.com/dymensionxyz/dymension-rdk/x/rollappparams/keeper"
 	seqkeeper "github.com/dymensionxyz/dymension-rdk/x/sequencers/keeper"
 	cosmosante "github.com/evmos/evmos/v12/app/ante/cosmos"
 	evmostypes "github.com/evmos/evmos/v12/types"
@@ -29,12 +30,13 @@ import (
 type HandlerOptions struct {
 	ante.HandlerOptions
 
-	IBCKeeper         *ibckeeper.Keeper
-	WasmConfig        *wasmtypes.WasmConfig
-	TxCounterStoreKey storetypes.StoreKey
-	GaslessKeeper     gaslesskeeper.Keeper
-	DistrKeeper       distrkeeper.Keeper
-	SequencersKeeper  seqkeeper.Keeper
+	IBCKeeper           *ibckeeper.Keeper
+	WasmConfig          *wasmtypes.WasmConfig
+	TxCounterStoreKey   storetypes.StoreKey
+	GaslessKeeper       gaslesskeeper.Keeper
+	DistrKeeper         distrkeeper.Keeper
+	SequencersKeeper    seqkeeper.Keeper
+	RollappParamsKeeper rollappparamskeeper.Keeper
 }
 
 // NewAnteHandler returns an AnteHandler that checks and increments sequence
@@ -125,6 +127,7 @@ func cosmosHandler(options HandlerOptions, sigChecker sdk.AnteDecorator) sdk.Ant
 			gasless.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker, options.GaslessKeeper),
 			options.DistrKeeper,
 			options.SequencersKeeper,
+			options.RollappParamsKeeper,
 		),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
