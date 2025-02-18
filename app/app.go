@@ -171,6 +171,7 @@ import (
 	drs6 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-6"
 	drs7 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-7"
 	drs8 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-8"
+	drs9 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-9"
 )
 
 const (
@@ -196,7 +197,16 @@ var (
 		rollappparamstypes.StoreKey,
 	}
 	// Upgrades contains the upgrade handlers for the application
-	Upgrades = []upgrades.Upgrade{drs2.Upgrade, drs3.Upgrade, drs4.Upgrade, drs5.Upgrade, drs6.Upgrade, drs7.Upgrade, drs8.Upgrade}
+	Upgrades = []upgrades.Upgrade{
+		drs2.Upgrade,
+		drs3.Upgrade,
+		drs4.Upgrade,
+		drs5.Upgrade,
+		drs6.Upgrade,
+		drs7.Upgrade,
+		drs8.Upgrade,
+		drs9.Upgrade,
+	}
 )
 
 func getGovProposalHandlers() []govclient.ProposalHandler {
@@ -348,6 +358,8 @@ type App struct {
 	configurator module.Configurator
 
 	consensusMessageAdmissionHandler consensus.AdmissionHandler
+
+	dymintVersionGetter func() (uint32, error)
 }
 
 // NewRollapp returns a reference to an initialized blockchain app
@@ -974,6 +986,9 @@ func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.R
 	resp.ConsensusMessagesResponses = consensusResponses
 
 	drsVersion, err := dymintversion.GetDRSVersion()
+	if app.dymintVersionGetter != nil {
+		drsVersion, err = app.dymintVersionGetter()
+	}
 	if err != nil {
 		panic(fmt.Errorf("Unable to get DRS version from binary: %w", err))
 	}
@@ -1236,7 +1251,10 @@ func (app *App) setupUpgradeHandler(upgrade upgrades.Upgrade) {
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgrade.Name,
 		upgrade.CreateHandler(
-			app.RollappParamsKeeper,
+			upgrades.UpgradeKeepers{
+				RpKeeper:      app.RollappParamsKeeper,
+				AccountKeeper: app.AccountKeeper,
+			},
 			app.mm,
 			app.configurator,
 		),
@@ -1251,4 +1269,8 @@ func (app *App) setupUpgradeHandler(upgrade upgrades.Upgrade) {
 		// configure store loader with the store upgrades
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &upgrade.StoreUpgrades))
 	}
+}
+
+func (app *App) SetDymintVersionGetter(getter func() (uint32, error)) {
+	app.dymintVersionGetter = getter
 }
