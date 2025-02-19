@@ -51,6 +51,7 @@ func HandleUpgrade(ctx sdk.Context, rpKeeper rollappparamskeeper.Keeper) error {
 	if err := rpKeeper.SetVersion(ctx, DRS); err != nil {
 		return err
 	}
+	rpKeeper.SetFreeIBC(ctx, true)
 	return nil
 }
 
