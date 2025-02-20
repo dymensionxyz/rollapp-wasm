@@ -161,6 +161,10 @@ import (
 	rollappparamskeeper "github.com/dymensionxyz/dymension-rdk/x/rollappparams/keeper"
 	rollappparamstypes "github.com/dymensionxyz/dymension-rdk/x/rollappparams/types"
 
+	"github.com/dymensionxyz/dymension-rdk/x/dividends"
+	dividendskeeper "github.com/dymensionxyz/dymension-rdk/x/dividends/keeper"
+	dividendstypes "github.com/dymensionxyz/dymension-rdk/x/dividends/types"
+
 	dymintversion "github.com/dymensionxyz/dymint/version"
 	// Upgrade handlers
 	"github.com/dymensionxyz/rollapp-wasm/app/upgrades"
@@ -195,6 +199,7 @@ var (
 		cwerrorsTypes.StoreKey,
 		timeupgradetypes.StoreKey,
 		rollappparamstypes.StoreKey,
+		dividendstypes.StoreKey,
 	}
 	// Upgrades contains the upgrade handlers for the application
 	Upgrades = []upgrades.Upgrade{
@@ -257,6 +262,7 @@ var (
 		callback.AppModuleBasic{},
 		cwerrors.AppModuleBasic{},
 		rollappparams.AppModuleBasic{},
+		dividends.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -275,6 +281,7 @@ var (
 		callbackTypes.ModuleName:       nil,
 		rollappparamstypes.ModuleName:  nil,
 		tokenfactorytypes.ModuleName:   {authtypes.Minter, authtypes.Burner},
+		dividendstypes.ModuleName:      nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -347,6 +354,7 @@ type App struct {
 	HubKeeper hubkeeper.Keeper
 
 	RollappParamsKeeper rollappparamskeeper.Keeper
+	DividendsKeeper     dividendskeeper.Keeper
 
 	// mm is the module manager
 	mm *module.Manager
@@ -480,7 +488,7 @@ func NewRollapp(
 	)
 	app.MintKeeper.SetHooks(
 		minttypes.NewMultiMintHooks(
-		// insert mint hooks receivers here
+			// insert mint hooks receivers here
 		),
 	)
 
@@ -619,6 +627,16 @@ func NewRollapp(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
+	app.DividendsKeeper = dividendskeeper.NewKeeper(
+		appCodec,
+		keys[dividendstypes.StoreKey],
+		app.StakingKeeper,
+		app.AccountKeeper,
+		app.DistrKeeper,
+		app.BankKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
@@ -685,7 +703,7 @@ func NewRollapp(
 
 	app.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(
-		// register the governance hooks
+			// register the governance hooks
 		),
 	)
 
@@ -740,6 +758,7 @@ func NewRollapp(
 		callback.NewAppModule(app.appCodec, app.CallbackKeeper, app.WasmKeeper, app.CWErrorsKeeper),
 		cwerrors.NewAppModule(app.appCodec, app.CWErrorsKeeper, app.WasmKeeper),
 		rollappparams.NewAppModule(appCodec, app.RollappParamsKeeper),
+		dividends.NewAppModule(app.DividendsKeeper),
 	}
 
 	app.mm = module.NewManager(modules...)
@@ -776,6 +795,7 @@ func NewRollapp(
 		callbackTypes.ModuleName,
 		cwerrorsTypes.ModuleName, // does not have begin blocker
 		rollappparamstypes.ModuleName,
+		dividendstypes.ModuleName,
 	}
 	app.mm.SetOrderBeginBlockers(beginBlockersList...)
 
@@ -806,6 +826,7 @@ func NewRollapp(
 		cwerrorsTypes.ModuleName,
 		rollappparamstypes.ModuleName,
 		tokenfactorytypes.ModuleName,
+		dividendstypes.ModuleName,
 	}
 	app.mm.SetOrderEndBlockers(endBlockersList...)
 
@@ -842,6 +863,7 @@ func NewRollapp(
 		callbackTypes.ModuleName,
 		cwerrorsTypes.ModuleName,
 		rollappparamstypes.ModuleName,
+		dividendstypes.ModuleName,
 	}
 	app.mm.SetOrderInitGenesis(initGenesisList...)
 
