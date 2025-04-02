@@ -14,7 +14,7 @@ import (
 	"github.com/evmos/evmos/v12/x/vesting/types"
 
 	"github.com/dymensionxyz/rollapp-wasm/app/upgrades"
-	drs5 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-8"
+	drs8 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-8"
 )
 
 func CreateUpgradeHandler(
@@ -43,7 +43,7 @@ func CreateUpgradeHandler(
 func HandleUpgrade(ctx sdk.Context, rpKeeper rollappparamskeeper.Keeper) error {
 	if rpKeeper.Version(ctx) < 8 {
 		// first run drs-8 migration
-		if err := drs5.HandleUpgrade(ctx, rpKeeper); err != nil {
+		if err := drs8.HandleUpgrade(ctx, rpKeeper); err != nil {
 			return err
 		}
 	}
