@@ -33,6 +33,14 @@ make install BECH32_PREFIX=$BECH32_PREFIX
 export the following variables:
 
 ```shell
+export DA_CLIENT="" # choose DA client: celestia, loadnetwork, sui, aptos; next configuration can depends on it
+
+# For Sui DA, one more env variable is needed: Sui wallet mnemonic.
+# export SUI_MNEMONIC="$MNEMONIC"
+
+# For Aptos DA, one more env variable is needed: hex-encoded Aptos wallet private key.
+# export APT_PRIVATE_KEY="$PRIVATE_KEY"
+
 export EXECUTABLE="rollapp-wasm"
 
 export CELESTIA_NETWORK="mock" # for a testnet RollApp use "arabica", for mainnet - "celestia"
