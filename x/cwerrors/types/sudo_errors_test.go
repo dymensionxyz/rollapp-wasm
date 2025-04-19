@@ -9,7 +9,7 @@ import (
 	"github.com/dymensionxyz/rollapp-wasm/x/cwerrors/types"
 )
 
-// TestSudoErrorValidate tests the json encoding of the sudo callback which is sent to the contract
+// TestSudoErrorMsgString tests the json encoding of the sudo callback which is sent to the contract
 func TestSudoErrorMsgString(t *testing.T) {
 	contractAddr := e2eTesting.GenContractAddresses(1)[0]
 	testCases := []struct {

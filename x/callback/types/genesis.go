@@ -15,7 +15,7 @@ func NewGenesisState(
 	}
 }
 
-// DefaultGenesisState returns a default genesis state.
+// DefaultGenesis returns a default genesis state.
 func DefaultGenesis() *GenesisState {
 	defaultParams := DefaultParams()
 	return NewGenesisState(defaultParams, nil)
