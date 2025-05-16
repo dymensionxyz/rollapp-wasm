@@ -17,7 +17,7 @@ GENESIS_FILE="$CONFIG_DIRECTORY/genesis.json"
 set_denom() {
   local denom=$1
 
-  
+  dasel put -f "$GENESIS_FILE" '.app_state.mint.minter.mint_denom' -v "$denom" || success=false
   dasel put -f "$GENESIS_FILE" '.app_state.staking.params.bond_denom' -v "$denom" || success=false
   dasel put -t string -f "$GENESIS_FILE" '.app_state.gov.deposit_params.min_deposit.[0].denom' -v "$denom" || success=false
 
