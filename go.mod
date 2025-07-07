@@ -18,7 +18,7 @@ require (
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/ibc-go/v6 v6.3.0
 	github.com/dvsekhvalnov/jose2go v1.5.0
-	github.com/dymensionxyz/dymension-rdk v1.10.0-rc01.0.20250408075532-9f34ff12fa64
+	github.com/dymensionxyz/dymension-rdk v1.10.0-rc01.0.20250420064344-3d5468dc64ae
 	github.com/dymensionxyz/dymint v1.5.0-rc02.0.20250625125415-02a47d36289c
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/evmos/evmos/v12 v12.1.6
