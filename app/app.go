@@ -725,6 +725,10 @@ func NewRollapp(
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferStack).AddRoute(wasmtypes.ModuleName, wasmStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
+	// used for x/mint v2 migrator. it's a direct access to the params store for x/mint
+	// this required as we need to access same subspace with different KeyTable
+	mintParamsDirectSubspace := paramstypes.NewSubspace(appCodec, cdc, keys[paramstypes.StoreKey], keys[paramstypes.TStoreKey], minttypes.ModuleName)
+
 	/**** Module Options ****/
 
 	// NOTE: Any module instantiated in the module manager that is later modified
@@ -743,7 +747,7 @@ func NewRollapp(
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		gaslessmodule.NewAppModule(appCodec, app.GaslessKeeper),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
-		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(minttypes.ModuleName)),
+		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, app.BankKeeper, mintParamsDirectSubspace),
 		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		sequencers.NewAppModule(app.SequencersKeeper),
