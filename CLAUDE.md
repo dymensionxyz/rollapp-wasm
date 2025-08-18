@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Repository Overview
 
 This is `rollapp-wasm`, a template implementation of a Dymension RollApp featuring:
+
 - CosmWasm smart contract execution
 - IBC (Inter-Blockchain Communication) for token transfers
 - Dymint for block sequencing (replacing Tendermint)
@@ -14,6 +15,7 @@ This is `rollapp-wasm`, a template implementation of a Dymension RollApp featuri
 ## Build Commands
 
 ### Primary Build & Install
+
 ```bash
 # Set BECH32_PREFIX before building (required)
 export BECH32_PREFIX=rol
@@ -26,6 +28,7 @@ make build BECH32_PREFIX=$BECH32_PREFIX
 ```
 
 ### Testing
+
 ```bash
 # Run all tests with race condition detection
 go test -race ./...
@@ -39,6 +42,7 @@ go test -v ./x/cwerrors/...
 ```
 
 ### Linting & Formatting
+
 ```bash
 # Run golangci-lint if installed
 golangci-lint run
@@ -48,6 +52,7 @@ gofumpt -w .
 ```
 
 ### Protocol Buffers
+
 ```bash
 # Generate protobuf files (uses Docker)
 make proto-gen
@@ -57,6 +62,7 @@ make proto-clean
 ```
 
 ### Genesis File Generation
+
 ```bash
 # Generate genesis file for mainnet
 make generate-genesis env=mainnet
@@ -71,6 +77,7 @@ make generate-genesis env=mainnet DRS_VERSION=10
 ## Architecture
 
 ### Core Modules (`x/`)
+
 - **callback**: Handles CosmWasm contract callbacks and fee management
   - Manages callback execution, gas fees, and sudo messages
   - Key types: `Callback`, `CallbackFees`, `SudoMsg`
@@ -82,6 +89,7 @@ make generate-genesis env=mainnet DRS_VERSION=10
 - **wasm**: Custom authorization types for CosmWasm operations
 
 ### Application Structure (`app/`)
+
 - **app.go**: Main application initialization and module wiring
 - **ante.go**: Custom ante handler with fee decorators
 - **wasm.go**: CosmWasm integration and configuration
@@ -89,6 +97,7 @@ make generate-genesis env=mainnet DRS_VERSION=10
   - Each upgrade in separate directory with constants and upgrade logic
 
 ### Key Dependencies
+
 - CosmWasm/wasmd v0.33.0 for smart contract execution
 - Dymension-RDK v1.10.0 for RollApp modules
 - Dymint v1.5.0 for consensus
@@ -96,6 +105,7 @@ make generate-genesis env=mainnet DRS_VERSION=10
 - IBC-Go v6.3.0
 
 ### Configuration Files
+
 - `~/.rollapp-wasm/config/dymint.toml`: Dymint consensus configuration
 - `~/.rollapp-wasm/config/app.toml`: Application configuration
 - `~/.rollapp-wasm/config/genesis.json`: Chain genesis state
@@ -103,6 +113,7 @@ make generate-genesis env=mainnet DRS_VERSION=10
 ## Common Development Workflows
 
 ### Local Development Setup
+
 ```bash
 # Set environment variables
 export EXECUTABLE="rollapp-wasm"
@@ -120,6 +131,7 @@ rollapp-wasm start
 ```
 
 ### Working with Smart Contracts
+
 ```bash
 # Download cw20-ics20 contract
 sh scripts/download_release.sh v1.0.0
@@ -132,6 +144,7 @@ sh scripts/wasm/ibc_transfer.sh
 ```
 
 ### Settlement Layer Integration
+
 ```bash
 # Generate denomination metadata
 sh scripts/settlement/generate_denom_metadata.sh
@@ -147,6 +160,7 @@ sh scripts/settlement/register_sequencer_to_hub.sh
 ```
 
 ### IBC Setup
+
 ```bash
 # Setup IBC channel between rollapp and hub
 sh scripts/ibc/setup_ibc.sh
@@ -169,18 +183,21 @@ rly start hub-rollapp
 ## Module-Specific Testing
 
 ### Callback Module
+
 ```bash
 go test -v ./x/callback/...
 go test -v ./x/callback/keeper/...
 ```
 
 ### CWErrors Module
+
 ```bash
 go test -v ./x/cwerrors/...
 go test -v ./x/cwerrors/keeper/...
 ```
 
 ### E2E Testing
+
 ```bash
 go test -v ./e2e/testing/...
 ```
@@ -188,6 +205,7 @@ go test -v ./e2e/testing/...
 ## Upgrade Handlers
 
 The rollapp supports protocol upgrades from DRS-2 through DRS-10. Each upgrade handler is in `app/upgrades/drs-X/`:
+
 - Constants define upgrade name and version
 - Upgrade logic handles state migrations
 - Test files verify upgrade behavior
