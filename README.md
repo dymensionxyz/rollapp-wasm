@@ -35,7 +35,7 @@ export the following variables:
 ```shell
 export EXECUTABLE="rollapp-wasm"
 
-export CELESTIA_NETWORK="mock" # for a testnet RollApp use "arabica", for mainnet - "celestia"
+export CELESTIA_NETWORK="mock" # for a testnet RollApp use "mocha", for mainnet - "celestia"
 export CELESTIA_HOME_DIR="${HOME}/.da"
 
 export BECH32_PREFIX="rol"
