@@ -168,6 +168,7 @@ import (
 	dymintversion "github.com/dymensionxyz/dymint/version"
 	// Upgrade handlers
 	"github.com/dymensionxyz/rollapp-wasm/app/upgrades"
+	drs10 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-10"
 	drs2 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-2"
 	drs3 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-3"
 	drs4 "github.com/dymensionxyz/rollapp-wasm/app/upgrades/drs-4"
@@ -211,6 +212,7 @@ var (
 		drs7.Upgrade,
 		drs8.Upgrade,
 		drs9.Upgrade,
+		drs10.Upgrade,
 	}
 )
 
