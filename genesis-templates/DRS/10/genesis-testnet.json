@@ -1,6 +1,6 @@
 {
-  "genesis_time": "2025-07-07T14:33:32.95578Z",
-  "chain_id": "rollapp-wasm",
+  "genesis_time": "2025-09-19T14:05:11.101343Z",
+  "chain_id": "rollappwasm_1234-1",
   "initial_height": "1",
   "consensus_params": {
     "block": {
