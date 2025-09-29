@@ -2,7 +2,7 @@ package e2eTesting
 
 import (
 	"encoding/json"
-	"io/ioutil" // nolint: staticcheck
+	"os"
 
 	wasmdTypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,7 +13,7 @@ import (
 func (chain *TestChain) UploadContract(sender Account, wasmPath string, instantiatePerms wasmdTypes.AccessConfig) (codeID uint64) {
 	t := chain.t
 
-	wasmBlob, err := ioutil.ReadFile(wasmPath)
+	wasmBlob, err := os.ReadFile(wasmPath)
 	require.NoError(t, err)
 
 	txMsg := wasmdTypes.MsgStoreCode{
