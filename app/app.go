@@ -119,6 +119,8 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v6/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v6/modules/core/keeper"
 	ibctestingtypes "github.com/cosmos/ibc-go/v6/testing/types"
+	"github.com/dymensionxyz/dymension-rdk/x/converter"
+	converterkeeper "github.com/dymensionxyz/dymension-rdk/x/converter/keeper"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
@@ -254,7 +256,9 @@ var (
 		gaslessmodule.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		ibc.AppModuleBasic{},
-		ibctransfer.AppModuleBasic{},
+		// ibctransfer.AppModuleBasic{},
+		converter.AppModuleBasic{AppModuleBasic: &ibctransfer.AppModuleBasic{}},
+
 		vesting.AppModuleBasic{},
 		hubgenesis.AppModuleBasic{},
 		tokenfactory.NewAppModuleBasic(),
@@ -339,7 +343,7 @@ type App struct {
 	UpgradeKeeper      upgradekeeper.Keeper
 	ParamsKeeper       paramskeeper.Keeper
 	IBCKeeper          *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	TransferKeeper     ibctransferkeeper.Keeper
+	TransferKeeper     converterkeeper.Keeper
 	WasmKeeper         wasmkeeper.Keeper
 	TokenFactoryKeeper tokenfactorykeeper.Keeper
 	FeeGrantKeeper     feegrantkeeper.Keeper
@@ -554,6 +558,7 @@ func NewRollapp(
 	app.HubKeeper = hubkeeper.NewKeeper(
 		appCodec,
 		keys[hubtypes.StoreKey],
+		app.BankKeeper,
 	)
 
 	tokenFactoryKeeper := tokenfactorykeeper.NewKeeper(
@@ -578,7 +583,7 @@ func NewRollapp(
 	ics4Wrapper = hubgenkeeper.NewICS4Wrapper(ics4Wrapper, app.HubGenesisKeeper)
 
 	// Create Transfer Keepers
-	app.TransferKeeper = ibctransferkeeper.NewKeeper(
+	ibcTransferKeeper := ibctransferkeeper.NewKeeper(
 		appCodec,
 		keys[ibctransfertypes.StoreKey],
 		app.GetSubspace(ibctransfertypes.ModuleName),
@@ -589,11 +594,12 @@ func NewRollapp(
 		app.BankKeeper,
 		scopedTransferKeeper,
 	)
+	app.TransferKeeper = converterkeeper.NewTransferKeeper(ibcTransferKeeper, nil, app.HubKeeper, app.BankKeeper)
 
 	// create IBC module from top to bottom of stack
 	var transferStack ibcporttypes.IBCModule
 
-	transferStack = ibctransfer.NewIBCModule(app.TransferKeeper)
+	transferStack = ibctransfer.NewIBCModule(app.TransferKeeper.Keeper)
 	transferStack = denommetadata.NewIBCModule(
 		transferStack,
 		app.BankKeeper,
@@ -601,6 +607,8 @@ func NewRollapp(
 		app.HubKeeper,
 		denommetadatamoduletypes.NewMultiDenommetadataHooks(),
 	)
+
+	transferStack = converter.NewDecimalConversionMiddleware(transferStack, app.TransferKeeper)
 
 	transferStack = hubgenkeeper.NewIBCModule(
 		transferStack,
@@ -757,7 +765,7 @@ func NewRollapp(
 		params.NewAppModule(app.ParamsKeeper),
 		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
-		ibctransfer.NewAppModule(app.TransferKeeper),
+		converter.NewAppModule(app.TransferKeeper),
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper),
 		hubgenesis.NewAppModule(appCodec, app.HubGenesisKeeper),
