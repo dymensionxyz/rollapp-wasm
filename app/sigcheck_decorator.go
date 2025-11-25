@@ -8,6 +8,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
+	"github.com/cosmos/cosmos-sdk/x/authz"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	rdkante "github.com/dymensionxyz/dymension-rdk/server/ante"
 )
 
@@ -21,7 +23,8 @@ func NewSigCheckDecorator(ak accountKeeper, signModeHandler authsigning.SignMode
 }
 
 // Copied from github.com/cosmos/cosmos-sdk@v0.46.16/x/auth/ante/sigverify.go:235
-// and modified to set account number to 0 when verifying for IBC relayer messages from a new account
+// and modified to set account number to 0 when verifying for free messages (IBC relayer or
+// special non-IBC messages like authz.MsgGrant, feegrant.MsgGrantAllowance) from a new account
 func (svd sigCheckDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	sigTx, ok := tx.(authsigning.SigVerifiableTx)
 	if !ok {
@@ -42,7 +45,7 @@ func (svd sigCheckDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate boo
 		return ctx, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "invalid number of signer;  expected: %d, got %d", len(signerAddrs), len(sigs))
 	}
 
-	ibcRelayerMsg := rdkante.IbcOnly(tx.GetMsgs()...)
+	freeMsg := isFreeMsg(tx.GetMsgs()...)
 
 	for i, sig := range sigs {
 		acc, err := authante.GetSignerAcc(ctx, svd.ak, signerAddrs[i])
@@ -71,8 +74,8 @@ func (svd sigCheckDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate boo
 
 		// ======= HACK ====================
 		_, isNewAcc := ctx.Value(CtxKeyNewAccount(acc.GetAddress().String())).(struct{})
-		isNewRelayerAcc := ibcRelayerMsg && isNewAcc
-		if !genesis && !isNewRelayerAcc {
+		isNewFreeAcc := freeMsg && isNewAcc
+		if !genesis && !isNewFreeAcc {
 			accNum = acc.GetAccountNumber()
 		}
 		// =================================
@@ -104,4 +107,42 @@ func (svd sigCheckDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate boo
 	}
 
 	return next(ctx, tx, simulate)
+}
+
+// isFreeNonIBCMsg returns true for non-IBC messages that are allowed to bypass fees
+// unconditionally when they are the only messages in the transaction.
+func isFreeNonIBCMsg(m sdk.Msg) bool {
+	switch m.(type) {
+	case *authz.MsgGrant:
+		return true
+	case *feegrant.MsgGrantAllowance:
+		return true
+	default:
+		return false
+	}
+}
+
+// isFreeMsg returns true if the transaction contains only messages that should
+// be free and allow account creation without funds.
+// This includes both IBC-only messages and specific non-IBC messages like authz.MsgGrant
+// and feegrant.MsgGrantAllowance.
+func isFreeMsg(msgs ...sdk.Msg) bool {
+	// Empty messages should return false
+	if len(msgs) == 0 {
+		return false
+	}
+
+	// Check if it's IBC-only messages
+	if rdkante.IbcOnly(msgs...) {
+		return true
+	}
+
+	// Check if all messages are free non-IBC messages
+	for _, msg := range msgs {
+		if !isFreeNonIBCMsg(msg) {
+			return false
+		}
+	}
+
+	return true
 }
