@@ -3,6 +3,7 @@ package app
 import (
 	"strings"
 
+	errorsmod "cosmossdk.io/errors"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -29,7 +30,7 @@ func NewIBCFilteredStargateEncoder(unpacker codectypes.AnyUnpacker) wasmkeeper.S
 
 	return func(sender sdk.AccAddress, msg *wasmvmtypes.StargateMsg) ([]sdk.Msg, error) {
 		if isBlockedStargateMsg(msg.TypeURL) {
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized,
+			return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized,
 				"ibc message %s is not allowed from cosmwasm contracts", msg.TypeURL)
 		}
 		return defaultEncoder(sender, msg)
