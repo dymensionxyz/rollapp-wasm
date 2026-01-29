@@ -664,9 +664,7 @@ func NewRollapp(
 
 	// Block IBC messages from being dispatched via CosmWasm stargate to prevent
 	// contracts from bypassing ante handler restrictions (relayer whitelist, connection restrictions).
-	wasmOpts = append(wasmOpts, wasmkeeper.WithMessageEncoders(&wasmkeeper.MessageEncoders{
-		Stargate: NewIBCFilteredStargateEncoder(appCodec),
-	}))
+	wasmOpts = append(wasmOpts, wasmkeeper.WithMessageHandlerDecorator(IBCFilteringMessageHandlerDecorator()))
 
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks

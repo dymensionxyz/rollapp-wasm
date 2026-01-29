@@ -6,7 +6,6 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -21,20 +20,31 @@ var blockedStargateMsgPrefixes = []string{
 	"/ibc.applications.transfer.",
 }
 
-// NewIBCFilteredStargateEncoder returns a stargate encoder that blocks IBC messages.
-// It wraps the default EncodeStargateMsg and rejects any message whose TypeURL
-// matches a blocked IBC prefix, preventing contracts from bypassing ante handler
-// restrictions (e.g. relayer whitelisting, connection open restrictions).
-func NewIBCFilteredStargateEncoder(unpacker codectypes.AnyUnpacker) wasmkeeper.StargateEncoder {
-	defaultEncoder := wasmkeeper.EncodeStargateMsg(unpacker)
-
-	return func(sender sdk.AccAddress, msg *wasmvmtypes.StargateMsg) ([]sdk.Msg, error) {
-		if isBlockedStargateMsg(msg.TypeURL) {
-			return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized,
-				"ibc message %s is not allowed from cosmwasm contracts", msg.TypeURL)
-		}
-		return defaultEncoder(sender, msg)
+// IBCFilteringMessageHandlerDecorator returns a decorator that filters IBC messages
+// from CosmWasm contracts before they reach the underlying message handler.
+func IBCFilteringMessageHandlerDecorator() func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
+	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
+		return &ibcFilteringMessenger{wrapped: old}
 	}
+}
+
+type ibcFilteringMessenger struct {
+	wrapped wasmkeeper.Messenger
+}
+
+// DispatchMsg implements the Messenger interface
+func (m *ibcFilteringMessenger) DispatchMsg(
+	ctx sdk.Context,
+	contractAddr sdk.AccAddress,
+	contractIBCPortID string,
+	msg wasmvmtypes.CosmosMsg,
+) (events []sdk.Event, data [][]byte, err error) {
+	// Check if this is a stargate message with a blocked IBC type URL
+	if msg.Stargate != nil && isBlockedStargateMsg(msg.Stargate.TypeURL) {
+		return nil, nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized,
+			"ibc message %s is not allowed from cosmwasm contracts", msg.Stargate.TypeURL)
+	}
+	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
 }
 
 // isBlockedStargateMsg checks if a message type URL matches any blocked IBC prefix.
